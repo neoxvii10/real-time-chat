@@ -6,6 +6,7 @@
   width: 100%;
   position: relative;
   height: fit-content;
+  border-right: 1px solid var(--header-border);
 }
 
 .navigation-users-container {

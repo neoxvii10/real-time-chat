@@ -70,7 +70,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 6,
-     }
+     },
   ];
 
   const [isClick, setIsClick] = useState<boolean>(false);

@@ -1,9 +1,8 @@
 .HomePage {
-  object-fit: cover;
-  background-repeat: repeat;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   display: grid;
   grid-template-columns: 34% 66%;
+  width: 100%;
 }
 
