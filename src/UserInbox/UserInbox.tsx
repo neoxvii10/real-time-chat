@@ -7,7 +7,7 @@ import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { PiShareFat } from 'react-icons/pi'
 import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import './UserInbox.css';
 
 type UserProp = {
@@ -24,6 +24,32 @@ type UserInboxProps = {
 };
 
 const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
+  const [isSlided, setSlided] = useState<boolean>(false);
+
+  const [translateX, setTranslateX] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(480px)',
+  });
+  
+  const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
+    // Check if the clicked element is the chat-utils element or one of its descendants
+    const clickedElement = event.target as Element;
+    const isChatUtilsClicked = clickedElement.closest('.chat-utils');
+  
+    // Only update the visibility of user-info if chat-utils or its child is not clicked
+    if (!isChatUtilsClicked) {
+      setSlided(!isSlided);
+      setTranslateX((translateX) => ({
+        ...translateX,
+        visibility: isSlided ? 'visible' : 'hidden',
+        opacity: isSlided ? 1 : 0,
+        transform: isSlided ? 'translateX(0px)' : 'translateX(480px)',
+      }));
+    }
+  };
+  
+  
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
 
@@ -33,8 +59,11 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
   return (
     <div className="user-box-chat">
-      <Logo/>
-      <div className="user-header-container">
+      <Logo />
+      <div className="single-user-container">
+        
+      </div>
+      <div className="user-header-container" onClick={event => handleSlideAnimation(event)}>
         <div className="user">
           <div className="user-avatar">
             <span>
@@ -65,24 +94,24 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             }}
             onMouseLeave={() => setUtilsVisible(false)}
             >
-              <ul>
-                <li>
+              <ul className="util-dropdown-item-container">
+                <li className="util-dropdown-item">
                   <span className='dropdown-icon'><IoNotificationsOffOutline size={22}/></span>
                   <span className='dropdown-label'>Mute</span>
                 </li>
-                <li>
+                <li className="util-dropdown-item">
                   <span className='dropdown-icon'><AiOutlineCheckCircle size={22}/></span>
                   <span className='dropdown-label'>Select Messages</span>
                 </li>
-                <li>
+                <li className="util-dropdown-item">
                   <span className='dropdown-icon'><PiShareFat size={22}/></span>
                   <span className='dropdown-label'>Share Contact</span>
                 </li>
-                <li>
+                <li className="util-dropdown-item">
                   <span className='dropdown-icon'><BiLockAlt size={22}/></span>
                   <span className='dropdown-label'>Block User</span>
                 </li>
-                <li>
+                <li className="util-dropdown-item">
                   <span className='dropdown-icon alert'><FiTrash size={22}/></span>
                   <span className='dropdown-label alert'>Delete Chat</span>
                 </li>
@@ -91,18 +120,10 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           </span>
         </div>
       </div>
-      {/* {userProp ? (
-        <div className="user-infos">
-          <p>User Name: {userProp.name}</p>
-          <p>User Id: {userProp.id}</p>
-          <p>User Avatar: {userProp.avatar}</p>
-          <p>User Chat: {userProp.chat}</p>
-          <p>User Time: {userProp.time}</p>
-          <p>User No Id: {userProp.no_id}</p>
-        </div>
-      ) : (
-        <p>No user selected</p>
-      )} */}
+
+      <div className={`user-info ${isSlided ? 'slided' : ''}`} style={translateX}>
+        <p>Test</p>
+      </div>
     </div>
   );
 };

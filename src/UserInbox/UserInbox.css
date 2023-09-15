@@ -1,11 +1,23 @@
 .user-box-chat {
-  position: relative;
+  width: 100%;
   overflow: hidden;
   height: 100vh;
-  object-fit: contain;
+  object-fit: cover;
   z-index: 1;
   display: flex;
   flex-direction: column;
+}
+
+.user-info {
+  width: 34%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--background-color);
+  position: absolute;
+  z-index: 5;
+  right: 0.4rem;
+  transition: all 300ms ease;
+  box-shadow: 0 0 3px black;
 }
 
 /*styling for pattern.svg*/

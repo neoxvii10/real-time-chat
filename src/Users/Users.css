@@ -222,7 +222,6 @@
 .dropdown-label {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: inline-flex;
-  align-items: center;
   font-size: 0.87rem;
   width: 5rem;
 }
