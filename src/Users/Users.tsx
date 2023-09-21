@@ -1,12 +1,14 @@
-import { useState, useRef } from 'react';
+import { CSSProperties, useState, useRef } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
-import { GoSearch, GoX } from 'react-icons/go' 
+import { GoSearch, GoX } from 'react-icons/go'
 import { BsCloudCheck, BsPerson } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
 import { TfiArrowLeft } from 'react-icons/tfi'
+import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
+import Profile from './Profile/Profile';
 
 type userProp = {
   name: string,
@@ -19,9 +21,10 @@ type userProp = {
 
 type UsersProps = {
   onUserClick: (selectedUsername: userProp) => void;
+  userProp: userProp;
 };
 
-const Users: React.FC<UsersProps> = ({ onUserClick }) => {
+const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
   const users = [
     {
       name: "Lê Minh Thuận",
@@ -30,47 +33,47 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
       chat: "Đc thế nhờ",
       time: "Sep 14",
       no_id: 1,
-     },
-     {
+    },
+    {
       name: "Phạm Tùng Thủy",
       id: "#@thuypham412",
       avatar: "PT",
       chat: "Đc thế nhờ",
       time: "Sep 13",
       no_id: 2,
-     },
-     {
+    },
+    {
       name: "Đinh Đức Thuận",
       id: "#@thuandinh795",
       avatar: "DT",
       chat: "Đc thế nhờ",
       time: "Sep 7",
       no_id: 3,
-     },
-     {
+    },
+    {
       name: "Nguyễn Trung Hiếu",
       id: "#@hieunguyen318",
       avatar: "NH",
       chat: "Đc thế nhờ",
       time: "Sep 8",
       no_id: 4,
-     },
-     {
+    },
+    {
       name: "Triệu Thanh Tùng",
       id: "#@tungtrieu799",
       avatar: "TT",
       chat: "Đc thế nhờ",
       time: "Sep 12",
       no_id: 5,
-     },
-     {
+    },
+    {
       name: "Trần Tất Việt",
       id: "#@viettt132",
       avatar: "TV",
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 6,
-     },
+    },
   ];
 
   const [isClick, setIsClick] = useState<boolean>(false);
@@ -98,81 +101,102 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
   const handleClearInput = () => {
     setInputValue('');
   };
-  
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
-  
+
   // handle menu dropdown
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   };
-  
+
+  // handle visiable profile
+
+  const [translateX, setTranslateX] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(480px)',
+  });
+
+  const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
+    setTranslateX((translateX) => ({
+      ...translateX,
+      visibility: 'visible',
+      opacity: 1,
+      transform: 'translateX(0px)',
+    }));
+  };
+
   return (
     <div className="users-container">
       <div className="navigation-users-container">
         <span className="menu-icon-container">
           {isClick ?
-          <TfiArrowLeft size={22}
-          className={`back-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
-          onClick={(e) => handleOnClick(e)}
-          />
-          :
-          <FiMenu
-            size={22}
-            className={`menu-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
-            onClick={handleMenuClick}
-          />
+            <TfiArrowLeft size={22}
+              className={`back-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
+              onClick={(e) => handleOnClick(e)}
+            />
+            :
+            <FiMenu
+              size={22}
+              className={`menu-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
+              onClick={handleMenuClick}
+            />
           }
           <div className="menu-container" style={{
             visibility: isMenuVisible ? 'visible' : 'hidden',
             opacity: isMenuVisible ? 1 : 0,
           }}
-          onMouseLeave={() => setMenuVisible(false)}
+            onMouseLeave={() => setMenuVisible(false)}
           >
             <ul>
+              <li onClick={e => handleSlideAnimation(e)}>
+                <span className='dropdown-icon'><ImProfile size={22} /></span>
+                <span className='dropdown-label'>Profile</span>
+              </li>
               <li>
-                <span className='dropdown-icon'><BsCloudCheck size={22}/></span>
+                <span className='dropdown-icon'><BsCloudCheck size={22} /></span>
                 <span className='dropdown-label'>My Cloud</span>
               </li>
               <li>
-                <span className='dropdown-icon'><BsPerson size={22}/></span>
+                <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Contacts</span>
               </li>
               <li>
-                <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22}/></span>
+                <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22} /></span>
                 <div className="dropdown-label-container">
                   <span className='dropdown-label'>Dark Mode</span>
                   <DarkMode />
                 </div>
               </li>
               <li>
-                <span className='dropdown-icon'><LuSettings size={22}/></span>
+                <span className='dropdown-icon'><LuSettings size={22} /></span>
                 <span className='dropdown-label'>Settings</span>
               </li>
             </ul>
           </div>
         </span>
         <div className={`search-container ${isClick ? 'active' : ''}`}
-        onClick={handleOnClick}
+          onClick={handleOnClick}
         >
           <div className='search-bar'>
-          <span className="search-icon-container">
-            <GoSearch size={22} className={`search-icon ${isClick ? 'active' : ''}`}/>
-          </span>
-          <form action="">
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder='Search'
-              value={inputValue}
-              onChange={handleInputChange}
-            />
-          </form>
+            <span className="search-icon-container">
+              <GoSearch size={22} className={`search-icon ${isClick ? 'active' : ''}`} />
+            </span>
+            <form action="">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder='Search'
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+            </form>
           </div>
-          
+
           {inputValue && ( // Render the clear icon only if there is input value
             <span className="clear-icon-container" onClick={handleClearInput}>
               <GoX size={22} className={`clear-icon ${isClick ? 'active' : ''}`} />
@@ -204,6 +228,9 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
           ))}
         </ul>
       </div>
+
+      <Profile translateX={translateX} setTranslateX={setTranslateX} userProp={userProp} />
+
     </div>
   );
 }

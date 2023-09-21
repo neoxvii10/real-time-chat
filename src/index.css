@@ -14,6 +14,7 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: #aaaaaa;
+  --color-background-secondary: rgb(244,244,245);
 }
 
 [data-theme="dark"] {
@@ -32,6 +33,7 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: black;
+  --color-background-secondary: rgb(15,15,15);
 }
 
 body {
