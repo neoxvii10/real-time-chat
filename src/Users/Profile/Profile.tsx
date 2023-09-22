@@ -1,5 +1,5 @@
 import './Profile.css'
-import { CSSProperties, useState } from 'react';
+import { CSSProperties } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { MdOutlineModeEditOutline } from 'react-icons/md'
 import { BsThreeDotsVertical } from 'react-icons/bs'
