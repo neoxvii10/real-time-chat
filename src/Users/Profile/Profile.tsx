@@ -7,6 +7,7 @@ import { MdOutlineCall, MdAlternateEmail } from 'react-icons/md'
 import { IoNotificationsOutline } from 'react-icons/io5'
 import { FiDatabase } from 'react-icons/fi'
 import { HiOutlineLockClosed } from 'react-icons/hi'
+import EditProfile from './Edit/EditProfile';
 
 type UserProp = {
     name: string;
@@ -24,6 +25,8 @@ type ProfileProps = {
 };
 
 const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }) => {
+
+    // handle slide for profile
     const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
         setTranslateX((translateX) => ({
             ...translateX,
@@ -33,6 +36,22 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
         }));
     };
 
+    // handle slide for edit
+    const [translateXForEdit, setTranslateXForEdit] = useState<CSSProperties>({
+        visibility: 'hidden',
+        opacity: 0,
+        transform: 'translateX(480px)',
+    })
+
+    const handleSlideEdit = (event: React.MouseEvent<Element>) => {
+        setTranslateXForEdit((translateXForEdit) => ({
+            ...translateXForEdit,
+            visibility: 'visible',
+            opacity: 1,
+            transform: 'translateX(0px)',
+        }));
+    }
+
     return (
         <div style={translateX} className='profile-container'>
             <div className='profile-header'>
@@ -41,7 +60,7 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
                 </span>
                 <div className="main-header">
                     <h3 className='title'>Profile</h3>
-                    <span className='icon-container'>
+                    <span className='icon-container' onClick={e => handleSlideEdit(e)}>
                         <MdOutlineModeEditOutline size={22} className='header-icon' />
                     </span>
                     <span className='icon-container'>
@@ -123,6 +142,8 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
                     </ul>
                 </div>
             </div>
+
+            <EditProfile userProp={userProp} translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit}/>
         </div>
     )
 }

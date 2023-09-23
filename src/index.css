@@ -2,7 +2,9 @@
   --font-color: #333;
   --switch-color: white;
   --background-color: white;
+  --color-background-secondary: rgb(244,244,245);
   --search-bg-color: white;
+  --color-primary: rgb(51,144,236);
   --border: #707579;
   --border-on-click: #3390ec;
   --hover: #f3f3f3;
@@ -14,13 +16,18 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: #aaaaaa;
-  --color-background-secondary: rgb(244,244,245);
+  --color-background-secondary-accent: rgb(228,228,229);
+  --color-borders-input: rgb(218,220,224);
+  --color-placeholders: #a2acb4;
+  --color-text-secondary: rgb(112,117,121);
 }
 
 [data-theme="dark"] {
   --font-color: #eee;
   --switch-color: black;
   --background-color: #212121;
+  --color-background-secondary: rgb(15,15,15);
+  --color-primary: rgb(135,116,225);
   --search-bg-color: #181818;
   --border: none;
   --border-on-click: #8774e1;
@@ -33,7 +40,10 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: black;
-  --color-background-secondary: rgb(15,15,15);
+  --color-background-secondary-accent: rgb(16,15,16);
+  --color-borders-input: rgb(91,91,90);
+  --color-placeholders: #a2acb4;
+  --color-text-secondary: rgb(170,170,170);
 }
 
 body {
