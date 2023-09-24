@@ -1,0 +1,9 @@
+.edit-info-container{
+    
+    
+}
+
+.edit-info-header-container{
+    display: grid;
+    grid-template-columns: 0fr 2fr 1fr;
+}

@@ -9,6 +9,7 @@ import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
 import { CSSProperties, useState } from 'react';
 import './UserInbox.css';
+import RightColumn from '../RightColumn/UserInfor';
 
 type UserProp = {
   name: string;
@@ -24,13 +25,13 @@ type UserInboxProps = {
 };
 
 const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
-  const [isSlided, setSlided] = useState<boolean>(false);
+    const [isSlided, setSlided] = useState<boolean>(false);
 
-  const [translateX, setTranslateX] = useState<CSSProperties>({
-    visibility: 'hidden',
-    opacity: 0,
-    transform: 'translateX(480px)',
-  });
+    const [translateX, setTranslateX] = useState<CSSProperties>({
+      visibility: 'hidden',
+      opacity: 0,
+      transform: 'translateX(480px)',
+    });
   
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
     // Check if the clicked element is the chat-utils element or one of its descendants
@@ -122,7 +123,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       </div>
 
       <div className={`user-info ${isSlided ? 'slided' : ''}`} style={translateX}>
-        <p>Test</p>
+            <RightColumn userInfoProp={userProp}/>
       </div>
     </div>
   );
