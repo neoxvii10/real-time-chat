@@ -12,7 +12,7 @@
   width: 34%;
   height: 100vh;
   overflow: hidden;
-  background: var(--background-color);
+  background: var(--rightcolumn-backgroud);
   position: absolute;
   z-index: 5;
   right: 0.4rem;
@@ -26,7 +26,14 @@
   z-index: 2;
 }
 
-.st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7 {
+.st0,
+.st1,
+.st2,
+.st3,
+.st4,
+.st5,
+.st6,
+.st7 {
   stroke: var(--stroke-color);
 }
 
@@ -78,7 +85,8 @@
   text-align: left;
 }
 
-h5, p {
+h5,
+p {
   margin: 0;
 }
 
@@ -116,7 +124,7 @@ h5, p {
   border-radius: 50%;
 }
 
-.util-icon:hover { 
+.util-icon:hover {
   background: var(--hover);
 }
 
@@ -130,7 +138,6 @@ h5, p {
   top: 3rem;
   right: 2rem;
   transition: all 300ms ease;
-  
 }
 
 .util-container ul {
@@ -164,7 +171,8 @@ h5, p {
 }
 
 .util-container .dropdown-label {
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
   display: inline-flex;
   align-items: center;
   font-size: 0.87rem;

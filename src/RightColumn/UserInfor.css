@@ -1,9 +1,99 @@
-.edit-info-container{
-    
-    
+:root {
+  --align-dimension: 2rem;
+  --rightcolumn-backgroud: rgb(16, 16, 16);
 }
 
-.edit-info-header-container{
-    display: grid;
-    grid-template-columns: 0fr 2fr 1fr;
+.edit-info-container {
+}
+
+.edit-info-header {
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+  background-color: var(--background-color);
+}
+
+.edit-info-header > h5 {
+  display: inline-block;
+  font-size: x-large;
+  width: 85%;
+  padding-left: 2%;
+}
+
+.avatar-container {
+  height: 400px;
+  background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  position: static;
+}
+
+.avatar-container > .avatar {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  font-size: xxx-large;
+}
+.avatar-container > .name {
+  position: relative;
+  display: inline-block;
+  top: 70%;
+  left: var(--align-dimension);
+  font-size: xx-large;
+}
+
+.phone-container {
+  height: 80px;
+  background-color: var(--background-color);
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.phone-container > .layout-btn {
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  width: 95%;
+  left: 2.5%;
+  height: 70%;
+}
+
+.phone-container .layout-btn:hover {
+  background: var(--hover);
+}
+
+.phone-container p {
+  display: inline-block;
+  font-size: x-large;
+  margin-left: 3%;
+}
+
+.phone-container .util-icon {
+  position: relative;
+  top: 20%;
+  left: 0.5em;
+}
+
+.media-container {
+}
+.media-container .media-topic {
+  background-color: var(--background-color);
+  display: inline-block;
+  width: calc(100% / 6);
+  text-align: center;
+  padding: 1rem 0;
+  color: #aaaaaa;
+  cursor: pointer;
+}
+
+.media-container .media-topic:hover {
+  background-color: var(--hover);
+}
+
+.media-container > .header {
+  border-bottom: rgba(25, 17, 17, 0.14) solid 1px;
+}
+.media-container > .body {
+  background-color: var(--background-color);
+  min-height: 100vh;
+  color: #686c72;
 }
