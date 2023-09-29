@@ -14,6 +14,10 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: #aaaaaa;
+  --checkbox-fill: var(--border-on-click);
+  --bg-hover: #fcf0f0;
+  --sec-bg: #f4f4f5;
+  --gradient-bg: rgb(157, 215, 234);
 }
 
 [data-theme="dark"] {
@@ -32,6 +36,10 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: black;
+  --checkbox-fill: var(--border-on-click);
+  --bg-hover: #322525;
+  --sec-bg: #181818;
+  --gradient-bg: rgb(182, 168, 225);
 }
 
 body {

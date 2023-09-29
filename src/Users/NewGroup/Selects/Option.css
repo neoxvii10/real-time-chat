@@ -1,0 +1,82 @@
+.delete-icon-container {
+  z-index: 3;
+  position: absolute;
+  border-radius: 50%;
+  left: -0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background 0.3s, transform 0.3s;
+  transform-origin: center;
+}
+
+.delete-icon {
+  margin: auto;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  stroke: white;
+  z-index: 3;
+}
+
+.option:hover .delete-icon-container {
+  background: #df3f40;
+  transform: rotate(90deg);
+  transition-delay: 0s;
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 10000px;
+  background: var(--hover);
+  height: 2rem;
+  padding: 0 0.5rem 0 2.2rem;
+  width: fit-content;
+  gap: 0.4rem;
+  z-index: 1;
+  cursor: pointer;
+  color: var(--font-color);
+  transition: background 0.3s;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.option:hover {
+  background: var(--bg-hover);
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.option-info h5 {
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.option .user-avatar {
+  z-index: 2;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+  background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  left: -0.2rem;
+}
+
+.option .user-avatar span {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+}

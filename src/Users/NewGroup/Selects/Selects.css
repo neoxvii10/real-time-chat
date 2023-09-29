@@ -1,0 +1,97 @@
+.select-container {
+  padding: 0 0.6rem 1rem;
+  max-height: calc(100vh - 4.2rem);
+  overflow-x: hidden;
+}
+
+.select-container ul {
+  width: 100%;
+  margin: 0;
+  
+}
+
+.select-container ul li {
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: var(--background-color);
+  text-align: left;
+  display: flex;
+}
+
+.select-container ul li:hover {
+  background: var(--hover);
+}
+
+.selected {
+  padding: 0.6rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.select-container ul li .user {
+  width: 11rem;
+  display: grid;
+  grid-template-columns: 20% 80%;
+  align-items: center;
+  text-decoration: none;
+  gap: 1.1rem;
+}
+
+.select-container ul li .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+  background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  border-radius: 50%;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.select-container ul li .user-avatar span {
+  margin: auto;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.select-container ul li .user-labels {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+h5, p {
+  margin: 0;
+}
+
+.select-container ul li .user-labels h5 {
+  color: var(--font-color);
+  font-size: 1rem;
+}
+
+.select-container ul li .user-labels p {
+  color: #aaaaaa;
+  font-size: 0.86rem;
+}
+
+/* .select-container ul li:focus-within .user-labels h5,
+.select-container ul li:focus-within .user-labels p {
+  color: var(--font-color);
+} */
+
+.create-gr-btn-container {
+  position: absolute;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  bottom: 1.4rem;
+  right: 1.4rem;
+  background: var(--border-on-click);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #eee;
+}

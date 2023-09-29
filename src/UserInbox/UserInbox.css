@@ -46,7 +46,7 @@
 }
 
 .user-header-container .user {
-  width: fit-content;
+  width: 13rem;
   display: grid;
   grid-template-columns: 20% 80%;
   align-items: center;
@@ -128,7 +128,7 @@ h5, p {
   border-radius: 2px;
   margin: auto;
   top: 3rem;
-  right: 2rem;
+  right: 1.5rem;
   transition: all 300ms ease;
   
 }
