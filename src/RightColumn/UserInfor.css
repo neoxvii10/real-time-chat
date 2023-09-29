@@ -3,20 +3,17 @@
   --rightcolumn-backgroud: rgb(16, 16, 16);
 }
 
-.edit-info-container {
-}
-
-.edit-info-header {
+.edit-info-header > div {
   display: flex;
   height: 3.5rem;
   align-items: center;
   background-color: var(--background-color);
 }
 
-.edit-info-header > h5 {
+.edit-info-header h3 {
   display: inline-block;
   font-size: x-large;
-  width: 85%;
+  width: 80%;
   padding-left: 2%;
 }
 
@@ -74,9 +71,9 @@
 }
 
 .media-container {
+  background-color: var(--background-color);
 }
 .media-container .media-topic {
-  background-color: var(--background-color);
   display: inline-block;
   width: calc(100% / 6);
   text-align: center;
