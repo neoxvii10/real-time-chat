@@ -1,5 +1,5 @@
 import './Profile.css'
-import { CSSProperties } from 'react';
+import { CSSProperties, useState } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { MdOutlineModeEditOutline } from 'react-icons/md'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -7,6 +7,7 @@ import { MdOutlineCall, MdAlternateEmail } from 'react-icons/md'
 import { IoNotificationsOutline } from 'react-icons/io5'
 import { FiDatabase } from 'react-icons/fi'
 import { HiOutlineLockClosed } from 'react-icons/hi'
+import { TbLogout } from 'react-icons/tb'
 import EditProfile from './Edit/EditProfile';
 
 type UserProp = {
@@ -26,13 +27,14 @@ type ProfileProps = {
 
 const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }) => {
 
+
     // handle slide for profile
     const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
         setTranslateX((translateX) => ({
             ...translateX,
             visibility: 'hidden',
             opacity: 0,
-            transform: 'translateX(480px)',
+            transform: 'translateX(180px)',
         }));
     };
 
@@ -40,7 +42,7 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
     const [translateXForEdit, setTranslateXForEdit] = useState<CSSProperties>({
         visibility: 'hidden',
         opacity: 0,
-        transform: 'translateX(480px)',
+        transform: 'translateX(180px)',
     })
 
     const handleSlideEdit = (event: React.MouseEvent<Element>) => {
@@ -52,7 +54,15 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
         }));
     }
 
+    // handle visbile button logout
+    const [visibleLogout, setvisibleLogout] = useState<boolean>(false);
+
+    const handleVisibleLogout = () => {
+        setvisibleLogout(!visibleLogout);
+    }
+
     return (
+        <>
         <div style={translateX} className='profile-container'>
             <div className='profile-header'>
                 <span className='icon-container' onClick={e => handleSlideAnimation(e)}>
@@ -64,7 +74,21 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
                         <MdOutlineModeEditOutline size={22} className='header-icon' />
                     </span>
                     <span className='icon-container'>
-                        <BsThreeDotsVertical size={22} className='header-icon' />
+                        <BsThreeDotsVertical size={22} className='header-icon'
+                            onClick={handleVisibleLogout}
+                        />
+                        {/* <div className="backdrop"></div> */}
+                        <div className='logout-button' style={{
+                            visibility: visibleLogout ? 'visible' : 'hidden',
+                            opacity: visibleLogout ? 1 : 0,
+                        }}
+                            onMouseLeave={() => setvisibleLogout(false)}
+                        >
+                            <div className='wrapper'>
+                                <span className='logout-icon'><TbLogout size={22} /></span>
+                                <span className='logout-lable'>Log out</span>
+                            </div>
+                        </div>
                     </span>
                 </div>
             </div>
@@ -142,9 +166,10 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
                     </ul>
                 </div>
             </div>
-
-            <EditProfile userProp={userProp} translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit}/>
         </div>
+
+        <EditProfile userProp={userProp} translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
+        </>
     )
 }
 

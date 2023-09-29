@@ -20,6 +20,10 @@
   --color-borders-input: rgb(218,220,224);
   --color-placeholders: #a2acb4;
   --color-text-secondary: rgb(112,117,121);
+  --color-background-compact-menu: rgb(255,255,255,0.733);
+  --color-background-compact-menu-hover: rgb(0,0,0,0.067);
+  --color-default-shadow: rgb(114,114,114,0.251);
+  --color-primary-shade: rgb(74,149,214);
 }
 
 [data-theme="dark"] {
@@ -44,6 +48,10 @@
   --color-borders-input: rgb(91,91,90);
   --color-placeholders: #a2acb4;
   --color-text-secondary: rgb(170,170,170);
+  --color-background-compact-menu: rgb(33,33,33,0.867);
+  --color-background-compact-menu-hover: rgb(0,0,0,0.4);
+  --color-default-shadow: rgb(16,16,16,0.612);
+  --color-primary-shade: rgb(123,113,198);
 }
 
 body {

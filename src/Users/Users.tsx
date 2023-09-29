@@ -118,7 +118,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: 'hidden',
     opacity: 0,
-    transform: 'translateX(480px)',
+    transform: 'translateX(180px)',
   });
 
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
