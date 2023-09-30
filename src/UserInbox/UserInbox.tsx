@@ -42,9 +42,9 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       setSlided(!isSlided);
       setTranslateX((translateX) => ({
         ...translateX,
-        visibility: isSlided ? 'visible' : 'hidden',
-        opacity: isSlided ? 1 : 0,
-        transform: isSlided ? 'translateX(0px)' : 'translateX(480px)',
+        visibility: isSlided ? 'hidden' : 'visible' ,
+        opacity: isSlided ? 0 : 1,
+        transform: isSlided ? 'translateX(480px)' : 'translateX(0px)',
       }));
     }
   };
@@ -60,9 +60,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   return (
     <div className="user-box-chat">
       <Logo />
-      <div className="single-user-container">
-        
-      </div>
       <div className="user-header-container" onClick={event => handleSlideAnimation(event)}>
         <div className="user">
           <div className="user-avatar">
@@ -121,7 +118,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         </div>
       </div>
 
-      <div className={`user-info ${isSlided ? 'slided' : ''}`} style={translateX}>
+      <div className="user-info" style={translateX}>
         <p>Test</p>
       </div>
     </div>

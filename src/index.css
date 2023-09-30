@@ -24,6 +24,10 @@
   --color-background-compact-menu-hover: rgb(0,0,0,0.067);
   --color-default-shadow: rgb(114,114,114,0.251);
   --color-primary-shade: rgb(74,149,214);
+  --checkbox-fill: var(--border-on-click);
+  --bg-hover: #fcf0f0;
+  --sec-bg: #f4f4f5;
+  --gradient-bg: rgb(157, 215, 234);
 }
 
 [data-theme="dark"] {
@@ -52,6 +56,10 @@
   --color-background-compact-menu-hover: rgb(0,0,0,0.4);
   --color-default-shadow: rgb(16,16,16,0.612);
   --color-primary-shade: rgb(123,113,198);
+  --checkbox-fill: var(--border-on-click);
+  --bg-hover: #322525;
+  --sec-bg: #181818;
+  --gradient-bg: rgb(182, 168, 225);
 }
 
 body {

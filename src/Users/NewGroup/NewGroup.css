@@ -1,0 +1,68 @@
+.new-group-container {
+  width: 100%;
+  height: 100vh;
+  background: var(--background-color);
+  position: absolute;
+  z-index: 5;
+  transition: 300ms;
+  box-shadow: 0 0 3px black;
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 0.4rem;
+}
+
+.new-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  margin: 0 0.6rem 0 1rem;
+  gap: 0.4rem;
+}
+
+.new-gr-back-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.new-gr-back-icon {
+  margin: auto;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.new-gr-back-icon:hover { 
+  background: var(--hover);
+}
+
+h4 {
+  padding: 0;
+  margin: 0;
+}
+
+.new-group-header h4 {
+  font-size: 1.4rem;
+}
+
+.select-values-container {
+  margin-left: 1rem;
+  overflow: auto;
+  scrollbar-width: none;
+  min-height: 3rem;
+  max-height: 5.8rem;
+  border-radius: 2px;
+  transition: all 250ms ease;
+  background: transparent;
+}
+
+.select-values-content {
+  margin: 0.4rem 0.1rem 0.6rem 0.3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min-content, 10rem));
+  gap: 0.8rem;
+  row-gap: 0.8rem;
+  transition: all 250ms ease;
+}

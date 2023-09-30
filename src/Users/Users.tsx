@@ -1,16 +1,17 @@
-import { CSSProperties, useState, useRef } from 'react';
+import { useState, useRef, CSSProperties } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
-import { GoSearch, GoX } from 'react-icons/go'
-import { BsCloudCheck, BsPerson } from 'react-icons/bs'
+import { GoSearch, GoX } from 'react-icons/go' 
+import { BsCloudCheck, BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
-import { TfiArrowLeft } from 'react-icons/tfi'
+import { FaArrowLeft } from 'react-icons/fa6'
 import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
 import Profile from './Profile/Profile';
+import NewGroup from './NewGroup/NewGroup';
 
-type userProp = {
+type UserProp = {
   name: string,
   id: string,
   avatar: string,
@@ -20,12 +21,12 @@ type userProp = {
 }
 
 type UsersProps = {
-  onUserClick: (selectedUsername: userProp) => void;
-  userProp: userProp;
+  onUserClick: (selectedUsername: UserProp) => void;
+  userProp: UserProp
 };
 
 const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
-  const users = [
+  const users: UserProp[] = [
     {
       name: "Lê Minh Thuận",
       id: "#@thuanle409",
@@ -33,48 +34,91 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
       chat: "Đc thế nhờ",
       time: "Sep 14",
       no_id: 1,
-    },
-    {
+     },
+     {
       name: "Phạm Tùng Thủy",
       id: "#@thuypham412",
       avatar: "PT",
       chat: "Đc thế nhờ",
       time: "Sep 13",
       no_id: 2,
-    },
-    {
+     },
+     {
       name: "Đinh Đức Thuận",
       id: "#@thuandinh795",
       avatar: "DT",
       chat: "Đc thế nhờ",
       time: "Sep 7",
       no_id: 3,
-    },
-    {
+     },
+     {
       name: "Nguyễn Trung Hiếu",
       id: "#@hieunguyen318",
       avatar: "NH",
       chat: "Đc thế nhờ",
       time: "Sep 8",
       no_id: 4,
-    },
-    {
+     },
+     {
       name: "Triệu Thanh Tùng",
       id: "#@tungtrieu799",
       avatar: "TT",
       chat: "Đc thế nhờ",
       time: "Sep 12",
       no_id: 5,
-    },
-    {
+     },
+     {
       name: "Trần Tất Việt",
       id: "#@viettt132",
       avatar: "TV",
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 6,
-    },
+     },
+     {
+      name: "Trần Tất Việt",
+      id: "#@viettt132",
+      avatar: "TV",
+      chat: "Đc thế nhờ",
+      time: "Sep 11",
+      no_id: 7,
+     },
+     {
+      name: "Trần Tất Việt",
+      id: "#@viettt132",
+      avatar: "TV",
+      chat: "Đc thế nhờ",
+      time: "Sep 11",
+      no_id: 8,
+     },
+     {
+      name: "Trần Tất Việt",
+      id: "#@viettt132",
+      avatar: "TV",
+      chat: "Đc thế nhờ",
+      time: "Sep 11",
+      no_id: 9,
+     },
   ];
+  //hanlde new group slides
+  const [isSlided, setSlided] = useState<boolean>(false);
+
+  const [translateX, setTranslateX] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-480px)',
+  });
+  
+  const handleSlideAnimation = () => {
+      setSlided(!isSlided);
+      console.log(isSlided);
+      setTranslateX((translateX) => ({
+        ...translateX,
+        visibility: isSlided ? 'hidden' : 'visible' ,
+        opacity: isSlided ? 0 : 1,
+        transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
+      }));
+  };
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
@@ -115,15 +159,15 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
 
   // handle visiable profile
 
-  const [translateX, setTranslateX] = useState<CSSProperties>({
+  const [translateXforProfile, setTranslateXforProfile] = useState<CSSProperties>({
     visibility: 'hidden',
     opacity: 0,
     transform: 'translateX(180px)',
   });
 
-  const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
-    setTranslateX((translateX) => ({
-      ...translateX,
+  const handleSlideAnimationForProfile = (event: React.MouseEvent<Element>) => {
+    setTranslateXforProfile((translateXforProfile) => ({
+      ...translateXforProfile,
       visibility: 'visible',
       opacity: 1,
       transform: 'translateX(0px)',
@@ -132,10 +176,15 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
 
   return (
     <div className="users-container">
+      <NewGroup
+      translateX={translateX}
+      handleSlideAnimation={handleSlideAnimation}
+      users={users}
+      />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
           {isClick ?
-            <TfiArrowLeft size={22}
+            <FaArrowLeft size={22}
               className={`back-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
               onClick={(e) => handleOnClick(e)}
             />
@@ -153,7 +202,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
             onMouseLeave={() => setMenuVisible(false)}
           >
             <ul>
-              <li onClick={e => handleSlideAnimation(e)}>
+              <li onClick={e => handleSlideAnimationForProfile(e)}>
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
               </li>
@@ -175,6 +224,10 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
               <li>
                 <span className='dropdown-icon'><LuSettings size={22} /></span>
                 <span className='dropdown-label'>Settings</span>
+              </li>
+              <li onClick={handleSlideAnimation}>
+                <span className='dropdown-icon'><BsPeople size={22}/></span>
+                <span className='dropdown-label'>New Group</span>
               </li>
             </ul>
           </div>
@@ -229,9 +282,9 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
         </ul>
       </div>
 
-      <Profile translateX={translateX} setTranslateX={setTranslateX} userProp={userProp} />
+      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} userProp={userProp} />
 
-    </div>
+     </div>
   );
 }
 

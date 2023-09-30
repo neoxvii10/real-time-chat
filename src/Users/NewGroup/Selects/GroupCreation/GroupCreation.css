@@ -1,0 +1,175 @@
+.gr-creation-container {
+  width: 100%;
+  height: 100vh;
+  background: var(--sec-bg);
+  position: absolute;
+  z-index: 6;
+  transition: 300ms;
+  box-shadow: 0 0 3px black;
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  gap: 0.8rem;
+}
+
+.gr-creation-top {
+  padding: 0.4rem 0 1.2rem;
+  background: var(--background-color);
+  height: fit-content;
+  margin: 0;
+}
+
+.gr-creation-bot {
+  background: var(--background-color);
+  height: fit-content;
+  margin: 0;
+  padding-bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.gr-number {
+  padding: 1.2rem 1.2rem 0.8rem;
+  text-align: left;
+}
+
+.gr-number h5 {
+  color: var(--border-on-click);
+  font-size: 1rem;
+}
+
+.gr-creation-bot ul {
+  margin: 0 auto; /* Add margin to center the ul horizontally */
+  max-width: 91%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items horizontally */
+  
+}
+
+.gr-creation-bot ul li {
+  width: 100%;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  background: var(--background-color);
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.gr-creation-bot ul li:hover {
+  background: var(--hover);
+}
+
+.gr-creation-bot ul li .user {
+  display: grid;
+  grid-template-columns: 20% 80%;
+  align-items: center;
+  text-decoration: none;
+  gap: 1.1rem;
+}
+
+.gr-creation-bot ul li .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+  background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  border-radius: 50%;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.gr-creation-bot ul li .user-avatar span {
+  margin: auto;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.gr-creation-bot ul li .user-labels {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.gr-creation-bot ul li .user-labels h5 {
+  color: var(--font-color);
+  font-size: 1rem;
+}
+
+.gr-creation-bot ul li .user-labels p {
+  color: #aaaaaa;
+  font-size: 0.86rem;
+}
+
+.file-container {
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  width: 7.4rem;
+  height: 7.4rem;
+  background: linear-gradient(var(--gradient-bg) 5%, var(--border-on-click) 95%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.6rem auto 0;
+  color: #eee;
+}
+
+.file-container [type=file] {
+  cursor: pointer;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
+}
+
+.selected-image-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.selected-image-container:hover .add-photo-icon {
+  cursor: pointer;
+}
+
+.selected-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.add-photo-icon {
+  position: relative;
+  z-index: 2;
+}
+
+.file-container .add-photo-icon::before {
+  margin-left: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-white);
+  margin-top: 10px;
+}
+
