@@ -174,3 +174,31 @@ h5, p {
 .alert {
   color: rgb(205, 83, 83);
 }
+
+.text-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5rem;
+}
+
+.text-input-box {
+  width: 92%;
+  min-height: 0.5rem; /* Set the minimum height to 1.5rem */
+  max-height: 10rem;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+  padding: 0.5rem;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 1rem;
+  resize: none; /* Disable manual resizing */
+  overflow-y: auto; /* Enable vertical scrollbar if content exceeds the maximum height */
+  transition: height 0.2s ease; /* Smooth transition when expanding */
+  
+}
+
+.text-input-box:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+

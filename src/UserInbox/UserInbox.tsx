@@ -7,8 +7,12 @@ import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { PiShareFat } from 'react-icons/pi'
 import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
+import { BiSend } from "react-icons/bi";
 import { CSSProperties, useState } from 'react';
+import React, { useEffect } from 'react';
 import './UserInbox.css';
+
+
 
 type UserProp = {
   name: string;
@@ -31,6 +35,14 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     opacity: 0,
     transform: 'translateX(480px)',
   });
+
+  const updateTextareaHeight = () => {
+    const textarea = document.querySelector('.text-input-box') as HTMLTextAreaElement;
+    textarea.rows = 1; // Reset to 1 row to calculate the scroll height
+    const newRows = Math.ceil(textarea.scrollHeight / 20); // Adjust the divisor as needed
+    textarea.rows = newRows;
+  };
+  
   
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
     // Check if the clicked element is the chat-utils element or one of its descendants
@@ -49,13 +61,25 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   };
   
-  
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
 
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
   };
+    const [message, setMessage] = useState("");
+
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(event.target.value);
+  };
+
+  const sendMessage = () => {
+    // TODO: Implement the logic to send the message
+  };
+
+  useEffect(() => {
+    updateTextareaHeight();   // update height of the messsage text box as user add more text
+  }, [message]);
 
   return (
     <div className="user-box-chat">
@@ -120,11 +144,22 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           </span>
         </div>
       </div>
-
-      <div className={`user-info ${isSlided ? 'slided' : ''}`} style={translateX}>
-        <p>Test</p>
+      <div className={`user-info ${isSlided ? "slided" : ""}`} style={translateX}>
+        {/* User chat history */}
+      </div>
+      <div className="message-input-container">
+      <textarea
+        className="text-input-box"
+        placeholder="Type your message here..."
+        value={message}
+        onChange={handleChange}
+      />
+        <span className="util-icon">
+          <BiSend size={24} onClick={sendMessage} className="util-icon" />
+        </span>
       </div>
     </div>
+
   );
 };
 
