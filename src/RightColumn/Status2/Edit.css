@@ -1,0 +1,69 @@
+.status2-container .avatar {
+  height: 300px;
+  background-color: var(--background-avatar);
+  margin-bottom: 20px;
+}
+
+.status2-container .name {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.edit-form-name-container {
+  width: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.edit-form-name-container .userbox {
+  position: relative;
+}
+
+.firstname,
+.lastname {
+  /* border: solid white;
+  border-radius: 35px; */
+}
+
+.edit-form-name-container input {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+.edit-form-name-container label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+.edit-form-name-container input:valid ~ label,
+.edit-form-name-container input:focus ~ label {
+  top: -20px;
+  left: 0;
+  color: #03e9f4;
+  font-size: 12px;
+}
+
+.submit-btn {
+  position: absolute;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  width: 5.5rem;
+  height: 5.5rem;
+  padding: 0;
+  border-radius: 60%;
+  right: 20px;
+  bottom: 50px;
+  cursor: pointer;
+}

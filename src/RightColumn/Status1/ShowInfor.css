@@ -1,26 +1,6 @@
-:root {
-  --align-dimension: 2rem;
-  --rightcolumn-backgroud: rgb(16, 16, 16);
-  --primary-color: rgb(135, 116, 225);
-}
-
-.edit-info-header > div {
-  display: flex;
-  height: 3.5rem;
-  align-items: center;
-  background-color: var(--background-color);
-}
-
-.edit-info-header h3 {
-  display: inline-block;
-  font-size: x-large;
-  width: 80%;
-  padding-left: 2%;
-}
-
 .avatar-container {
   height: 400px;
-  background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  background: var(--background-avatar);
   position: static;
 }
 

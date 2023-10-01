@@ -1,0 +1,20 @@
+{
+  /* {pageStatus !== "edit" ? (
+          <div>
+            <span className="btn-close">
+              <IoMdClose size={24} className="util-icon" />
+            </span>
+            <h3>User info</h3>
+            <span className="btn-edit" onClick={handleClickOnEditButton}>
+              <RiPencilLine size={24} className="util-icon" />
+            </span>
+          </div>
+        ) : (
+          <div>
+            <span className="btn-edit" onClick={handleClickOnEditButton}>
+              <IoMdArrowBack size={24} className="util-icon" />
+            </span>
+            <h3>Edit</h3>
+          </div>
+        )} */
+}

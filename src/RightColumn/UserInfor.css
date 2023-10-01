@@ -1,0 +1,19 @@
+:root {
+  --align-dimension: 2rem;
+  --rightcolumn-backgroud: rgb(16, 16, 16);
+  --primary-color: rgb(135, 116, 225);
+  --background-avatar: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+}
+.rightcolumn-header {
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+  background-color: var(--background-color);
+}
+
+.rightcolumn-header h3 {
+  display: inline-block;
+  font-size: x-large;
+  width: 80%;
+  padding-left: 2%;
+}
