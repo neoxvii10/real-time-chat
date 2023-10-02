@@ -194,8 +194,8 @@ h5, p {
   resize: none; /* Disable manual resizing */
   overflow-y: auto; /* Enable vertical scrollbar if content exceeds the maximum height */
   transition: height 0.2s ease; /* Smooth transition when expanding */
-  background-color: #3A3B3C;
-  color: #fff;
+  background-color: var(--msgtextbox-color);
+  color: var(--font-color);
 }
 
 .text-input-box:focus {
