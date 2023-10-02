@@ -184,7 +184,7 @@ h5, p {
 
 .text-input-box {
   width: 92%;
-  min-height: 0.5rem; /* Set the minimum height to 1.5rem */
+  min-height: 1.5rem; /* Set the minimum height to 1.5rem */
   max-height: 10rem;
   border: 1px solid var(--border-color);
   border-radius: 25px;
@@ -194,11 +194,30 @@ h5, p {
   resize: none; /* Disable manual resizing */
   overflow-y: auto; /* Enable vertical scrollbar if content exceeds the maximum height */
   transition: height 0.2s ease; /* Smooth transition when expanding */
-  
+  background-color: #3A3B3C;
+  color: #fff;
 }
 
 .text-input-box:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+.emoji-container {
+  position: absolute;
+  right: 80px; /* Adjust the right position as needed */
+  top: 96.5%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.emoji-icon:hover {
+  transform: scale(1.2); /* Increase the size on hover (adjust as needed) */
+  transition: transform 0.2s ease; /* Add a smooth transition */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+.message-input-container .util-icon {
+  position: relative;
+  top: -3px;
 }
 

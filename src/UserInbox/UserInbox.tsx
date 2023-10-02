@@ -8,6 +8,7 @@ import { PiShareFat } from 'react-icons/pi'
 import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
 import { BiSend } from "react-icons/bi";
+import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import { CSSProperties, useState } from 'react';
 import React, { useEffect } from 'react';
 import './UserInbox.css';
@@ -34,6 +35,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     visibility: 'hidden',
     opacity: 0,
     transform: 'translateX(480px)',
+  
   });
 
   const updateTextareaHeight = () => {
@@ -148,16 +150,26 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         {/* User chat history */}
       </div>
       <div className="message-input-container">
-      <textarea
-        className="text-input-box"
-        placeholder="Type your message here..."
-        value={message}
-        onChange={handleChange}
-      />
-        <span className="util-icon">
-          <BiSend size={24} onClick={sendMessage} className="util-icon" />
-        </span>
+        <textarea
+          className="text-input-box"
+          placeholder="Type your message here..."
+          value={message}
+          onChange={handleChange}
+        />
+        <div className="emoji-container">
+          <MdOutlineEmojiEmotions
+          size={24}
+          className="emoji-icon"
+          onClick={() => {
+        // Handle emoji icon click event here (e.g., open emoji picker)
+          }}
+        />
+          </div>
+          <span className="util-icon">
+            <BiSend size={24} onClick={sendMessage} className="util-icon" />
+          </span>
       </div>
+
     </div>
 
   );
