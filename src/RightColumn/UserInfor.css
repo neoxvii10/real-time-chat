@@ -1,5 +1,6 @@
 :root {
   --align-dimension: 2rem;
+  --size-avatar-edit: 2.5rem;
   --rightcolumn-backgroud: rgb(16, 16, 16);
   --primary-color: rgb(135, 116, 225);
   --background-avatar: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);

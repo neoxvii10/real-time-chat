@@ -1,57 +1,85 @@
-.status2-container .avatar {
-  height: 300px;
-  background-color: var(--background-avatar);
-  margin-bottom: 20px;
+.status2-container {
+  background-color: black;
+}
+
+.status2-container .part1 {
+  background-color: var(--background-color);
+}
+.status2-container .edit-avatar-container {
+  height: 13rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-avatar-container > .avatar {
+  display: flex;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--size-avatar-edit);
+}
+
+.avatar .imgAvt {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+.avatar .textAvt {
+  background-color: wheat;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--size-avatar-edit);
 }
 
 .status2-container .name {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
 }
 
-.edit-form-name-container {
-  width: 100%;
-  padding: 40px;
-  box-sizing: border-box;
+.delete-contact {
+  background-color: var(--background-color);
+  border-top: 5px solid black;
+  padding-top: 10px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.edit-form-name-container .userbox {
+.delete-contact > .layout-btn {
+  width: 95%;
+  height: 75%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.delete-contact .layout-btn:hover {
+  background: var(--hover);
+}
+.delete-contact .util-icon {
   position: relative;
+  top: 20%;
+  left: 0.5em;
 }
 
-.firstname,
-.lastname {
-  /* border: solid white;
-  border-radius: 35px; */
-}
-
-.edit-form-name-container input {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
-  color: #fff;
-  margin-bottom: 30px;
-  border: none;
-  border-bottom: 1px solid #fff;
-  outline: none;
-  background: transparent;
-}
-.edit-form-name-container label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px 0;
-  font-size: 16px;
-  color: #fff;
-  pointer-events: none;
-  transition: 0.5s;
-}
-.edit-form-name-container input:valid ~ label,
-.edit-form-name-container input:focus ~ label {
-  top: -20px;
-  left: 0;
-  color: #03e9f4;
-  font-size: 12px;
+.delete-contact p {
+  display: inline-block;
+  position: relative;
+  bottom: 2px;
+  font-size: medium;
+  margin-left: 15px;
+  color: red;
 }
 
 .submit-btn {
@@ -59,8 +87,8 @@
   background: var(--primary-color);
   color: #fff;
   border: none;
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
   padding: 0;
   border-radius: 60%;
   right: 20px;

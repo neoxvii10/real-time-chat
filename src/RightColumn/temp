@@ -1,20 +1,69 @@
-{
-  /* {pageStatus !== "edit" ? (
-          <div>
-            <span className="btn-close">
-              <IoMdClose size={24} className="util-icon" />
-            </span>
-            <h3>User info</h3>
-            <span className="btn-edit" onClick={handleClickOnEditButton}>
-              <RiPencilLine size={24} className="util-icon" />
-            </span>
-          </div>
-        ) : (
-          <div>
-            <span className="btn-edit" onClick={handleClickOnEditButton}>
-              <IoMdArrowBack size={24} className="util-icon" />
-            </span>
-            <h3>Edit</h3>
-          </div>
-        )} */
+<form>
+            <div className="edit-form-name-container">
+              <div className="userbox firstname">
+                <input
+                  type="text"
+                  name="fname"
+                  value={inputValues?.fname || ""}
+                  onChange={handleChangeInput}
+                />
+                <label>First name</label>
+              </div>
+              <div className="userbox lastname">
+                <input
+                  type="text"
+                  name="lname"
+                  value={inputValues?.lname || ""}
+                  onChange={handleChangeInput}
+                />
+                <label>Last name</label>
+              </div>
+            </div>
+            {ChangingForm ? (
+              <button type="submit" className="submit-btn">
+                <TiTickOutline size={24} />
+              </button>
+            ) : (
+              <></>
+            )}
+          </form>
+
+          .edit-form-name-container {
+  margin-top: 50px;
+  width: 100%;
+  padding: 10px 70px;
+  box-sizing: border-box;
+}
+
+.edit-form-name-container .userbox {
+  position: relative;
+}
+
+.edit-form-name-container input {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+.edit-form-name-container label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+.edit-form-name-container input:valid ~ label,
+.edit-form-name-container input:focus ~ label {
+  top: -20px;
+  left: 0;
+  color: #03e9f4;
+  font-size: 12px;
 }

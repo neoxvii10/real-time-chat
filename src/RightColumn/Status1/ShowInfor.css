@@ -2,18 +2,18 @@
   height: 400px;
   background: var(--background-avatar);
   position: static;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .avatar-container > .avatar {
-  text-align: center;
-  position: relative;
-  top: 50%;
   font-size: xxx-large;
 }
-.avatar-container > .name {
-  position: relative;
+.status1-container > .name {
+  position: absolute;
   display: inline-block;
-  top: 70%;
+  top: 400px;
   left: var(--align-dimension);
   font-size: xx-large;
 }
@@ -23,16 +23,15 @@
   background-color: var(--background-color);
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
+  border-bottom: 5px solid black;
 }
 
 .phone-container > .layout-btn {
   border-radius: 8px;
   cursor: pointer;
-  position: relative;
   width: 95%;
-  left: 2.5%;
-  height: 70%;
+  height: 75%;
 }
 
 .phone-container .layout-btn:hover {
@@ -42,7 +41,7 @@
 .phone-container p {
   display: inline-block;
   font-size: x-large;
-  margin-left: 3%;
+  margin-left: 15px;
 }
 
 .phone-container .util-icon {
@@ -76,7 +75,7 @@
   color: #686c72;
 }
 
-.media-clicked {
+.media-container .media-clicked {
   border-bottom: var(--primary-color) solid 3px;
   color: rgb(135, 116, 225) !important;
 }

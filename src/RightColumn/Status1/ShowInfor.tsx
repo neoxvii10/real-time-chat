@@ -19,8 +19,8 @@ const ShowInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
     <div className="status1-container">
       <div className="avatar-container">
         <p className="avatar">{userInfoProp.avatar}</p>
-        <p className="name">{userInfoProp.name}</p>
       </div>
+      <p className="name">{userInfoProp.name}</p>
 
       <div className="phone-container">
         <div className="layout-btn">

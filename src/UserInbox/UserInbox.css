@@ -12,7 +12,7 @@
   width: 34%;
   height: 100vh;
   overflow: hidden;
-  background: var(--rightcolumn-backgroud);
+  background-color: var(--background-color);
   position: absolute;
   z-index: 5;
   right: 0.4rem;

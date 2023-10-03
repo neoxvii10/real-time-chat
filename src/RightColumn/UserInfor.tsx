@@ -6,6 +6,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import "./UserInfor.css";
 import ShowInfor from "./Status1/ShowInfor";
 import EditInfor from "./Status2/Edit";
+import MediaState from "./Status3/MediaState";
 
 type UserProp = {
   name: string;
@@ -20,7 +21,7 @@ type UserInfoProps = {
   userInfoProp: UserProp;
 };
 
-const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
+const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp: userProp }) => {
   const [pageStatus, setPageStatus] = useState<string>("info");
   const [mediaClicked, setMediaClick] = useState<string>("");
   const handleClickOnEditButton = (
@@ -51,7 +52,7 @@ const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
             </span>
           </div>
           <div className="info-body">
-            <ShowInfor userInfoProp={userInfoProp} />
+            <ShowInfor userInfoProp={userProp} />
           </div>
           <div className="media-container">
             <div className="header">
@@ -107,7 +108,10 @@ const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
               </p>
             </div>
             <div className="body">
-              <p>no {mediaClicked} files jett</p>
+              <p>
+                {" "}
+                this {mediaClicked} of {userProp.name}{" "}
+              </p>
             </div>
           </div>
         </div>
@@ -122,7 +126,7 @@ const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
             <h3>Edit</h3>
           </div>
           <div className="info-body">
-            <EditInfor userInfoProp={userInfoProp} />
+            <EditInfor userInfoProp={userProp} />
           </div>
         </div>
       )}
@@ -136,58 +140,7 @@ const UserInfor: React.FC<UserInfoProps> = ({ userInfoProp }) => {
             <h3>Shared Media</h3>
           </div>
           <div className="info-body"></div>
-          <div className="header">
-            <p
-              className={`media-topic ${
-                mediaClicked === "Media" ? "media-clicked" : ""
-              }`}
-              onClick={(e) => {
-                handleClickOnMedia(e);
-              }}
-            >
-              Media
-            </p>
-            <p
-              className={`media-topic ${
-                mediaClicked === "Files" ? "media-clicked" : ""
-              }`}
-              onClick={(e) => {
-                handleClickOnMedia(e);
-              }}
-            >
-              Files
-            </p>
-            <p
-              className={`media-topic ${
-                mediaClicked === "Links" ? "media-clicked" : ""
-              }`}
-              onClick={(e) => {
-                handleClickOnMedia(e);
-              }}
-            >
-              Links
-            </p>
-            <p
-              className={`media-topic ${
-                mediaClicked === "Music" ? "media-clicked" : ""
-              }`}
-              onClick={(e) => {
-                handleClickOnMedia(e);
-              }}
-            >
-              Music
-            </p>
-            <p
-              className={`media-topic ${
-                mediaClicked === "Group" ? "media-clicked" : ""
-              }`}
-              onClick={(e) => {
-                handleClickOnMedia(e);
-              }}
-            >
-              Group
-            </p>
-          </div>
+          <MediaState userProp={userProp} stateMedia={mediaClicked} />
         </div>
       )}
     </div>
