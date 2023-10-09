@@ -221,4 +221,10 @@ h5, p {
   top: -3px;
 }
 
+.emoji-picker-container {
+  position: absolute;
+  bottom: 60px;
+  right: 70px;
+  opacity: 1;
+}
 
