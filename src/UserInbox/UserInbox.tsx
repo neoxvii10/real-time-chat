@@ -8,9 +8,11 @@ import { PiShareFat } from 'react-icons/pi'
 import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
 import { BiSend } from "react-icons/bi";
+import { ImAttachment } from 'react-icons/im';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
-import { CSSProperties, useState } from 'react';
-import React, { useEffect } from 'react';
+import { CSSProperties } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import Picker from "emoji-picker-react";
 import './UserInbox.css';
 
 
@@ -65,6 +67,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
+  const [hasMessage, setHasMessage] = useState(false);
 
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
@@ -72,22 +75,44 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     const [message, setMessage] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(event.target.value);
+    const newMessage = event.target.value;
+    setMessage(newMessage);
+    setHasMessage(newMessage.trim() !== ""); // Check if the message is not empty
+  };
+  
+  const sendMessage = () => {
+    setSelectedFile(null);
+    setMessage('');
+    // TODO: Implement the logic to send the message
+  };
+  const attachmentButtonRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleAttachmentButtonClick = () => {
+    if (attachmentButtonRef.current) {
+      attachmentButtonRef.current.click();
+    }
   };
 
-  const sendMessage = () => {
-    // TODO: Implement the logic to send the message
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
   };
 
   useEffect(() => {
-    updateTextareaHeight();   // update height of the messsage text box as user add more text
+    updateTextareaHeight();   // update  height of the messsage text box as user add more text
   }, [message]);
+
+  
 
   return (
     <div className="user-box-chat">
       <Logo />
       <div className="single-user-container">
-        
       </div>
       <div className="user-header-container" onClick={event => handleSlideAnimation(event)}>
         <div className="user">
@@ -146,6 +171,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           </span>
         </div>
       </div>
+      
       <div className={`user-info ${isSlided ? "slided" : ""}`} style={translateX}>
         {/* User chat history */}
       </div>
@@ -156,7 +182,14 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           value={message}
           onChange={handleChange}
         />
-        <div className="emoji-container">
+       {/* Display the selected file if available */}
+       {selectedFile ? (
+          <div className="selected-file">
+            <span>{selectedFile.name}</span>
+            <button onClick={() => setSelectedFile(null)}>X</button>
+          </div>
+        ) : (
+          <div className="emoji-container">
           <MdOutlineEmojiEmotions
           size={24}
           className="emoji-icon"
@@ -164,12 +197,24 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         // Handle emoji icon click event here (e.g., open emoji picker)
           }}
         />
-          </div>
+         <input
+              type="file"
+              ref={attachmentButtonRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+        </div>
+        )}
+          {hasMessage||selectedFile ? (
           <span className="util-icon">
             <BiSend size={24} onClick={sendMessage} className="util-icon" />
           </span>
+        ) : (
+          <span className="util-icon">
+            <ImAttachment size={24} onClick={handleAttachmentButtonClick} className="util-icon" />
+          </span>
+            )}
       </div>
-
     </div>
 
   );
