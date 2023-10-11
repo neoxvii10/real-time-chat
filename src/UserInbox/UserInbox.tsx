@@ -228,19 +228,21 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         )}
         {hasMessage || selectedFile ? (
           <span className="util-icon">
-            <BiSend size={24} onClick={sendMessage} className="util-icon" />
+            <BiSend 
+            size={24} 
+            onClick={sendMessage} 
+           
+            />
           </span>
         ) : (
           <span className="util-icon">
             <ImAttachment
               size={24}
-              onClick={handleAttachmentButtonClick}
-              className="util-icon"
+              onClick={handleAttachmentButtonClick}  
             />
           </span>
         )}
       </div>
-      
     </div>
   );
 };
