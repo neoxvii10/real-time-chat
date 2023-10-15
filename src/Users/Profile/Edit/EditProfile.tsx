@@ -112,7 +112,7 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                                 <label>Username</label>
                             </div>
                             <p className='edit-item-desription'>
-                                You can use a-z, 0-9 and underscores. Minumum length is 5 characters.
+                                You can use a-z, 0-9 and underscores. Minimum length is 5 characters.
                             </p>
                         </div>
                     </div>
