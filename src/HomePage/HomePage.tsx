@@ -44,10 +44,7 @@ function HomePage() {
 
   return (
     <div className="HomePage">
-      <Users onUserClick={handleUserClick} />
-      {/* <div className="modal-overlay">
-        <ImageCrop />
-      </div> */}
+      <Users onUserClick={handleUserClick} selectedUser = {user}/>
       <UserInbox userProp={user} />
     </div>
   );
