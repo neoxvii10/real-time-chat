@@ -6,8 +6,10 @@ import { BsCloudCheck, BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
 import { FaArrowLeft } from 'react-icons/fa6'
+import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
+import Profile from './Profile/Profile';
 
 type UserProp = {
   name: string;
@@ -82,22 +84,24 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       no_id: 7,
      },
   ];
-
+  //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
+
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: 'hidden',
     opacity: 0,
     transform: 'translateX(-480px)',
   });
-
+  
   const handleSlideAnimation = () => {
-    setSlided(!isSlided);
-    setTranslateX((translateX) => ({
-      ...translateX,
-      visibility: isSlided ? 'hidden' : 'visible',
-      opacity: isSlided ? 0 : 1,
-      transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
-    }));
+      setSlided(!isSlided);
+      console.log(isSlided);
+      setTranslateX((translateX) => ({
+        ...translateX,
+        visibility: isSlided ? 'hidden' : 'visible' ,
+        opacity: isSlided ? 0 : 1,
+        transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
+      }));
   };
 
   const [isClick, setIsClick] = useState<boolean>(false);
@@ -152,10 +156,27 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
     filterUsers(searchText);
   };
 
+
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
+  };
+
+  // handle visiable profile
+  const [translateXforProfile, setTranslateXforProfile] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-480px)',
+  });
+
+  const handleSlideAnimationForProfile = (event: React.MouseEvent<Element>) => {
+    setTranslateXforProfile((translateXforProfile) => ({
+      ...translateXforProfile,
+      visibility: 'visible',
+      opacity: 1,
+      transform: 'translateX(0px)',
+    }));
   };
 
   return (
@@ -189,23 +210,27 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
             onMouseLeave={() => setMenuVisible(false)}
           >
             <ul>
+              <li onClick={e => handleSlideAnimationForProfile(e)}>
+                <span className='dropdown-icon'><ImProfile size={22} /></span>
+                <span className='dropdown-label'>Profile</span>
+              </li>
               <li>
-                <span className='dropdown-icon'><BsCloudCheck size={22}/></span>
+                <span className='dropdown-icon'><BsCloudCheck size={22} /></span>
                 <span className='dropdown-label'>My Cloud</span>
               </li>
               <li>
-                <span className='dropdown-icon'><BsPerson size={22}/></span>
+                <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Contacts</span>
               </li>
               <li>
-                <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22}/></span>
+                <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22} /></span>
                 <div className="dropdown-label-container">
                   <span className='dropdown-label'>Dark Mode</span>
                   <DarkMode />
                 </div>
               </li>
               <li>
-                <span className='dropdown-icon'><LuSettings size={22}/></span>
+                <span className='dropdown-icon'><LuSettings size={22} /></span>
                 <span className='dropdown-label'>Settings</span>
               </li>
               <li onClick={handleSlideAnimation}>
@@ -262,7 +287,10 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
           ))}
         </ul>
       </div>
-    </div>
+
+      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} userProp={selectedUser} />
+
+     </div>
   );
 }
 

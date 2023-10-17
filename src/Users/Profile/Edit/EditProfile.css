@@ -1,0 +1,298 @@
+/* .edit-container {
+    z-index: 4;
+    width: 100%;
+    height: 100vh;
+    background: var(--background-color);
+    position: relative;
+    top: -100vh;
+    transition: 200ms;
+    box-shadow: 0 0 3px var(--color-background-secondary-accent);
+    overflow: hidden;
+} */
+
+.edit-container {
+    width: 100%;
+    height: 100vh;
+    background: var(--background-color);
+    position: absolute;
+    z-index: 3;
+    transition: 200ms;
+    box-shadow: 0 0 3px black;
+    overflow: hidden;
+}
+
+.edit-header {
+    height: 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    height: 3.5rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    cursor: default;
+    gap: 1rem;
+    background: var(--background-color);
+}
+
+.wrapper {
+    height: calc(100% - var(--header-height));
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-content {   
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.edit-profile {
+    padding: 0 1.5rem;
+    background-color: var(--color-background);
+    box-shadow: inset 0 -0.0625rem 0 0 var(--color-background-secondary-accent);
+    border-bottom: 0.625rem solid var(--color-background-secondary);
+    position: relative;
+}
+
+
+.avatar-editable label {
+    margin-left: auto;
+    margin-right: auto;
+    width: 7.5rem;
+    height: 7.5rem;
+    margin-bottom: 2rem;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 3rem;
+    cursor: var(--custom-cursor, pointer);
+    position: relative;
+    overflow: hidden;
+    outline: none !important;
+    transition: border-radius 200ms;
+}
+
+.avatar-editable label:hover .camera-icon {
+    transform: scale(1.2);
+    transition: transform 200ms;
+}
+
+.edit-profile .input-image {
+    width: 120px;
+    height: 100%;
+    border-radius: 50%;
+    display: none;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    --border-width: 1px;
+    display: block;
+    width: calc(100% - calc(2 * 0.9rem - 2 * var(--border-width)));
+    height: 2rem;
+    padding: calc(0.75rem - var(--border-width)) calc(0.9rem - var(--border-width));
+    border: var(--border-width) solid var(--color-borders-input);
+    border-radius: 0.75rem;
+    color: var(--color-text);
+    background-color: var(--background-color);
+    outline: none;
+    transition: border-color .15s ease;
+    word-break: break-word;
+    -webkit-appearance: none;
+    font-size: 1rem;
+    line-height: 1.25rem;
+}
+
+.form-control::placeholder {
+    color: transparent;
+}
+
+.form-control[dir] {
+    text-align: initial;
+}
+
+.form-control:hover,
+.form-control:focus {
+    border-color: var(--color-primary);
+}
+
+.form-control:hover + label {
+    color: var(--color-primary);
+}
+
+.form-control:focus + label {
+    color: var(--color-primary);
+    transform: scale(0.75) translate(-0.5rem, -2.25rem);
+}
+
+.form-control:not(:placeholder-shown) + label {
+    color: var(--color-primary);
+    transform: scale(0.75) translate(-0.5rem, -2.25rem);
+}
+
+.input-group label {
+    display: block;
+    padding: 0 0.25rem;
+    position: absolute;
+    left: 0.75rem;
+    top: 0.9375rem;
+    background-color: var(--background-color);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--color-placeholders);
+    transition: transform .15s ease-out,color .15s ease-out;
+    cursor: var(--custom-cursor, text);
+    pointer-events: none;
+    transform-origin: left center;
+    white-space: nowrap;
+    line-height: 1.25rem;
+}
+
+.edit-item-desription {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    padding-bottom: 24px;
+}
+
+.edit-username {
+    background-color: var(--background-color);
+    padding: 1.5rem 1.5rem 1rem;
+}
+
+.edit-username h4 {
+    color: var(--color-text-secondary);
+    margin: 0 0 2rem 0;
+    text-align: left;
+}
+
+
+/* handle edit avatar */
+.container-edit-avatar {
+    z-index: 3;
+    position: fixed;
+    left: -100vw;
+    right: -100vw;
+    top: -100vh;
+    bottom: -100vh;
+}
+
+.backdrop {
+    z-index: 4;
+    position: fixed;
+    left: -100vw;
+    right: -100vw;
+    top: -100vh;
+    bottom: -100vh;
+}
+
+.wrap-edit {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 5;
+    width: 560px;
+    height: 560px;
+    background-color: var(--background-color);
+    box-shadow: 0 0.1rem 0.1rem 0.1rem var(--color-default-shadow);
+    border-radius: 0.75rem;
+}
+
+.header-edit {
+    padding: 1rem 1rem 0;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    
+}
+
+.header-edit .button-close { 
+    color: var(--icon-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.button-close:hover {
+    background-color: var(--hover);
+}
+
+.header-title {
+    margin: 0 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.content-edit {
+    padding: 1rem;
+    overflow: hidden;
+    overflow-y: auto;
+    height: calc(100% - 86px);
+    max-height: 92vh;
+}
+
+.avatar-crop {
+    max-width: 25rem;
+    height: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.wrap-image {
+    width: 402px;
+    height: 402px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.avatar-crop .image {
+    z-index: -1;;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    max-height: none;
+    max-width: none;
+}
+
+.wrap-silder {
+    z-index: 4;
+    width: 100%;
+    background-color: var(--background-color);
+}
+
+.confirm-button {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    /* box-shadow: 0 1px 2px var(--color-default-shadow); */
+    background-color: var(--color-primary);
+    color: #fff;
+    --ripple-color: rgba(0, 0, 0, 0.08);
+    padding: 0;
+    border: 0;
+}
+
+.confirm-button:hover {
+    background-color: var(--color-primary-shade);
+}

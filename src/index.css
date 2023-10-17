@@ -2,7 +2,9 @@
   --font-color: #333;
   --switch-color: white;
   --background-color: white;
+  --color-background-secondary: rgb(244,244,245);
   --search-bg-color: white;
+  --color-primary: rgb(51,144,236);
   --border: #707579;
   --border-on-click: #3390ec;
   --hover: #f3f3f3;
@@ -14,6 +16,14 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: #aaaaaa;
+  --color-background-secondary-accent: rgb(228,228,229);
+  --color-borders-input: rgb(218,220,224);
+  --color-placeholders: #a2acb4;
+  --color-text-secondary: rgb(112,117,121);
+  --color-background-compact-menu: rgb(255,255,255,0.733);
+  --color-background-compact-menu-hover: rgb(0,0,0,0.067);
+  --color-default-shadow: rgb(114,114,114,0.251);
+  --color-primary-shade: rgb(74,149,214);
   --checkbox-fill: var(--border-on-click);
   --bg-hover: #fcf0f0;
   --sec-bg: #f4f4f5;
@@ -24,6 +34,8 @@
   --font-color: #eee;
   --switch-color: black;
   --background-color: #212121;
+  --color-background-secondary: rgb(15,15,15);
+  --color-primary: rgb(135,116,225);
   --search-bg-color: #181818;
   --border: none;
   --border-on-click: #8774e1;
@@ -36,6 +48,14 @@
   --icon-color: #aaaaaa;
   --icon-color-active: var(--border-on-click);
   --header-border: black;
+  --color-background-secondary-accent: rgb(16,15,16);
+  --color-borders-input: rgb(91,91,90);
+  --color-placeholders: #a2acb4;
+  --color-text-secondary: rgb(170,170,170);
+  --color-background-compact-menu: rgb(33,33,33,0.867);
+  --color-background-compact-menu-hover: rgb(0,0,0,0.4);
+  --color-default-shadow: rgb(16,16,16,0.612);
+  --color-primary-shade: rgb(123,113,198);
   --checkbox-fill: var(--border-on-click);
   --bg-hover: #322525;
   --sec-bg: #181818;

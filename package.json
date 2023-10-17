@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.2.7",
     "get-orientation": "^1.1.2",
     "react": "^18.2.0",
+    "react-avatar-edit": "^1.2.0",
     "react-dom": "^18.2.0",
     "react-easy-crop": "^5.0.2",
     "react-icons": "^4.11.0",
