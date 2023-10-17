@@ -12,7 +12,7 @@ import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
-import Picker from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
 import "./UserInbox.css";
 
 type UserProp = {
@@ -197,11 +197,13 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         />
         {isEmojiPickerVisible && (
         <div className="emoji-picker-container">
-          <Picker
+          <EmojiPicker
             onEmojiClick={(emojiObject) => {
               setMessage((prevMessage) => prevMessage + emojiObject.emoji);
               setHasMessage(true);
             }}
+            emojiStyle={EmojiStyle.NATIVE}
+            theme = {Theme.AUTO}
           />
         </div>
       )}
@@ -214,7 +216,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         ) : (
           <div className="emoji-container">
             <MdOutlineEmojiEmotions
-              size={24}
+              size={28}
               className="emoji-icon"
               onClick={toggleEmojiPicker}
             />

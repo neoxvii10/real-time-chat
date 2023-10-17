@@ -186,8 +186,8 @@ h5, p {
   position: absolute;
   line-height: 1; /* Set the line height to 1 to prevent extra spacing */
   bottom: 0.5rem;
-  left: 32rem;
-  right: 12.7rem;
+  left: 35rem;
+  right: 20rem;
   min-height: 1.5rem; /* Set the minimum height to 1.5rem */
   max-height: 10rem;
   border: 1px solid var(--border-color);
@@ -212,8 +212,8 @@ h5, p {
 
 .emoji-container {
   position: absolute;
-  right: 13.5rem; /* Adjust the right position as needed */
-  bottom: 0.3rem;
+  left: 33rem; /* Adjust the right position as needed */
+  bottom: 0rem;
   transform: translateY(-50%);
   cursor: pointer;
   align-self: center;
@@ -228,13 +228,13 @@ h5, p {
 .message-input-container .util-icon {
   position: absolute;
   bottom: 0.6rem;
-  right: 10rem;
+  right: 17.2rem;
 }
 
 .emoji-picker-container {
   position: absolute;
-  bottom: 60px;
-  right: 70px;
+  bottom: 4rem;
+  left: 32rem;
   opacity: 1;
 }
 
