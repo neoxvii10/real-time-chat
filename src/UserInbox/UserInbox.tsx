@@ -7,6 +7,7 @@ import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { PiShareFat } from 'react-icons/pi'
 import { BiLockAlt } from 'react-icons/bi'
 import { FiTrash } from 'react-icons/fi'
+import { GoSearch } from 'react-icons/go' 
 import { CSSProperties, useState } from 'react';
 import './UserInbox.css';
 
@@ -74,10 +75,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         </div>
         <div className="chat-utils">
           <span className="util-icon-container">
-            <MdOutlineCall size={24} className="util-icon"/>
-          </span>
-          <span className="util-icon-container">
-            <HiOutlineVideoCamera size={24} className="util-icon"/>
+            <GoSearch size={24} className="util-icon"/>
           </span>
           <span className="util-icon-container">
             <BsThreeDotsVertical
@@ -100,17 +98,17 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
                   <span className='dropdown-icon'><AiOutlineCheckCircle size={22}/></span>
                   <span className='dropdown-label'>Select Messages</span>
                 </li>
-                <li className="util-dropdown-item">
+                {/* <li className="util-dropdown-item">
                   <span className='dropdown-icon'><PiShareFat size={22}/></span>
                   <span className='dropdown-label'>Share Contact</span>
                 </li>
                 <li className="util-dropdown-item">
                   <span className='dropdown-icon'><BiLockAlt size={22}/></span>
                   <span className='dropdown-label'>Block User</span>
-                </li>
+                </li> */}
                 <li className="util-dropdown-item">
                   <span className='dropdown-icon alert'><FiTrash size={22}/></span>
-                  <span className='dropdown-label alert'>Delete Chat</span>
+                  <span className='dropdown-label alert'>Leave Group</span>
                 </li>
               </ul>
             </div>

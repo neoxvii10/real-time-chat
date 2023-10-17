@@ -10,19 +10,20 @@ import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 
 type UserProp = {
-  name: string,
-  id: string,
-  avatar: string,
-  chat: string,
-  time: string,
-  no_id: number,
-}
+  name: string;
+  id: string;
+  avatar: string;
+  chat: string;
+  time: string;
+  no_id: number;
+};
 
 type UsersProps = {
   onUserClick: (selectedUsername: UserProp) => void;
+  selectedUser: UserProp;
 };
 
-const Users: React.FC<UsersProps> = ({ onUserClick }) => {
+const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
   const users: UserProp[] = [
     {
       name: "Lê Minh Thuận",
@@ -73,48 +74,30 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
       no_id: 6,
      },
      {
-      name: "Trần Tất Việt",
-      id: "#@viettt132",
-      avatar: "TV",
+      name: "Sample Group",
+      id: "#@sg",
+      avatar: "SG",
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 7,
      },
-     {
-      name: "Trần Tất Việt",
-      id: "#@viettt132",
-      avatar: "TV",
-      chat: "Đc thế nhờ",
-      time: "Sep 11",
-      no_id: 8,
-     },
-     {
-      name: "Trần Tất Việt",
-      id: "#@viettt132",
-      avatar: "TV",
-      chat: "Đc thế nhờ",
-      time: "Sep 11",
-      no_id: 9,
-     },
   ];
-  //hanlde new group slides
-  const [isSlided, setSlided] = useState<boolean>(false);
 
+  const [isSlided, setSlided] = useState<boolean>(false);
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: 'hidden',
     opacity: 0,
     transform: 'translateX(-480px)',
   });
-  
+
   const handleSlideAnimation = () => {
-      setSlided(!isSlided);
-      console.log(isSlided);
-      setTranslateX((translateX) => ({
-        ...translateX,
-        visibility: isSlided ? 'hidden' : 'visible' ,
-        opacity: isSlided ? 0 : 1,
-        transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
-      }));
+    setSlided(!isSlided);
+    setTranslateX((translateX) => ({
+      ...translateX,
+      visibility: isSlided ? 'hidden' : 'visible',
+      opacity: isSlided ? 0 : 1,
+      transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
+    }));
   };
 
   const [isClick, setIsClick] = useState<boolean>(false);
@@ -123,37 +106,58 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Handle styles for search bar when clicked and Menu-Back Icon
   const handleOnClick = (event: React.MouseEvent<Element, MouseEvent>) => {
     const target = event.target as HTMLDivElement;
     if (target.classList.contains('back-icon')) {
       setIsClick(false);
-      setMenuRotated(prevState => !prevState);
+      setMenuRotated((prevState) => !prevState);
+      // Restore the default chatlist when the input is cleared
+      setFilteredUsers(users);
     } else if (isClick && inputRef.current?.value === '') {
       setIsClick(false);
-      setMenuRotated(prevState => !prevState);
+      setMenuRotated((prevState) => !prevState);
+      // Restore the default chatlist when the input is cleared
+      setFilteredUsers(users);
     } else if (!isClick) {
       setIsClick(true);
-      setMenuRotated(prevState => !prevState);
+      setMenuRotated((prevState) => !prevState);
     }
   };
 
-  // Handle input in search bar
   const handleClearInput = () => {
     setInputValue('');
+    // Restore the default chatlist when the input is cleared
+    setFilteredUsers(users);
   };
-  
+
+  const [filteredUsers, setFilteredUsers] = useState<UserProp[]>(users);
+
+  const filterUsers = (searchText: string) => {
+    if (searchText.trim() === '') {
+      // If the search input is empty, show all users
+      setFilteredUsers(users);
+    } else {
+      // Filter the users whose name or chat contains the search text
+      const filtered = users.filter((user) =>
+        user.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.chat.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    const searchText = event.target.value;
+    setInputValue(searchText);
+    filterUsers(searchText);
   };
-  
-  // handle menu dropdown
+
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   };
-  
+
   return (
     <div className="users-container">
       <NewGroup
@@ -163,23 +167,26 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
-          {isClick ?
-          <FaArrowLeft size={22}
-          className={`back-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
-          onClick={(e) => handleOnClick(e)}
-          />
-          :
-          <FiMenu
-            size={22}
-            className={`menu-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
-            onClick={handleMenuClick}
-          />
-          }
-          <div className="menu-container" style={{
-            visibility: isMenuVisible ? 'visible' : 'hidden',
-            opacity: isMenuVisible ? 1 : 0,
-          }}
-          onMouseLeave={() => setMenuVisible(false)}
+          {isClick ? (
+            <FaArrowLeft
+              size={22}
+              className={`back-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
+              onClick={(e) => handleOnClick(e)}
+            />
+          ) : (
+            <FiMenu
+              size={22}
+              className={`menu-icon ${isMenuRotated ? 'rotated-cw' : 'rotated-ccw'}`}
+              onClick={handleMenuClick}
+            />
+          )}
+          <div
+            className="menu-container"
+            style={{
+              visibility: isMenuVisible ? 'visible' : 'hidden',
+              opacity: isMenuVisible ? 1 : 0,
+            }}
+            onMouseLeave={() => setMenuVisible(false)}
           >
             <ul>
               <li>
@@ -208,25 +215,26 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
             </ul>
           </div>
         </span>
-        <div className={`search-container ${isClick ? 'active' : ''}`}
-        onClick={handleOnClick}
-        >
-          <div className='search-bar'>
-          <span className="search-icon-container">
-            <GoSearch size={22} className={`search-icon ${isClick ? 'active' : ''}`}/>
-          </span>
-          <form action="">
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder='Search'
-              value={inputValue}
-              onChange={handleInputChange}
-            />
-          </form>
+        <div className={`search-container ${isClick ? 'active' : ''}`} onClick={handleOnClick}>
+          <div className="search-bar">
+            <span className="search-icon-container">
+              <GoSearch
+                size={22}
+                className={`search-icon ${isClick ? 'active' : ''}`}
+              />
+            </span>
+            <form action="">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search"
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+            </form>
           </div>
-          
-          {inputValue && ( // Render the clear icon only if there is input value
+
+          {inputValue && (
             <span className="clear-icon-container" onClick={handleClearInput}>
               <GoX size={22} className={`clear-icon ${isClick ? 'active' : ''}`} />
             </span>
@@ -235,22 +243,19 @@ const Users: React.FC<UsersProps> = ({ onUserClick }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {users.map((user) => (
-            <li tabIndex={user.no_id} key={user.no_id} onClick={() => onUserClick(user)}>
+          {filteredUsers.map((user) => (
+            <li tabIndex={user.no_id} key={user.no_id} onClick={() => onUserClick(user)}
+            className={selectedUser === user ? 'user-selected' : ''}>
               <div className="user">
                 <div className="user-avatar">
-                  <span>
-                    {user.avatar}
-                  </span>
+                  <span>{user.avatar}</span>
                 </div>
                 <div className="user-label-timestamps">
                   <div className="user-labels">
                     <h5>{user.name}</h5>
                     <p>{user.chat}</p>
                   </div>
-                  <span className="latest-timestamps">
-                    {user.time}
-                  </span>
+                  <span className="latest-timestamps">{user.time}</span>
                 </div>
               </div>
             </li>
