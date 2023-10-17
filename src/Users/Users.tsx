@@ -162,7 +162,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, userProp }) => {
   const [translateXforProfile, setTranslateXforProfile] = useState<CSSProperties>({
     visibility: 'hidden',
     opacity: 0,
-    transform: 'translateX(180px)',
+    transform: 'translateX(-480px)',
   });
 
   const handleSlideAnimationForProfile = (event: React.MouseEvent<Element>) => {

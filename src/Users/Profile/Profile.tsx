@@ -34,7 +34,7 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
             ...translateX,
             visibility: 'hidden',
             opacity: 0,
-            transform: 'translateX(180px)',
+            transform: 'translateX(-480px)',
         }));
     };
 
@@ -42,7 +42,7 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
     const [translateXForEdit, setTranslateXForEdit] = useState<CSSProperties>({
         visibility: 'hidden',
         opacity: 0,
-        transform: 'translateX(180px)',
+        transform: 'translateX(-480px)',
     })
 
     const handleSlideEdit = (event: React.MouseEvent<Element>) => {
