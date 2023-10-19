@@ -1,7 +1,7 @@
 import { ReactComponent as Logo } from "../pattern.svg";
 import { MdOutlineCall } from "react-icons/md";
 import { HiOutlineVideoCamera } from "react-icons/hi";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsThreeDotsVertical, BsEmojiSmile } from "react-icons/bs";
 import { IoNotificationsOffOutline } from "react-icons/io5";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
@@ -10,9 +10,19 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { GoSearch, GoX } from 'react-icons/go' 
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
-import Picker from "emoji-picker-react";
+import EmojiPicker, {
+  EmojiStyle,
+  SkinTones,
+  Theme,
+  Categories,
+  EmojiClickData,
+  Emoji,
+  SuggestionMode,
+  SkinTonePickerLocation
+} from "emoji-picker-react";
 import "./UserInbox.css";
 
 type UserProp = {
@@ -29,7 +39,7 @@ type UserInboxProps = {
 };
 
 const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
-  const [isSlided, setSlided] = useState<boolean>(false);
+  const [isSlided, setSlided] = useState<boolean>(true);
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
@@ -65,51 +75,80 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
-  const [hasMessage, setHasMessage] = useState(false);
 
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
   };
-  const [message, setMessage] = useState("");
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newMessage = event.target.value;
-    setMessage(newMessage);
-    setHasMessage(newMessage.trim() !== ""); // Check if the message is not empty
+  const [isEmojiIconClicked, setIsEmojiIconClicked] = useState(false);
+
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendingInputs();
+      console.log("Submit action triggered");
+    }
   };
 
-  const sendMessage = () => {
-    setSelectedFile(null);
-    setMessage("");
-    // TODO: Implement the logic to send the message
+  const handleSendingInputs = () => {
+    setInputValue("");
   };
+  
+  // const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //   const newMessage = event.target.value;
+  //   setMessage(newMessage);
+  //   setHasMessage(newMessage.trim() !== ""); // Check if the message is not empty
+  // };
+
+  // const sendMessage = () => {
+  //   setSelectedFile(null);
+  //   setMessage("");
+  //   // TODO: Implement the logic to send the message
+  // };
+
+  const [popupVisible, setPopupVisible] = useState(false);
+  
   const attachmentButtonRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleAttachmentButtonClick = () => {
+  const contentType = selectedFile && selectedFile.type.startsWith("image/") ? "image" : "normal";
+
+  const handleAttachmentButtonClick = (event: React.MouseEvent<Element>) => {
     if (attachmentButtonRef.current) {
       attachmentButtonRef.current.click();
     }
   };
-
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    setSelectedFile(file);
+    const file = event.target.files?.[0];
+  
+    if (file) {
+      setSelectedFile(file);
+      setPopupVisible(true);
+    }
   };
 
-  useEffect(() => {
-    updateTextareaHeight(); // update  height of the messsage text box as user add more text
-  }, [message]);
+  // useEffect(() => {
+  //   updateTextareaHeight(); // update  height of the messsage text box as user add more text
+  // }, [message]);
 
+  const [inputValue, setInputValue] = useState<string>("");
+
+  function onClick(emojiData: EmojiClickData, event: MouseEvent) {
+    const unicodeEmoji = emojiData.emoji;
+    setInputValue((inputValue) => inputValue + unicodeEmoji);
+  }
 
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
+
   const toggleEmojiPicker = () => {
     setEmojiPickerVisible(!isEmojiPickerVisible);
+    setIsEmojiIconClicked(!isEmojiIconClicked);
   };
-
+  
   return (
     <div className="user-box-chat">
-      <Logo />
       <div className="single-user-container"></div>
       <div
         className="user-header-container"
@@ -181,68 +220,81 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           </span>
         </div>
       </div>
-
+      <Logo />
       <div
         className={`user-info ${isSlided ? "slided" : ""}`}
         style={translateX}
       >
-        {/* User chat history */}
+        Test
       </div>
+      
       <div className="message-input-container">
-        <textarea
-          className="text-input-box"
-          placeholder="Type your message here..."
-          value={message}
-          onChange={handleChange}
+        <div className="input-container">
+        <MdOutlineEmojiEmotions
+          style={{
+            marginLeft: "0.2rem",
+            color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
+          }}
+          size={25}
+          onClick={toggleEmojiPicker}
         />
-        {isEmojiPickerVisible && (
-        <div className="emoji-picker-container">
-          <Picker
-            onEmojiClick={(emojiObject) => {
-              setMessage((prevMessage) => prevMessage + emojiObject.emoji);
-              setHasMessage(true);
-            }}
+          {isEmojiPickerVisible && (
+            <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
+              <EmojiPicker
+                previewConfig={{
+                  defaultCaption: "Pick one!",
+                  defaultEmoji: "1f92a",
+                  showPreview: false,
+                }}
+                lazyLoadEmojis={true}
+                searchDisabled
+                emojiStyle={EmojiStyle.NATIVE}
+                onEmojiClick={onClick}
+              />
+            </div>
+          )}
+          <input
+          type="text"
+          className="input-area"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.currentTarget.value)}
+          onKeyDown={handleInputKeyDown}
+          placeholder="Message"
           />
-        </div>
-      )}
-        {/* Display the selected file if available */}
-        {selectedFile ? (
-          <div className="selected-file">
-            <span>{selectedFile.name}</span>
-            <button onClick={() => setSelectedFile(null)}>X</button>
-          </div>
-        ) : (
-          <div className="emoji-container">
-            <MdOutlineEmojiEmotions
-              size={24}
-              className="emoji-icon"
-              onClick={toggleEmojiPicker}
-            />
+          <div className="file-container" onClick={handleAttachmentButtonClick}>
+            <ImAttachment size={24} />
             <input
               type="file"
-              ref={attachmentButtonRef}
               style={{ display: "none" }}
+              ref={attachmentButtonRef}
               onChange={handleFileChange}
             />
           </div>
-        )}
-        {hasMessage || selectedFile ? (
-          <span className="util-icon">
-            <BiSend 
-            size={24} 
-            onClick={sendMessage} 
-           
-            />
-          </span>
-        ) : (
-          <span className="util-icon">
-            <ImAttachment
-              size={24}
-              onClick={handleAttachmentButtonClick}  
-            />
-          </span>
-        )}
+        </div>
+        <div className="send-container" onClick={handleSendingInputs}>
+          <BiSend size={24} />
+        </div>
       </div>
+      {popupVisible && selectedFile && (
+        <div className={`file-popup file-popup-${contentType}`}>
+          <div className="file-popup-header">
+            <GoX size={24} onClick={() => setPopupVisible(false)}/>
+            <span>Send Photo</span>
+          </div>
+          {contentType === "image" ? (
+            <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
+          ) : (
+            <div className="file-descriptions">
+              <p>Name: {selectedFile.name}</p>
+              <p>Type: {selectedFile.type}</p>
+            </div>
+          )}
+          <div className="file-popup-footer">
+            <input type="text" placeholder="Add a caption"/>
+            <button><span>SEND</span></button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
