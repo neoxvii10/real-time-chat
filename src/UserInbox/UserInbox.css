@@ -44,12 +44,12 @@
 }
 
 .user-header-container .user {
-  width: 13rem;
+  width: fit-content;
   display: grid;
   grid-template-columns: 20% 80%;
   align-items: center;
   text-decoration: none;
-  gap: 1.1rem;
+  gap: 1.4rem;
 }
 
 .user-header-container .user-avatar {
@@ -126,7 +126,7 @@ h5, p {
   border-radius: 2px;
   margin: auto;
   top: 3rem;
-  right: 1.5rem;
+  right: 2rem;
   transition: all 300ms ease;
   
 }
@@ -180,6 +180,7 @@ h5, p {
   margin-left: 2rem;
   padding: 1rem;
   gap: 0.8rem;
+  
 }
 
 .input-container {
@@ -191,6 +192,7 @@ h5, p {
   padding: 0.6rem;
   border-radius: 1.2rem;
   z-index: 6;
+  
 }
 
 .input-area {
@@ -214,7 +216,7 @@ h5, p {
   box-shadow: none;
 }
 
-.file-container, .send-container {
+.file-import-container, .send-container {
   display: flex;
   align-items: center;
   justify-content: center;

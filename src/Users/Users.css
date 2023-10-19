@@ -243,8 +243,6 @@
   overflow-y: hidden;
   max-height: calc(100vh - 4.2rem);
   overflow-x: hidden;
-  position: relative;
-  z-index: 1;
 }
 
 .chatlist-container ul {

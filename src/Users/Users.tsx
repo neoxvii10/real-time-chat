@@ -92,16 +92,16 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
     opacity: 0,
     transform: 'translateX(-480px)',
   });
+
   
   const handleSlideAnimation = () => {
-      setSlided(!isSlided);
-      console.log(isSlided);
-      setTranslateX((translateX) => ({
-        ...translateX,
-        visibility: isSlided ? 'hidden' : 'visible' ,
-        opacity: isSlided ? 0 : 1,
-        transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
-      }));
+    setSlided(!isSlided);
+    setTranslateX((translateX) => ({
+      ...translateX,
+      visibility: isSlided ? 'hidden' : 'visible',
+      opacity: isSlided ? 0 : 1,
+      transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
+    }));
   };
 
   const [isClick, setIsClick] = useState<boolean>(false);
