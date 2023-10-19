@@ -1,7 +1,7 @@
 import { ReactComponent as Logo } from "../pattern.svg";
 import { MdOutlineCall } from "react-icons/md";
 import { HiOutlineVideoCamera } from "react-icons/hi";
-import { BsThreeDotsVertical, BsEmojiSmile } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoNotificationsOffOutline } from "react-icons/io5";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
@@ -15,13 +15,7 @@ import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
 import EmojiPicker, {
   EmojiStyle,
-  SkinTones,
-  Theme,
-  Categories,
   EmojiClickData,
-  Emoji,
-  SuggestionMode,
-  SkinTonePickerLocation
 } from "emoji-picker-react";
 import "./UserInbox.css";
 
@@ -47,15 +41,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     transform: "translateX(480px)",
   });
   
-  const updateTextareaHeight = () => {
-    const textarea = document.querySelector(
-      ".text-input-box"
-    ) as HTMLTextAreaElement;
-    textarea.rows = 1; // Reset to 1 row to calculate the scroll height
-    const newRows = Math.ceil(textarea.scrollHeight / 20); // Adjust the divisor as needed
-    textarea.rows = newRows;
-  };
-
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
     // Check if the clicked element is the chat-utils element or one of its descendants
     const clickedElement = event.target as Element;
