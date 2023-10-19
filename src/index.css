@@ -28,6 +28,7 @@
   --bg-hover: #fcf0f0;
   --sec-bg: #f4f4f5;
   --gradient-bg: rgb(157, 215, 234);
+  --msgtextbox-color:rgb(238, 238, 238);
 }
 
 [data-theme="dark"] {
@@ -60,6 +61,7 @@
   --bg-hover: #322525;
   --sec-bg: #181818;
   --gradient-bg: rgb(182, 168, 225);
+  --msgtextbox-color:#3A3B3C;
 }
 
 body {
