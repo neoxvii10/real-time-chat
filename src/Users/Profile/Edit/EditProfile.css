@@ -1,15 +1,3 @@
-/* .edit-container {
-    z-index: 4;
-    width: 100%;
-    height: 100vh;
-    background: var(--background-color);
-    position: relative;
-    top: -100vh;
-    transition: 200ms;
-    box-shadow: 0 0 3px var(--color-background-secondary-accent);
-    overflow: hidden;
-} */
-
 .edit-container {
     width: 100%;
     height: 100vh;
@@ -37,6 +25,7 @@
 }
 
 .wrapper {
+    width: 100%;
     height: calc(100% - var(--header-height));
     position: relative;
     overflow: hidden;
@@ -295,4 +284,5 @@
 
 .confirm-button:hover {
     background-color: var(--color-primary-shade);
+    cursor: pointer;
 }

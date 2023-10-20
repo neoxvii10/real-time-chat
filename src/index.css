@@ -28,6 +28,7 @@
   --bg-hover: #fcf0f0;
   --sec-bg: #f4f4f5;
   --gradient-bg: rgb(157, 215, 234);
+  --header-height: 3.5rem;
 }
 
 [data-theme="dark"] {
