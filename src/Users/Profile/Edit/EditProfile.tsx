@@ -1,5 +1,5 @@
 import './EditProfile.css'
-import Avatar from 'react-avatar-edit';
+
 import { CSSProperties, useState, useEffect } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { TbCameraPlus } from 'react-icons/tb'
@@ -38,7 +38,7 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
             ...translateXForEdit,
             visibility: 'hidden',
             opacity: 0,
-            transform: 'translateX(180px)',
+            transform: 'translateX(-480px)',
         }));
     }
 
@@ -130,11 +130,11 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                         <div className="content-edit">
                             <div className="avatar-crop">
                                 <div className="wrap-image">
-                                    <Avatar
+                                    {/* <Avatar
                                         width={400}
                                         height={400}
                                         src={fileAvatar}
-                                    />
+                                    /> */}
                                     {/* <img src={"https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"} alt="avatar" className='image'/> */}
                                 </div>
                                 <div className="wrap-silder">
