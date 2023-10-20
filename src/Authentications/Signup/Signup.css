@@ -3,12 +3,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 2rem;
+  padding-top: 1.8rem;
   font-family: "Roboto",-apple-system,apple color emoji,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
 
 .signup-form-container h4 {
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   font-weight: 600;
   font-size: 2rem;
 }
