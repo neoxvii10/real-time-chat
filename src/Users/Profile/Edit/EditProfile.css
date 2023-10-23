@@ -18,7 +18,7 @@
     z-index: 3;
     transition: 200ms;
     box-shadow: 0 0 3px black;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .edit-header {
