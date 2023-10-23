@@ -260,8 +260,8 @@
   background: var(--hover);
 }
 
-.chatlist-container ul li:focus {
-  background: var(--icon-color-active);
+.chatlist-container ul li.user-selected {
+  background-color: var(--icon-color-active) !important;
 }
 
 .chatlist-container ul li .user {
@@ -302,6 +302,7 @@
   text-align: left;
 }
 
+
 h5, p {
   margin: 0;
 }
@@ -322,9 +323,9 @@ h5, p {
   color: #aaaaaa; 
 }
 
-.chatlist-container ul li:focus-within .user-labels h5,
-.chatlist-container ul li:focus-within .user-labels p,
-.chatlist-container ul li:focus-within .latest-timestamps {
+.chatlist-container ul li.user-selected .user-labels h5,
+.chatlist-container ul li.user-selected .user-labels p,
+.chatlist-container ul li.user-selected .latest-timestamps {
   color: white;
 }
 

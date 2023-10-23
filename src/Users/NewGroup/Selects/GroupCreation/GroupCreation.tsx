@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Dispatch, SetStateAction, CSSProperties } from "react";
 import { TbCameraPlus } from 'react-icons/tb';
-import { FaArrowLeft } from 'react-icons/fa6'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import ImageCrop from './ImageCrop/ImageCrop';
 import './GroupCreation.css';
 
 type UserProp = {
@@ -64,14 +65,24 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
 
   const [selectedImage, setSelectedImage] = useState<string>("");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [croppedImage, setCroppedImage] = useState<string>("");
+
+  const [isCropped, setIsCropped] = useState<boolean>(false);
+
+  const handleCropImage = (image: string) => {
+    setCroppedImage(image);
+    setIsCropped(!isCropped);
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
+      setIsCropped(false);
+      console.log(isCropped);
     }
   };
-  
 
   const defaultGrName = selectedOptions.map(option => option.name).join(', ');
 
@@ -89,22 +100,24 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
           <label htmlFor="file-input" className="change-image-button">
             <TbCameraPlus className="add-photo-icon" size={50} />
           </label>
+
+          <div className="image-container">
+            {isCropped === true && croppedImage && (
+              <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
+            )}
+          </div>
+
           <input
             type="file"
             id="file-input"
             name="photo"
             accept="image/png, image/jpeg"
             onChange={handleImageChange}
-            style={{ display: 'none' }}
+            style={{ opacity: 0 }}
+            title=""
           />
-          {selectedImage && (
-            <img
-              src={selectedImage}
-              alt="Selected"
-              className="selected-image"
-            />
-          )}
         </div>
+        {isCropped === false && selectedImage && <ImageCrop selectedImage = {selectedImage} onCropImage={handleCropImage}/>}
         <CssTextField
         label="Group Name"
         id="gr-name"
@@ -135,6 +148,9 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
             </li>
           ))}
         </ul>
+      </div>
+      <div className="create-gr-btn-container">
+        <FaArrowRight className="create-gr-icon" size={22}/>
       </div>
     </div>
   );

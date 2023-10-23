@@ -123,7 +123,26 @@
   color: #eee;
 }
 
-.file-container [type=file] {
+.file-container {
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  width: 7.4rem;
+  height: 7.4rem;
+  background: linear-gradient(var(--gradient-bg) 5%, var(--border-on-click) 95%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.6rem auto 0;
+  color: #eee;
+}
+
+.file-container:hover {
+  cursor: pointer;
+}
+
+.file-container input[type=file] {
   cursor: pointer;
   display: block;
   font-size: 999px;
@@ -135,6 +154,20 @@
   right: 0;
   text-align: right;
   top: 0;
+  z-index: 2; /* Ensure the input is on top */
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cropped-img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
 }
 
 .selected-image-container {
@@ -153,23 +186,18 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
+  z-index: 2; /* Make sure this pseudo-element is above the image */
+  filter: grayscale(25%) brightness(70%);
 }
 
 .add-photo-icon {
-  position: relative;
-  z-index: 2;
-}
-
-.file-container .add-photo-icon::before {
-  margin-left: 20px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: var(--color-white);
-  margin-top: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 4;
+  pointer-events: none; /* Prevents the icon from being interactive */
 }
 
