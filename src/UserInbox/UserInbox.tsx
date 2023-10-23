@@ -114,6 +114,14 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   };
 
+  const handleClosePopup = () => {
+    setPopupVisible(false);
+    setSelectedFile(null);
+    if (attachmentButtonRef.current) {
+      attachmentButtonRef.current.value = "";
+    }
+  }
+
   // useEffect(() => {
   //   updateTextareaHeight(); // update  height of the messsage text box as user add more text
   // }, [message]);
@@ -258,9 +266,9 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       </div>
       {popupVisible && selectedFile && (
         <div className={`file-popup file-popup-${contentType}`}>
-          <div className="file-popup-header">
-            <GoX size={24} onClick={() => setPopupVisible(false)}/>
-            <span>Send Photo</span>
+          <div className="file-popup-header file">
+            <GoX size={24} onClick={handleClosePopup}/>
+            <span>Send {contentType === "image" ? "Photo" : "File"}</span>
           </div>
           {contentType === "image" ? (
             <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />

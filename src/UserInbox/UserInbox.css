@@ -203,10 +203,12 @@ h5, p {
   outline: none;
   border: none;
   box-shadow: none;
-  width: 100%;
+  width: 96%;
+  word-break: break-word;
+  word-wrap: break-word;
 }
 
-.input-area[type=text] {
+.input-area[type="text"] {
   color: var(--font-color);
 }
 
