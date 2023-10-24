@@ -312,13 +312,13 @@ h5, p {
 .file-popup {
   width: 24rem;
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   position: absolute;
   z-index: 10;
   flex-direction: column;
   background-color: var(--background-color);
-  padding: 0 1.2rem;
+  padding: 0 1.2rem 0.4rem;
   box-shadow: 0 0 4px black;
   border-radius: 10px;
 }
@@ -362,7 +362,8 @@ h5, p {
 }
 
 .file-popup-footer {
-  width: 105%;
+  width: 100%;
+  display: flex;
   justify-content: space-between;
   padding: 0.6rem 0;
 }
@@ -394,10 +395,63 @@ h5, p {
   outline: none;
   border: none;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .file-popup-footer button span {
   color: var(--font-color);
   font-weight: bold;
 }
+
+.message-container {
+  position: absolute;
+  z-index: 5;
+  width: 62%;
+  display: grid;
+  top: 8rem;
+  gap: 0.2rem;
+}
+
+.message.self {
+  background-color: var(--chat-ib-color-self);
+  color: #fff;
+  justify-self: end;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-left: 50px;
+  max-width: 70%;
+  padding: 8px;
+  width: fit-content;
+}
+
+.message.user {
+  background-color: #f2f2f2;
+  color: #333;
+  border-radius: 10px;
+  align-self: flex-start;
+  margin-right: 50px;
+  margin-left: 10px;
+  max-width: 70%;
+  padding: 8px;
+}
+
+.message.self.file {
+  background-color: var(--chat-ib-color-self);
+  color: #000;
+  border-radius: 10px;
+  justify-self: end;
+  margin-right: 10px;
+  margin-left: 50px;
+  width: fit-content;
+  padding: 8px;
+  white-space: pre-wrap;
+}
+
+.file-downloader {
+  text-decoration: none;
+  color: var(--font-color);
+  font-weight: bold;
+}
+
+
 
