@@ -4,12 +4,32 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { styled } from '@mui/material/styles';
 import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react';
 
 import './Signup.css';
-import { useState } from 'react';
+
+type UserSignupProp = {
+  first_name: string;
+  last_name: string;
+  password: string;
+  username: string;
+};
 
 export default function CountrySelect() {
-  const [numberInputValue, setNumberInputValue] = useState('');
+  const [data, setData] = useState<UserSignupProp>({
+    first_name: "",
+    last_name: "",
+    password: "",
+    username: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setData({
+      ...data,
+      [e.target.name]: value
+    });
+  };
 
   const CssTextField = styled(TextField)({
     '& label.Mui-focused': {

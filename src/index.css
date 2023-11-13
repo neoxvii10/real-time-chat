@@ -29,6 +29,7 @@
   --sec-bg: #f4f4f5;
   --gradient-bg: rgb(157, 215, 234);
   --msgtextbox-color:rgb(238, 238, 238);
+  --chat-ib-color-self: #e9f5e9;
 }
 
 [data-theme="dark"] {
@@ -62,6 +63,7 @@
   --sec-bg: #181818;
   --gradient-bg: rgb(182, 168, 225);
   --msgtextbox-color:#3A3B3C;
+  --chat-ib-color-self: rgb(135,116,225);
 }
 
 body {

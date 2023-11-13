@@ -1,4 +1,5 @@
 import './Profile.css'
+import { Link } from "react-router-dom";
 import { CSSProperties, useState } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { MdOutlineModeEditOutline } from 'react-icons/md'
@@ -84,10 +85,12 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
                         }}
                             onMouseLeave={() => setvisibleLogout(false)}
                         >
-                            <div className='wrapper'>
-                                <span className='logout-icon'><TbLogout size={22} /></span>
-                                <span className='logout-lable'>Log out</span>
-                            </div>
+                            <Link to="/signin" style={{ textDecoration: 'none', color: 'var(--font-color)' }}>
+                                <div className='wrapper'>
+                                    <span className='logout-icon'><TbLogout size={22} /></span>
+                                    <span className='logout-lable'>Log out</span>
+                                </div>
+                            </Link>
                         </div>
                     </span>
                 </div>
