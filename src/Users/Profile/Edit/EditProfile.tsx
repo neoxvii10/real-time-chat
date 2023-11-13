@@ -6,6 +6,8 @@ import { TbCameraPlus } from 'react-icons/tb'
 import { AiOutlineClose } from 'react-icons/ai'
 import { FaCheck } from 'react-icons/fa6'
 
+import ImageCrop from './ImageCrop/ImageCrop'
+
 type UserProp = {
     name: string;
     id: string;
@@ -23,6 +25,28 @@ type Props = {
 
 const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslateXForEdit }) => {
     const [disEditAvatar, setDisEditAvatar] = useState<boolean>(false);
+
+    const [selectedImage, setSelectedImage] = useState<string>("");
+
+    const [croppedImage, setCroppedImage] = useState<string>("");
+
+    const [isCropped, setIsCropped] = useState<boolean>(false);
+
+    const handleCropImage = (image: string) => {
+        setCroppedImage(image);
+        console.log(image);
+        setIsCropped(!isCropped);
+    };
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target && e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const imageUrl = URL.createObjectURL(file);
+            setSelectedImage(imageUrl);
+            setIsCropped(false);
+            console.log(isCropped);
+        }
+    };
 
     // fake: fetch data
     const [name, setName] = useState<string>("");
@@ -62,10 +86,10 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
     }
 
     useEffect(() => {
-        if(translateXForEdit.visibility === 'visible') {
+        if (translateXForEdit.visibility === 'visible') {
             setDisEditAvatar(!disEditAvatar);
         }
-    }, [fileAvatar])
+    }, [selectedImage])
 
     return (
         <>
@@ -81,12 +105,26 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                 <div className="wrapper">
                     <div className="edit-content">
                         <div className="edit-profile">
-                            <div className="avatar-editable">
-                                <label className="avatar-lable" role="button" title="Edit your profile photo">
-                                    <input onChange={(e) => handleImage(e)} className='input-image' type="file" accept="image/png, image/jpeg"></input>
-                                    <span className='camera-icon'><TbCameraPlus size={52} /></span>
+                            <div className="file-container selected-image-container">
+                                <label htmlFor="file-input" className="change-image-button">
+                                    <TbCameraPlus className="add-photo-icon" size={50} />
                                 </label>
 
+                                <div className="image-container">
+                                    {isCropped === true && croppedImage && (
+                                        <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
+                                    )}
+                                </div>
+
+                                <input
+                                    type="file"
+                                    id="file-input"
+                                    name="photo"
+                                    accept="image/png, image/jpeg"
+                                    onChange={handleImageChange}
+                                    style={{ opacity: 0 }}
+                                    title=""
+                                />
                             </div>
                             <div className="input-group">
                                 <input onChange={(e) => handleChange(e)} className='form-control' dir='auto' type="text" value={name} placeholder='Fist name' />
@@ -129,21 +167,8 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                         </div>
                         <div className="content-edit">
                             <div className="avatar-crop">
-                                <div className="wrap-image">
-                                    {/* <Avatar
-                                        width={400}
-                                        height={400}
-                                        src={fileAvatar}
-                                    /> */}
-                                    {/* <img src={"https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"} alt="avatar" className='image'/> */}
-                                </div>
-                                <div className="wrap-silder">
-                                    {/* <input type="range" /> */}
-                                </div>
+                                <ImageCrop selectedImage={selectedImage} onCropImage={handleCropImage} />
                             </div>
-                            <button className="confirm-button" type='button' title='crop image'>
-                                <FaCheck size={24} />
-                            </button>
                         </div>
                     </div>
                 </div>}

@@ -64,10 +64,15 @@
     outline: none !important;
     transition: border-radius 200ms;
 }
-
+/* 
 .avatar-editable label:hover .camera-icon {
     transform: scale(1.2);
     transition: transform 200ms;
+} */
+
+.file-container {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
 .edit-profile .input-image {
@@ -259,6 +264,11 @@
     transform-origin: 0 0;
     max-height: none;
     max-width: none;
+}
+
+.change-image-button:hover {
+    color: #fff;
+    scale: 1.1;
 }
 
 .wrap-silder {

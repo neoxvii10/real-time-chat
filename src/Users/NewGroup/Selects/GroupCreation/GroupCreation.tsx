@@ -53,7 +53,7 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
     width: '90%',
     marginTop: '2rem',
   });
-  
+
   const handleClose = () => {
     handleNewGroupAnimation(prevSlideRight => ({
       ...prevSlideRight,
@@ -91,38 +91,38 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       <div className="gr-creation-top">
         <div className="new-group-header">
           <span className="new-gr-back-icon-container">
-            <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon'/>
+            <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon' />
           </span>
           <h4>New Group</h4>
         </div>
         <form action="" className="new-group-info" >
-        <div className="file-container selected-image-container">
-          <label htmlFor="file-input" className="change-image-button">
-            <TbCameraPlus className="add-photo-icon" size={50} />
-          </label>
+          <div className="file-container selected-image-container">
+            <label htmlFor="file-input" className="change-image-button">
+              <TbCameraPlus className="add-photo-icon" size={50} />
+            </label>
 
-          <div className="image-container">
-            {isCropped === true && croppedImage && (
-              <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
-            )}
+            <div className="image-container">
+              {isCropped === true && croppedImage && (
+                <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
+              )}
+            </div>
+
+            <input
+              type="file"
+              id="file-input"
+              name="photo"
+              accept="image/png, image/jpeg"
+              onChange={handleImageChange}
+              style={{ opacity: 0 }}
+              title=""
+            />
           </div>
-
-          <input
-            type="file"
-            id="file-input"
-            name="photo"
-            accept="image/png, image/jpeg"
-            onChange={handleImageChange}
-            style={{ opacity: 0 }}
-            title=""
+          {isCropped === false && selectedImage && <ImageCrop selectedImage={selectedImage} onCropImage={handleCropImage} />}
+          <CssTextField
+            label="Group Name"
+            id="gr-name"
+            defaultValue={defaultGrName}
           />
-        </div>
-        {isCropped === false && selectedImage && <ImageCrop selectedImage = {selectedImage} onCropImage={handleCropImage}/>}
-        <CssTextField
-        label="Group Name"
-        id="gr-name"
-        defaultValue={defaultGrName}
-        />
         </form>
       </div>
       <div className="gr-creation-bot">
@@ -150,7 +150,7 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
         </ul>
       </div>
       <div className="create-gr-btn-container">
-        <FaArrowRight className="create-gr-icon" size={22}/>
+        <FaArrowRight className="create-gr-icon" size={22} />
       </div>
     </div>
   );
