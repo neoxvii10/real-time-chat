@@ -87,8 +87,10 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
+      setSelectedFile(null);
     }
   };
+  
   
   const [popupVisible, setPopupVisible] = useState(false);
   

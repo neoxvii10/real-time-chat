@@ -80,7 +80,6 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
       setIsCropped(false);
-      console.log(isCropped);
     }
   };
 
