@@ -24,9 +24,11 @@
     background: var(--background-color);
 }
 
+
+
 .wrapper {
     width: 100%;
-    height: calc(100% - var(--header-height));
+    height: calc(100% - 3.5rem);
     position: relative;
     overflow: hidden;
 }
@@ -64,11 +66,6 @@
     outline: none !important;
     transition: border-radius 200ms;
 }
-/* 
-.avatar-editable label:hover .camera-icon {
-    transform: scale(1.2);
-    transition: transform 200ms;
-} */
 
 .file-container {
     margin-top: 1rem;
