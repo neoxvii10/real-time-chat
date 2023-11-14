@@ -19,6 +19,10 @@
   align-items: center;
 }
 
+.title-heading {
+  margin-bottom: 1.5rem;
+}
+
 .signin-contents {
   width: 40%;
   display: grid;
@@ -46,7 +50,7 @@
 }
 
 .submit-btn {
-  margin-top: 1.5rem;
+  margin-top: 0;
   height: 3rem;
   border-radius: 10px;
   background: var(--icon-color-active);

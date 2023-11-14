@@ -2,9 +2,9 @@ import axiosClient from "./AxiosClient";
 
 class UserApi {
 
-    signin = (data: Object) => {
+    signin = async (data: object) => {
         const url = '/api/user/login/';
-        return axiosClient.post(url, data);
+        return await axiosClient.post(url, data);
     } 
 }
 
