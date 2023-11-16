@@ -1,4 +1,5 @@
 .signup-form-container {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,9 +27,9 @@
   margin-bottom: 1rem;
 }
 
-.submit-btn {
+.signup-btn {
   margin-top: 1.5rem;
-  height: 3rem;
+  height: 3.6rem;
   border-radius: 10px;
   background: var(--icon-color-active);
   color: white;
@@ -41,4 +42,46 @@
 
 .submit-btn:hover {
   filter: brightness(75%);
+}
+
+.inputBox {
+  position: relative;
+  width: 250px;
+  margin-top: 0.4rem;
+}
+
+.inputBox input {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 20px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: #1d2b3a;
+  border-radius: 10px;
+  outline: none;
+  color: #fff;
+  font-size: 1rem;
+  background: var(--background-color);
+}
+
+.inputBox span {
+  margin-top: 1rem;
+  position: absolute;
+  left: 0;
+  padding: 16px 10px;
+  pointer-events: none;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.25);
+  transition: 0.2s ease;
+}
+
+.inputBox input:focus ~ span, .inputBox input:valid ~ span {
+  color: var(--border-on-click);
+  transform: translateX(10px) translateY(-10px);
+  font-size: 0.8rem;
+  padding: 0 10px;
+  background: var(--background-color);
+}
+
+.inputBox input:focus, .inputBox input:valid {
+  border: 2px solid var(--border-on-click);
 }

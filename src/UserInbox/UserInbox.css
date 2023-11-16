@@ -12,7 +12,7 @@
   overflow: hidden;
   background: var(--background-color);
   position: absolute;
-  z-index: 5;
+  z-index: 10;
   right: 0.4rem;
   transition: 300ms;
   box-shadow: 0 0 3px black;
