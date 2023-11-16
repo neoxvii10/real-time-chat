@@ -84,6 +84,7 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       setSelectedImage(imageUrl);
       setCroppedImage('');
       setCroppedBlob(null);
+      setIsCropped(false);
     }
   };
 
