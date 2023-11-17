@@ -5,72 +5,98 @@ import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import './Signin.css';
 import UserApi from '../../Api/UserApi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type SigninProp = {
   username: string;
   password: string;
-}
+};
 
 type ApiResponse = {
   message?: string;
-  data?: {
+  data?:{
     refresh?: string,
     access?: string
   }
-}
+};
 
 export default function CountrySelect() {
   const navigate = useNavigate();
 
   const [data, setData] = useState<SigninProp>({
     username: '',
-    password: ''
+    password: '',
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
 
     if (name) {
       setData({
         ...data,
-        [name]: value
+        [name]: value,
       });
     }
-  }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     const formData = {
       username: data.username,
-      password: data.password
-    }
-
+      password: data.password,
+    };
+  
     try {
-      // [post] signin(data)
-      const response: ApiResponse = await UserApi.signin(formData);
-
-      if (response.message === 'Login successfully') {
-        localStorage.setItem('user', JSON.stringify(data))
-        localStorage.setItem('accessToken', JSON.stringify(response?.data?.access))
-        navigate('/');
-      } else if (response.message === 'Password not match') {
-        alert("invaild username or password")
-      }
+      setTimeout(async () => {
+        const response: ApiResponse = await UserApi.signin(formData);
+  
+        if (response.message === 'Login successfully') {
+          localStorage.setItem('user', JSON.stringify(data));
+          localStorage.setItem('accessToken', JSON.stringify(response?.data?.access))
+          toast.success('Login successful. Redirecting...', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 2500,
+            hideProgressBar: true,
+            pauseOnHover: true,
+            closeOnClick: false,
+            theme: "dark",
+          });
+          navigate('/');
+        } else if (response.message === 'Password not match') {
+          toast.error('Invalid username or password!', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 2500,
+            hideProgressBar: true,
+            pauseOnHover: true,
+            closeOnClick: false,
+            theme: "dark",
+          });
+        }
+      }, 2000);
     } catch (error) {
       console.log(error);
-
-      alert("invaild username or password")
+      toast.error('Invalid username or password!', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2500,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeOnClick: false,
+        theme: "dark",
+      });
     }
-
+  
     setData({
       username: '',
-      password: ''
-    })
-  }
+      password: '',
+    });
+  };
+  
 
   return (
     <section className="signin-form-container">
+      <ToastContainer />
       <div className="logo-icon-container">
         <BsTelegram size={150} style={{ color: "var(--icon-color-active)" }} />
       </div>

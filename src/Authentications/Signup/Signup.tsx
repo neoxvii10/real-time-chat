@@ -1,12 +1,9 @@
 import { BsTelegram } from 'react-icons/bs'
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-
-import Autocomplete from '@mui/material/Autocomplete';
-import { styled } from '@mui/material/styles';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './Signup.css';
 
@@ -19,6 +16,8 @@ type UserSignupProp = {
 };
 
 export default function CountrySelect() {
+  const navigate = useNavigate();
+
   const [data, setData] = useState<UserSignupProp>({
     first_name: "",
     last_name: "",
@@ -27,19 +26,31 @@ export default function CountrySelect() {
     email: "",
   });
 
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setData(prevData => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }));
-  // };
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (data.password !== confirmPassword) {
+      toast.error('Password and Confirm Password do not match!', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2500,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeOnClick: false,
+        theme: "dark",
+      });
+      console.error('Password and Confirm Password do not match');
+      return;
+    }
 
     const formData = {
       first_name: (event.target as any).firstname.value,
@@ -49,96 +60,122 @@ export default function CountrySelect() {
       email: (event.target as any).email.value,
     };
 
-    try {
-      const response = await axios.post('http://16.162.46.190/api/user/signup/', formData);
-      console.log(response.data);
+    try {      
+      toast.success('Verification successful. Redirecting...', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2500,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeOnClick: false,
+        theme: "dark",
+      });
+
+      setTimeout(async () => {
+        const response = await axios.post('http://16.162.46.190/api/user/signup/', formData);
+        console.log(response.data);
+        navigate(`/redirect/${formData.username}`);
+      }, 2000);
     } catch (error) {
+      toast.error('Error sending data!', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2500,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeOnClick: false,
+        theme: "dark",
+      });
       console.error('Error sending data:', error);
     }
   };
 
-  const CssTextField = styled(TextField)({
-    '& label.Mui-focused': {
-      color: 'var(--border-on-click)',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#2f2f2f',
-      },
-      '&:hover fieldset': {
-        borderColor: 'var(--border-on-click)',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'var(--border-on-click)',
-      },
-      borderRadius: '10px',
-    },
-    '& .MuiInputLabel-root': {
-      color: '#9e9e9e',
-    },
-    '&:hover .MuiInputLabel-root': {
-      color: 'var(--border-on-click)',
-    },
-    '&.Mui-focused .MuiInputLabel-root': {
-      color: 'var(--border-on-click)',
-    },
-    '& .MuiOutlinedInput-input': {
-      color: 'var(--font-color)',
-    },
-    
-    marginTop: '1.4rem',
-  });
-
   return (
     <section className="signup-form-container">
+      
       <div className="logo-icon-container">
         <BsTelegram size={150} style={{color: "var(--icon-color-active)"}}/>
       </div>
       <h4>Signup Form</h4>
       <form action="" className='signup-contents' onSubmit={handleSubmit}>
-        <input
-        // label="First Name"
-        id="firstname"
-        name="first_name"
-        value = {data.first_name}
-        onChange={handleChange}
-        />
-        <input
-        // label="Last Name"
-        id="lastname"
-        name="last_name"
-        value={data.last_name}
-        onChange={handleChange}
-        />
-        
-        <input
-        // label="Email"
-        id="email"
-        name="email"
-        value={data.email}
-        onChange={handleChange}
-        />
-        <input
-        // label="Username"
-        id="username"
-        name="username"
-        value={data.username}
-        onChange={handleChange}
-        />
-        <input
-        // label="Password"
-        id="password"
-        name="password"
-        value={data.password}
-        onChange={handleChange}
-        />
-        <input
-        // label="Confirm Password"
-        id="cfpassword"
-        />
-        <button className='submit-btn signup' type="submit">Submit</button>
+        <div className="inputBox">
+          <input
+          id="firstname"
+          name="first_name"
+          value = {data.first_name}
+          onChange={handleChange}
+          type='text'
+          required
+          />
+          <span>First Name</span>
+        </div>
+        <div className="inputBox">
+          <input
+          id="lastname"
+          name="last_name"
+          value={data.last_name}
+          onChange={handleChange}
+          type='text'
+          required
+          />
+          <span>Last Name</span>
+        </div>
+        <div className="inputBox">
+          <input
+          id="phone"
+          name="phone"
+          type='text'
+          required
+          />
+          <span>Phone Number</span>
+        </div>
+        <div className="inputBox">
+          <input
+          id="email"
+          name="email"
+          value={data.email}
+          onChange={handleChange}
+          type='email'
+          required
+          />
+          <span>Email</span>
+        </div>
+        <div className="inputBox">
+          <input
+          id="username"
+          name="username"
+          value={data.username}
+          onChange={handleChange}
+          type='text'
+          required
+          />
+          <span>User Name</span>
+        </div>
+        <div className="inputBox">
+          <input
+          id="password"
+          name="password"
+          value={data.password}
+          onChange={handleChange}
+          type='password'
+          required
+          />
+          <span>Password</span>
+        </div>
+        <div className="inputBox">
+          <input
+            id="cfpassword"
+            name="cfpassword"
+            type="password"
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+            required
+          />
+          <span>Confirm Password</span>
+        </div>
+        <button className='signup-btn' type="submit">Submit</button>
       </form>
+      
       <span>Already have an account? <Link to="/signin">Signin</Link></span>
+      
     </section>
   );
 }

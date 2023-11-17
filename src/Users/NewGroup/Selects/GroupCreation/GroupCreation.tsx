@@ -65,20 +65,25 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
 
   const [selectedImage, setSelectedImage] = useState<string>("");
 
-  const [croppedImage, setCroppedImage] = useState<string>("");
-
+  const [croppedImage, setCroppedImage] = useState<string>('');
+  const [croppedBlob, setCroppedBlob] = useState<Blob | null>(null);
   const [isCropped, setIsCropped] = useState<boolean>(false);
 
-  const handleCropImage = (image: string) => {
-    setCroppedImage(image);
+  const handleCropImage = ({ blob, url }: { blob: Blob; url: string }) => {
+    setCroppedBlob(blob);
+    setCroppedImage(url);
     setIsCropped(!isCropped);
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (e.target && e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
+      setCroppedImage('');
+      setCroppedBlob(null);
       setIsCropped(false);
     }
   };
