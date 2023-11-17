@@ -1,6 +1,6 @@
 import './Profile.css'
-import { Link } from "react-router-dom";
-import { CSSProperties, useState } from 'react';
+import {useNavigate, Link } from "react-router-dom";
+import { CSSProperties, useEffect, useState } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { MdOutlineModeEditOutline } from 'react-icons/md'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -9,25 +9,34 @@ import { IoNotificationsOutline } from 'react-icons/io5'
 import { FiDatabase } from 'react-icons/fi'
 import { HiOutlineLockClosed } from 'react-icons/hi'
 import { TbLogout } from 'react-icons/tb'
-import EditProfile from './Edit/EditProfile';
+import { PiAddressBook } from 'react-icons/pi';
+import { PiWarningCircle } from "react-icons/pi";
 
-type UserProp = {
-    name: string;
-    id: string;
-    avatar: string;
-    chat: string;
-    time: string;
-    no_id: number;
-};
+import EditProfile from './Edit/EditProfile';
+import UserProfileApi from '../../Api/UserProfileApi';
+
 
 type ProfileProps = {
-    userProp: UserProp;
     translateX: CSSProperties;
     setTranslateX: React.Dispatch<React.SetStateAction<CSSProperties>>;
 };
 
-const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }) => {
+type TypeUserProfile = {
+    user?: {
+        id: number,
+        first_name: string,
+        last_name: string,
+        fullname: string,
+        username: string
+    },
+    bio?: string,
+    avatar_url?: string,
+    phone_number?: string,
+    address?: string,
+    online?: boolean
+}
 
+const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
 
     // handle slide for profile
     const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
@@ -62,116 +71,178 @@ const Profile: React.FC<ProfileProps> = ({ userProp, translateX, setTranslateX }
         setvisibleLogout(!visibleLogout);
     }
 
+    //fetch data
+    const [dataUser, setDataUser] = useState<TypeUserProfile>({
+        user: {
+            id: 0,
+            first_name: '',
+            last_name: '',
+            fullname: '',
+            username: ''
+        },
+        bio: '',
+        avatar_url: '',
+        phone_number: '',
+        address: '',
+        online: true
+    })
+
+    
+    useEffect(() => {
+        const fetchData = async () => {
+
+            try {
+                const response = await UserProfileApi.getProfile();
+                setDataUser(response?.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, [translateXForEdit])
+
+    // logout
+    const navigate = useNavigate();
+
+    const handleLogout = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.preventDefault();
+
+        await localStorage.removeItem('accessToken');
+        await localStorage.removeItem('user');
+
+        navigate('/signin');
+    }
+
     return (
         <>
-        <div style={translateX} className='profile-container'>
-            <div className='profile-header'>
-                <span className='icon-container' onClick={e => handleSlideAnimation(e)}>
-                    <TfiArrowLeft size={22} className='header-icon' />
-                </span>
-                <div className="main-header">
-                    <h3 className='title'>Profile</h3>
-                    <span className='icon-container' onClick={e => handleSlideEdit(e)}>
-                        <MdOutlineModeEditOutline size={22} className='header-icon' />
+            <div style={translateX} className='profile-container'>
+                <div className='profile-header'>
+                    <span className='icon-container' onClick={e => handleSlideAnimation(e)}>
+                        <TfiArrowLeft size={22} className='header-icon' />
                     </span>
-                    <span className='icon-container'>
-                        <BsThreeDotsVertical size={22} className='header-icon'
-                            onClick={handleVisibleLogout}
-                        />
-                        {/* <div className="backdrop"></div> */}
-                        <div className='logout-button' style={{
-                            visibility: visibleLogout ? 'visible' : 'hidden',
-                            opacity: visibleLogout ? 1 : 0,
-                        }}
-                            onMouseLeave={() => setvisibleLogout(false)}
-                        >
-                            <Link to="/signin" style={{ textDecoration: 'none', color: 'var(--font-color)' }}>
-                                <div className='wrapper'>
+                    <div className="main-header">
+                        <h3 className='title'>Profile</h3>
+                        <span className='icon-container' onClick={e => handleSlideEdit(e)}>
+                            <MdOutlineModeEditOutline size={22} className='header-icon' />
+                        </span>
+                        <span className='icon-container'>
+                            <BsThreeDotsVertical size={22} className='header-icon'
+                                onClick={handleVisibleLogout}
+                            />
+                            {/* <div className="backdrop"></div> */}
+                            <div className='logout-button' style={{
+                                visibility: visibleLogout ? 'visible' : 'hidden',
+                                opacity: visibleLogout ? 1 : 0,
+                            }}
+                                onMouseLeave={() => setvisibleLogout(false)}
+                            >
+                            
+                                <div className='wrapper' onClick={handleLogout}>
                                     <span className='logout-icon'><TbLogout size={22} /></span>
                                     <span className='logout-lable'>Log out</span>
                                 </div>
-                            </Link>
-                        </div>
-                    </span>
-                </div>
-            </div>
-            <div className="content-profile">
-                <div className="profile-info">
-                    <div className="avatar">
-                        {/* <img src="" alt="" /> */}
-                        <span>
-                            {userProp.avatar}
+                            </div>
                         </span>
                     </div>
-                    <div className="info">
-                        <div className='name'>
-                            <h3>{userProp.name}</h3>
+                </div>
+                <div className="content-profile">
+                    <div className="profile-info">
+                        <div className="avatar">
+                            <img className='avatar-img' src={dataUser.avatar_url} alt="avatar user" />
                         </div>
-                        <div className='status'>
-                            <span>online</span>
+                        <div className="info">
+                            <div className='name'>
+                                <h3>{dataUser.user?.fullname}</h3>
+                            </div>
+                            <div className='status'>
+                                <span>online</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="info-extra">
-                    <ul>
-                        <li>
-                            <div className="list-item">
-                                <span className="icon-item">
-                                    <MdOutlineCall size={24} />
-                                </span>
-                                <div className="multiline-item">
-                                    <span className="title-item">+84 123 456 789</span>
-                                    <span className="subtitle">Phone</span>
+                    <div className="info-extra">
+                        <ul>
+                            {dataUser.phone_number &&
+                                <li>
+                                    <div className="list-item">
+                                        <span className="icon-item">
+                                            <MdOutlineCall size={24} />
+                                        </span>
+                                        <div className="multiline-item">
+                                            <span className="title-item">{dataUser.phone_number}</span>
+                                            <span className="subtitle">Phone</span>
+                                        </div>
+                                    </div>
+                                </li>}
+                            <li>
+                                <div className="list-item">
+                                    <span className="icon-item">
+                                        <MdAlternateEmail size={24} />
+                                    </span>
+                                    <div className="multiline-item">
+                                        <span className="title-item">{dataUser.user?.username}</span>
+                                        <span className="subtitle">Username</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="list-item">
-                                <span className="icon-item">
-                                    <MdAlternateEmail size={24} />
-                                </span>
-                                <div className="multiline-item">
-                                    <span className="title-item">user_name</span>
-                                    <span className="subtitle">Username</span>
+                            </li>
+                            <li>
+                                <div className="list-item">
+                                    <span className="icon-item">
+                                        <PiAddressBook size={24} />
+                                    </span>
+                                    <div className="multiline-item">
+                                        <span className="title-item">{dataUser.address}</span>
+                                        <span className="subtitle">Address</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                            </li>
+                            <li>
+                                <div className="list-item">
+                                    <span className="icon-item">
+                                        <PiWarningCircle size={24} />
+                                    </span>
+                                    <div className="multiline-item">
+                                        <span className="title-item">{dataUser.bio}</span>
+                                        <span className="subtitle">Bio</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
 
-                <div className="setting">
-                    <ul>
-                        <li>
-                            <div className="list-setting">
-                                <span className="icon">
-                                    <IoNotificationsOutline size={24} />
-                                </span>
-                                <span className="title">Notificatons</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="list-setting">
-                                <span className="icon">
-                                    <FiDatabase size={24} />
-                                </span>
-                                <span className="title">Data and Storage</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="list-setting">
-                                <span className="icon">
-                                    <HiOutlineLockClosed size={24} />
-                                </span>
-                                <span className="title">Policy and security</span>
-                            </div>
-                        </li>
-                    </ul>
+                    <div className="setting">
+                        <ul>
+                            <li>
+                                <div className="list-setting">
+                                    <span className="icon">
+                                        <IoNotificationsOutline size={24} />
+                                    </span>
+                                    <span className="title">Notificatons</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="list-setting">
+                                    <span className="icon">
+                                        <FiDatabase size={24} />
+                                    </span>
+                                    <span className="title">Data and Storage</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="list-setting">
+                                    <span className="icon">
+                                        <HiOutlineLockClosed size={24} />
+                                    </span>
+                                    <span className="title">Policy and security</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <EditProfile userProp={userProp} translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
+            <EditProfile translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
         </>
     )
 }

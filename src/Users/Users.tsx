@@ -288,7 +288,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
         </ul>
       </div>
 
-      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} userProp={selectedUser} />
+      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
 
      </div>
   );

@@ -7,23 +7,104 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { FaCheck } from 'react-icons/fa6'
 
 import ImageCrop from './ImageCrop/ImageCrop'
-
-type UserProp = {
-    name: string;
-    id: string;
-    avatar: string;
-    chat: string;
-    time: string;
-    no_id: number;
-};
+import UserProfileApi from '../../../Api/UserProfileApi';
 
 type Props = {
-    userProp: UserProp;
     translateXForEdit: CSSProperties;
     setTranslateXForEdit: React.Dispatch<React.SetStateAction<CSSProperties>>;
 }
 
-const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslateXForEdit }) => {
+type TypeUserProfile = {
+    user?: {
+        id?: number,
+        first_name?: string,
+        last_name?: string,
+        fullname?: string,
+        username?: string
+    },
+    bio?: string,
+    avatar_url?: string,
+    phone_number?: string,
+    address?: string,
+    online?: boolean
+}
+
+const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit }) => {
+
+     // handle fetch data 
+    const [data, setData] = useState<TypeUserProfile>({
+        user: {
+            id: 0,
+            first_name: '',
+            last_name: '',
+            fullname: '',
+            username: ''
+        },
+        bio: '',
+        avatar_url: '',
+        phone_number: '',
+        address: '',
+        online: true
+    });
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            try {
+                const response = await UserProfileApi.getProfile();
+                setData(response?.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, [translateXForEdit])
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = event.target;
+        
+        if(name === 'first_name' || name === 'last_name') {
+            setData({
+                ...data,
+                user: {
+                    ...data.user,
+                    [name]: value
+                }
+            })
+        } else {
+            setData({
+                ...data,
+                [name]: value
+            })
+        }
+        
+        // visible button submit
+        handleVisibleBtn(true);
+    }
+
+    // handle submit
+    const handleSubmitData = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault();
+
+        const formData = {
+            "first_name": data.user?.first_name,
+            "last_name": data.user?.last_name,
+            "bio": data.bio,
+            "avatar_url": null,
+            "phone_number": data.phone_number,
+            "address": data.address,
+            "online": true
+        }
+
+        const response = await UserProfileApi.putProfile(formData);
+        console.log( "update profile user:", response);
+
+        handleVisibleBtn(false);
+    }
+
+    // handle image and slide
+
     const [disEditAvatar, setDisEditAvatar] = useState<boolean>(false);
 
     const [selectedImage, setSelectedImage] = useState<string>("");
@@ -48,15 +129,7 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
         }
     };
 
-    // fake: fetch data
-    const [name, setName] = useState<string>("");
-    const [fileAvatar, setFileAvatar] = useState<string>("");
-
-    useEffect(() => {
-        setName(userProp.name)
-    }, []);
-    //
-
+   //
     const handleSlideEdit = (event: React.MouseEvent<Element>) => {
         setTranslateXForEdit((translateXForEdit) => ({
             ...translateXForEdit,
@@ -66,30 +139,33 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
         }));
     }
 
-    // handle input or change in input tag (base)
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setName(event.target.value);
+    //
+
+    const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
+        visibility: 'hidden',
+        bottom: '-4rem'
+    });
+
+    const handleVisibleBtn = (visible: boolean) => {
+       if(visible) {
+         setHideBtnSubmit({
+            ...hideBtnSubmit,
+            visibility: 'visible',
+            bottom: '1rem'
+        })
+       } else {
+        setHideBtnSubmit({
+            ...hideBtnSubmit,
+            visibility: 'hidden',
+            bottom: '-4rem'
+        })
+       }
     }
 
     // handle avatar
-    const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        if (event.target.files && event.target.files[0]) {
-            let img = event.target.files[0];
-            setFileAvatar(URL.createObjectURL(img));
-        }
-    }
-
     const handleDisEditAvatar = () => {
         setDisEditAvatar(!disEditAvatar);
     }
-
-    useEffect(() => {
-        if (translateXForEdit.visibility === 'visible') {
-            setDisEditAvatar(!disEditAvatar);
-        }
-    }, [selectedImage])
 
     return (
         <>
@@ -127,15 +203,19 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                                 />
                             </div>
                             <div className="input-group">
-                                <input onChange={(e) => handleChange(e)} className='form-control' dir='auto' type="text" value={name} placeholder='Fist name' />
+                                <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='first_name' value={data.user?.first_name} placeholder='Fist name' />
                                 <label>First name</label>
                             </div>
                             <div className="input-group">
-                                <input className='form-control' dir='auto' type="text" placeholder='Last name' />
+                                <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='last_name' value={data.user?.last_name} placeholder='Last name' />
                                 <label className='label-input'>Last name</label>
                             </div>
                             <div className="input-group">
-                                <input className='form-control' dir='auto' type="text" placeholder='Bio' />
+                                <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='address' value={data.address} placeholder='Last name' />
+                                <label className='label-input'>Address</label>
+                            </div>
+                            <div className="input-group">
+                                <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='bio' value={data.bio} placeholder='Bio' />
                                 <label>Bio</label>
                             </div>
                             <p className='edit-item-desription'>
@@ -144,16 +224,19 @@ const EditProfile: React.FC<Props> = ({ userProp, translateXForEdit, setTranslat
                             </p>
                         </div>
                         <div className="edit-username">
-                            <h4>Username</h4>
+                            <h4>Phone</h4>
                             <div className="input-group">
-                                <input className='form-control' dir='auto' type="text" placeholder='Username' />
-                                <label>Username</label>
+                                <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='phone_number' value={data.phone_number} placeholder='Username' />
+                                <label>Phone</label>
                             </div>
                             <p className='edit-item-desription'>
-                                You can use a-z, 0-9 and underscores. Minimum length is 5 characters.
+                                Enter your phone 
                             </p>
                         </div>
                     </div>
+                    <button style={hideBtnSubmit} className='btn-submit-edit' onClick={handleSubmitData}>
+                        <FaCheck size={24}/>
+                    </button>
                 </div>
             </div>
 

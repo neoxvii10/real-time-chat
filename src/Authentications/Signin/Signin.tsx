@@ -1,4 +1,4 @@
-import { useState } from 'react';
+  import { useState } from 'react';
 import { BsTelegram } from 'react-icons/bs'
 import Checkbox from '@mui/material/Checkbox'
 import { Link } from "react-router-dom";
@@ -13,7 +13,10 @@ type SigninProp = {
 
 type ApiResponse = {
   message?: string;
-  data?: string;
+  data?: {
+    refresh?: string,
+    access?: string
+  }
 }
 
 export default function CountrySelect() {
@@ -49,7 +52,7 @@ export default function CountrySelect() {
 
       if (response.message === 'Login successfully') {
         localStorage.setItem('user', JSON.stringify(data))
-
+        localStorage.setItem('accessToken', JSON.stringify(response?.data?.access))
         navigate('/');
       } else if (response.message === 'Password not match') {
         alert("invaild username or password")

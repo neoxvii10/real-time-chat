@@ -108,7 +108,7 @@ const Demo = ({selectedImage, onCropImage}) => {
                 position: 'absolute',
                 bottom: 0,
                 right: '-70px',
-                height: '3.5rem',
+                height: '3.8rem',
                 borderRadius: '50%'
               }}
             >

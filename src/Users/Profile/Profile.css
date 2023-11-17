@@ -107,15 +107,12 @@
     justify-content: center;
     flex-direction: column;
     position: relative;
-    background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+    background-color: transparent;
     margin-bottom: 0.5rem;
 }
 
-.avatar span {
-    margin: auto;
-    color: white;
-    font-weight: bold;
-    font-size: 10rem;
+.avatar-img {
+    background-color: transparent;
 }
 
 .profile-info .info {
