@@ -149,7 +149,7 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                 <div className="content-profile">
                     <div className="profile-info">
                         <div className="avatar">
-                            <img className='avatar-img' src={dataUser.avatar_url} alt="avatar user" />
+                            <img className="cropped-img" src={dataUser.avatar_url} alt="Cropped Image" />
                         </div>
                         <div className="info">
                             <div className='name'>

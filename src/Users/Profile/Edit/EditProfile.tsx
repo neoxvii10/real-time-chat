@@ -31,7 +31,7 @@ type TypeUserProfile = {
 
 const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit }) => {
 
-     // handle fetch data 
+    // handle fetch data 
     const [data, setData] = useState<TypeUserProfile>({
         user: {
             id: 0,
@@ -62,9 +62,9 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
     }, [translateXForEdit])
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = event.target;
-        
-        if(name === 'first_name' || name === 'last_name') {
+        const { name, value } = event.target;
+
+        if (name === 'first_name' || name === 'last_name') {
             setData({
                 ...data,
                 user: {
@@ -78,7 +78,7 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
                 [name]: value
             })
         }
-        
+
         // visible button submit
         handleVisibleBtn(true);
     }
@@ -87,20 +87,47 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
     const handleSubmitData = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
 
+        if(isCropped) {
+            await handleSubmitAvatar(event);
+        }
+
         const formData = {
             "first_name": data.user?.first_name,
             "last_name": data.user?.last_name,
             "bio": data.bio,
-            "avatar_url": null,
+            "avatar_url": data.avatar_url,
             "phone_number": data.phone_number,
             "address": data.address,
             "online": true
         }
 
         const response = await UserProfileApi.putProfile(formData);
-        console.log( "update profile user:", response);
+        console.log("update profile user:", response);
 
         handleVisibleBtn(false);
+    }
+
+    // handle submit blob 
+    const handleSubmitAvatar = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault();
+        if (croppedBlob) {
+            const fileAvatar = new File([croppedBlob], "my_avatar.jpg", { type: "image/jpeg", lastModified: new Date().getTime() })
+            const formData = new FormData();
+            formData.append('file', fileAvatar);
+            try {
+                const response = await UserProfileApi.putAvatar(formData);
+                setData({
+                    ...data,
+                    avatar_url: response.data.avatar_url
+                })
+                console.log("update avatar", response);
+
+                // 
+                setIsCropped(false);
+            } catch (error) {
+                console.log(error)
+            }
+        }
     }
 
     // handle image and slide
@@ -109,14 +136,14 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
 
     const [selectedImage, setSelectedImage] = useState<string>("");
 
-    const [croppedImage, setCroppedImage] = useState<string>("");
-
+    const [croppedImage, setCroppedImage] = useState<string>();
+    const [croppedBlob, setCroppedBlob] = useState<Blob>();
     const [isCropped, setIsCropped] = useState<boolean>(false);
 
-    const handleCropImage = (image: string) => {
-        setCroppedImage(image);
-        console.log(image);
-        setIsCropped(!isCropped);
+    const handleCropImage = ({ blob, url }: { blob: Blob; url: string }) => {
+        setCroppedBlob(blob);
+        setCroppedImage(url);
+        setIsCropped(true);
     };
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,12 +151,15 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
             const file = e.target.files[0];
             const imageUrl = URL.createObjectURL(file);
             setSelectedImage(imageUrl);
+            setCroppedImage('');
             setIsCropped(false);
-            console.log(isCropped);
         }
+
+        setDisEditAvatar(true);
+        handleVisibleBtn(true);
     };
 
-   //
+    //
     const handleSlideEdit = (event: React.MouseEvent<Element>) => {
         setTranslateXForEdit((translateXForEdit) => ({
             ...translateXForEdit,
@@ -147,24 +177,25 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
     });
 
     const handleVisibleBtn = (visible: boolean) => {
-       if(visible) {
-         setHideBtnSubmit({
-            ...hideBtnSubmit,
-            visibility: 'visible',
-            bottom: '1rem'
-        })
-       } else {
-        setHideBtnSubmit({
-            ...hideBtnSubmit,
-            visibility: 'hidden',
-            bottom: '-4rem'
-        })
-       }
+        if (visible) {
+            setHideBtnSubmit({
+                ...hideBtnSubmit,
+                visibility: 'visible',
+                bottom: '1rem'
+            })
+        } else {
+            setHideBtnSubmit({
+                ...hideBtnSubmit,
+                visibility: 'hidden',
+                bottom: '-4rem'
+            })
+        }
     }
 
-    // handle avatar
-    const handleDisEditAvatar = () => {
-        setDisEditAvatar(!disEditAvatar);
+    // handle visible edit avatar
+    const handleHiddenEditAvatar = () => {
+        setDisEditAvatar(false);
+        setSelectedImage("");
     }
 
     return (
@@ -181,14 +212,17 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
                 <div className="wrapper">
                     <div className="edit-content">
                         <div className="edit-profile">
-                            <div className="file-container selected-image-container">
+                            <div className="file-container selected-image-container" >
                                 <label htmlFor="file-input" className="change-image-button">
                                     <TbCameraPlus className="add-photo-icon" size={50} />
                                 </label>
 
                                 <div className="image-container">
-                                    {isCropped === true && croppedImage && (
+                                    {isCropped && croppedImage && (
                                         <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
+                                    )}
+                                    {!isCropped && (
+                                        <img className="cropped-img" src={data.avatar_url} alt="Image" />
                                     )}
                                 </div>
 
@@ -202,6 +236,9 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
                                     title=""
                                 />
                             </div>
+                            {/*  */}
+                            {/* <button onClick={handleSubmitAvatar}>test submit file</button> */}
+                            {/*  */}
                             <div className="input-group">
                                 <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='first_name' value={data.user?.first_name} placeholder='Fist name' />
                                 <label>First name</label>
@@ -230,27 +267,27 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
                                 <label>Phone</label>
                             </div>
                             <p className='edit-item-desription'>
-                                Enter your phone 
+                                Enter your phone
                             </p>
                         </div>
                     </div>
                     <button style={hideBtnSubmit} className='btn-submit-edit' onClick={handleSubmitData}>
-                        <FaCheck size={24}/>
+                        <FaCheck size={24} />
                     </button>
                 </div>
             </div>
 
             {disEditAvatar &&
                 <div className="container-edit-avatar" >
-                    <div onClick={handleDisEditAvatar} className="backdrop"></div>
+                    <div onClick={handleHiddenEditAvatar} className="backdrop"></div>
                     <div className="wrap-edit">
                         <div className="header-edit">
-                            <span onClick={handleDisEditAvatar} className='button-close'><AiOutlineClose size={22} /></span>
+                            <span onClick={handleHiddenEditAvatar} className='button-close'><AiOutlineClose size={22} /></span>
                             <div className='header-title'>Avatar</div>
                         </div>
                         <div className="content-edit">
                             <div className="avatar-crop">
-                                <ImageCrop selectedImage={selectedImage} onCropImage={handleCropImage} />
+                                <ImageCrop setDisEditAvatar={setDisEditAvatar} selectedImage={selectedImage} onCropImage={handleCropImage} />
                             </div>
                         </div>
                     </div>

@@ -1,11 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 // Set up default config for http requests here
 // Please have a look at here `https://github.com/axios/axios#request` for the full list of configs
+
 const axiosClient = axios.create({
     baseURL: 'http://16.162.46.190',
-    headers: {
-        'content-type': 'application/json',
-    },
 });
 axiosClient.interceptors.request.use(async (config) => {
     const token = await localStorage.getItem('accessToken');
@@ -14,6 +12,8 @@ axiosClient.interceptors.request.use(async (config) => {
         const accessToken = JSON.parse(token)
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
+
+    config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json';
 
     return config;
 })

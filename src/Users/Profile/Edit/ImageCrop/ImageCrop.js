@@ -6,8 +6,7 @@ import { FaCheck } from 'react-icons/fa6'
 import { getCroppedImg } from './canvasUtils';
 import './styles.css'
 
-
-const Demo = ({selectedImage, onCropImage}) => {
+const Demo = ({setDisEditAvatar, selectedImage, onCropImage}) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -19,12 +18,18 @@ const Demo = ({selectedImage, onCropImage}) => {
 
   const showCroppedImage = async () => {
     try {
-      const croppedImage = await getCroppedImg(
+      const { blob, url } = await getCroppedImg(
         selectedImage,
         croppedAreaPixels,
         rotation
       );
-      onCropImage(croppedImage);
+      console.log('Cropped Blob:', blob);
+      console.log('Cropped URL:', url);
+      onCropImage({ blob, url });
+
+      //
+        setDisEditAvatar(false);
+
     } catch (e) {
       console.error(e);
     }

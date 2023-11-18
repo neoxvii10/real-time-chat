@@ -74,7 +74,7 @@ export default function CountrySelect() {
             theme: "dark",
           });
         }
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.log(error);
       toast.error('Invalid username or password!', {
