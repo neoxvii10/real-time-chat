@@ -28,8 +28,18 @@ type UserProp = {
   no_id: number;
 };
 
+// use api
+type UserType = {
+  id: number,
+  username: string,
+  avatar_url: string,
+  first_name: string,
+  last_name: string,
+  fullname: string
+}
+
 type UserInboxProps = {
-  userProp: UserProp;
+  userProp: UserType;
 };
 
 const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
@@ -161,10 +171,11 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       >
         <div className="user">
           <div className="user-avatar">
-            <span>{userProp.avatar}</span>
+            {/* <span>{userProp.avatar}</span> */}
+            <img src={userProp?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
           </div>
           <div className="user-labels">
-            <h5>{userProp.name}</h5>
+            <h5>{userProp?.fullname}</h5>
             <p>Last seen now</p>
           </div>
         </div>

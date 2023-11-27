@@ -14,6 +14,15 @@ type UserProp = {
   no_id: number,
 }
 
+type UserType = {
+  id: number,
+  username: string,
+  avatar_url: string,
+  first_name: string,
+  last_name: string,
+  fullname: string
+}
+
 type SelectsProps = {
   selectedOptions: UserProp[];
   setSelectedOptions: Dispatch<SetStateAction<UserProp[]>>;
