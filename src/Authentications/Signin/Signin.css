@@ -1,0 +1,67 @@
+.signin-form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2rem;
+  font-family: "Roboto",-apple-system,apple color emoji,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+.signin-form-container h4 {
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.logo-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-heading {
+  margin-bottom: 1.5rem;
+}
+
+.signin-contents {
+  width: 40%;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.label-utils {
+  width: 40%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.label-utils span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.label-utils a {
+  text-decoration: none;
+}
+
+.submit-btn {
+  margin-top: 0;
+  height: 3rem;
+  border-radius: 10px;
+  background: var(--icon-color-active);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  font-weight: 550;
+  transition: filter 0.1s ease;
+}
+
+.submit-btn:hover {
+  filter: brightness(75%);
+}

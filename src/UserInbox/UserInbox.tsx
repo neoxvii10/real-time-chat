@@ -77,21 +77,21 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   };
 
   const handleSendingInputs = () => {
-    setInputValue("");
+    if (inputValue.trim() !== "") {
+      const textMessage = {
+        text: inputValue,
+        sender: "self",
+        type: "text",
+      };
+      setMessages([...messages, textMessage]);
+      setInputValue("");
+    } else if (selectedFile) {
+      handleFileMessage();
+      setSelectedFile(null);
+    }
   };
   
-  // const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   const newMessage = event.target.value;
-  //   setMessage(newMessage);
-  //   setHasMessage(newMessage.trim() !== ""); // Check if the message is not empty
-  // };
-
-  // const sendMessage = () => {
-  //   setSelectedFile(null);
-  //   setMessage("");
-  //   // TODO: Implement the logic to send the message
-  // };
-
+  
   const [popupVisible, setPopupVisible] = useState(false);
   
   const attachmentButtonRef = useRef<HTMLInputElement>(null);
@@ -114,11 +114,32 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   };
 
-  // useEffect(() => {
-  //   updateTextareaHeight(); // update  height of the messsage text box as user add more text
-  // }, [message]);
+  const handleFileMessage = () => {
+    if (selectedFile) {
+      const fileMessage = {
+        text: `${selectedFile.name}\n${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
+        sender: "self",
+        type: "file",
+        file: selectedFile,
+      };
+      setMessages([...messages, fileMessage]);
+      setInputValue("");
+      setPopupVisible(false);
+    }
+  };
+  
+  const handleClosePopup = () => {
+    setPopupVisible(false);
+    setSelectedFile(null);
+    if (attachmentButtonRef.current) {
+      attachmentButtonRef.current.value = "";
+    }
+  }
+
+  const [messages, setMessages] = useState<{ text: string; sender: string; type: string; file?: File }[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
+
 
   function onClick(emojiData: EmojiClickData, event: MouseEvent) {
     const unicodeEmoji = emojiData.emoji;
@@ -134,7 +155,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   
   return (
     <div className="user-box-chat">
-      <div className="single-user-container"></div>
       <div
         className="user-header-container"
         onClick={(event) => handleSlideAnimation(event)}
@@ -150,10 +170,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         </div>
         <div className="chat-utils">
           <span className="util-icon-container">
-            <MdOutlineCall size={24} className="util-icon" />
-          </span>
-          <span className="util-icon-container">
-            <HiOutlineVideoCamera size={24} className="util-icon" />
+            <GoSearch size={24} className="util-icon" />
           </span>
           <span className="util-icon-container">
             <BsThreeDotsVertical
@@ -212,7 +229,28 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       >
         Test
       </div>
-      
+      <div className="message-container">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`message ${message.sender === "self" ? "self" : "user"} ${
+              message.type === "file" ? "file" : ""
+            }`}
+          >
+            {message.type === "file" && message.file ? (
+              <a
+                href={URL.createObjectURL(message.file)}
+                download={message.file.name}
+                className="file-downloader"
+              >
+                {message.text}
+              </a>
+            ) : (
+              message.text
+            )}
+          </div>
+        ))}
+      </div>
       <div className="message-input-container">
         <div className="input-container">
         <MdOutlineEmojiEmotions
@@ -246,7 +284,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           onKeyDown={handleInputKeyDown}
           placeholder="Message"
           />
-          <div className="file-container" onClick={handleAttachmentButtonClick}>
+          <div className="file-import-container" onClick={handleAttachmentButtonClick}>
             <ImAttachment size={24} />
             <input
               type="file"
@@ -262,9 +300,9 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       </div>
       {popupVisible && selectedFile && (
         <div className={`file-popup file-popup-${contentType}`}>
-          <div className="file-popup-header">
-            <GoX size={24} onClick={() => setPopupVisible(false)}/>
-            <span>Send Photo</span>
+          <div className="file-popup-header file">
+            <GoX size={24} onClick={handleClosePopup}/>
+            <span>Send {contentType === "image" ? "Photo" : "File"}</span>
           </div>
           {contentType === "image" ? (
             <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
@@ -276,7 +314,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
           )}
           <div className="file-popup-footer">
             <input type="text" placeholder="Add a caption"/>
-            <button><span>SEND</span></button>
+            <button onClick={handleSendingInputs}><span>SEND</span></button>
           </div>
         </div>
       )}
