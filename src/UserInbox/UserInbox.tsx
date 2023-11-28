@@ -89,7 +89,35 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       handleFileMessage();
       setSelectedFile(null);
     }
+  }
+  const token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+
+  const socket = new WebSocket(`ws://16.162.46.190/chat/?token=${token}`);
+
+  socket.onopen = () => {
+    console.log('WebSocket connection established');
   };
+
+  // const handleSendingInputs = () => {
+  // Construct the message object based on the protocol
+    // const messageObject = {
+    //   action: "create_message",
+    //   target: "channel",
+    //   targetId: channelID,
+    //   data: {
+    //     member: userID,
+    //     channel: channelID,
+    //     content: inputValue,
+    //     reply: null,
+    //   },
+    // // };
+
+    // const messageString = JSON.stringify(messageObject);
+    // socket.send(messageString);
+    // setInputValue("");
+
+
+  
   
   
   const [popupVisible, setPopupVisible] = useState(false);
