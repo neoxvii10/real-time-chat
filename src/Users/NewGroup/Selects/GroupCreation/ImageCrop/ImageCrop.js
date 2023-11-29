@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
 import Slider from '@mui/material/Slider';
 import Button from '@mui/material/Button';
+import { FaCheck } from 'react-icons/fa6'
 import { getCroppedImg } from './canvasUtils';
 import './styles.css';
 
-const ImageCrop = ({ selectedImage, onCropImage }) => {
+const ImageCrop = ({setDisEditAvatar, selectedImage, onCropImage }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -25,8 +26,9 @@ const ImageCrop = ({ selectedImage, onCropImage }) => {
       console.log('Cropped Blob:', blob);
       console.log('Cropped URL:', url);
       onCropImage({ blob, url });
+      //
+      setDisEditAvatar(false);
 
-      // 
     } catch (e) {
       console.error(e);
     }
@@ -56,6 +58,18 @@ const ImageCrop = ({ selectedImage, onCropImage }) => {
           max={3}
           step={0.1}
           aria-labelledby="Zoom"
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            padding: '22px 0px',
+            marginLeft: 16,
+            '@media (min-width: 600px)': {
+              flexDirection: 'row',
+              alignItems: 'center',
+              margin: '0',
+            },
+          }}
           onChange={(e, zoom) => setZoom(zoom)}
         />
       </div>
@@ -64,8 +78,16 @@ const ImageCrop = ({ selectedImage, onCropImage }) => {
           onClick={showCroppedImage}
           variant="contained"
           color="primary"
+          sx={{
+            flexShrink: 0,
+            position: 'absolute',
+            bottom: 0,
+            right: '-70px',
+            height: '3.8rem',
+            borderRadius: '50%'
+          }}
         >
-          Show Result
+          <FaCheck size={24} />
         </Button>
       </div>
     </div>

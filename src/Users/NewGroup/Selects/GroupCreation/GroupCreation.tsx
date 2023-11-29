@@ -8,15 +8,6 @@ import TextField from '@mui/material/TextField';
 import ImageCrop from './ImageCrop/ImageCrop';
 import './GroupCreation.css';
 
-type UserProp = {
-  name: string,
-  id: string,
-  avatar: string,
-  chat: string,
-  time: string,
-  no_id: number,
-}
-
 type UserType = {
   id: number,
   username: string,
@@ -101,11 +92,11 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
   };
 
   // handle visible popup edit avatar
-  const [disEditAvatar, setDisEditAvatar] = useState<boolean>(true);
+  const [disEditAvatar, setDisEditAvatar] = useState<boolean>(false);
   const handleHiddenEditAvatar = () => {
     setDisEditAvatar(false);
     setSelectedImage("");
-}
+  }
 
   console.log(disEditAvatar)
 
@@ -140,7 +131,6 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
                 title=""
               />
             </div>
-            {isCropped === false && selectedImage && <ImageCrop selectedImage={selectedImage} onCropImage={handleCropImage} />}
             <CssTextField
               label="Group Name"
               id="gr-name"
@@ -154,9 +144,7 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
           </div>
           <ul>
             {selectedOptions.map((selectedOption) => (
-              <li
-                key={selectedOption.id}
-              >
+              <li key={selectedOption.id} >
                 <div className="user">
                   <div className="user-avatar">
                     <img src={selectedOption.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img' />
@@ -174,6 +162,21 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
           <FaArrowRight className="create-gr-icon" size={22} />
         </div>
       </div>
+      {disEditAvatar &&
+        <div className="overlay" >
+          <div onClick={handleHiddenEditAvatar} className="backdrop"></div>
+          <div className="wrap-edit">
+            <div className="header-edit">
+              <span onClick={handleHiddenEditAvatar} className='button-close'><AiOutlineClose size={22} /></span>
+              <div className='header-title'>Avatar</div>
+            </div>
+            <div className="content-edit">
+              <div className="avatar-crop">
+                <ImageCrop setDisEditAvatar={setDisEditAvatar} selectedImage={selectedImage} onCropImage={handleCropImage} />
+              </div>
+            </div>
+          </div>
+        </div>}
     </>
   );
 }

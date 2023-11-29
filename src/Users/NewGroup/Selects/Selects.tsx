@@ -5,15 +5,6 @@ import './Selects.css';
 import GroupCreation from "./GroupCreation/GroupCreation";
 import Checkbox from '@mui/material/Checkbox'
 
-type UserProp = {
-  name: string,
-  id: string,
-  avatar: string,
-  chat: string,
-  time: string,
-  no_id: number,
-}
-
 type UserType = {
   id: number,
   username: string,
@@ -26,30 +17,31 @@ type UserType = {
 type SelectsProps = {
   selectedOptions: UserType[];
   setSelectedOptions: Dispatch<SetStateAction<UserType[]>>;
+  slideRight: React.CSSProperties;
+  setSlideRight: React.Dispatch<React.SetStateAction<React.CSSProperties>>;
+  handleNewGroupAnimation: () => void;
   users: UserType[];
 };
 
-const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, users }) => {
-  const [isNewGroup, setNewGroup] = useState<boolean>(false);
+const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, slideRight, setSlideRight, handleNewGroupAnimation, users }) => {
+  // const [isNewGroup, setNewGroup] = useState<boolean>(false);
 
-  const [slideRight, setSlideRight] = useState<CSSProperties>({
-    visibility: 'hidden',
-    opacity: 0,
-    transform: 'translateX(-480px)',
-  });
+  // const [slideRight, setSlideRight] = useState<CSSProperties>({
+  //   visibility: 'hidden',
+  //   opacity: 0,
+  //   transform: 'translateX(-480px)',
+  // });
   
-  const handleNewGroupAnimation = () => {
-      setNewGroup(!isNewGroup);
-      console.log(isNewGroup);
-      setSlideRight((slideRight) => ({
-        ...slideRight,
-        visibility: isNewGroup ? 'hidden' : 'visible' ,
-        opacity: isNewGroup ? 0 : 1,
-        transform: isNewGroup ? 'translateX(-480px)' : 'translateX(0px)',
-      }));
-  };
-
-  //
+  // const handleNewGroupAnimation = () => {
+  //     setNewGroup(!isNewGroup);
+  //     console.log(isNewGroup);
+  //     setSlideRight((slideRight) => ({
+  //       ...slideRight,
+  //       visibility: isNewGroup ? 'hidden' : 'visible' ,
+  //       opacity: isNewGroup ? 0 : 1,
+  //       transform: isNewGroup ? 'translateX(-480px)' : 'translateX(0px)',
+  //     }));
+  // };
 
   const handleOptionClick = (selectedValue: UserType) => {
     const option: UserType = {
@@ -110,11 +102,6 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       <div className="create-gr-btn-container" onClick={handleNewGroupAnimation}>
         <FaArrowRight className="create-gr-icon" size={22}/>
       </div>
-      <GroupCreation
-      slideRight={slideRight}
-      handleNewGroupAnimation={handleNewGroupAnimation}
-      selectedOptions={selectedOptions}
-      />
     </div>
   );
 }

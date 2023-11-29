@@ -1,8 +1,10 @@
 .gr-creation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100vh;
   background: var(--sec-bg);
-  position: absolute;
   z-index: 6;
   transition: 300ms;
   box-shadow: 0 0 3px black;
@@ -10,8 +12,6 @@
   justify-content: left;
   flex-direction: column;
   overflow: hidden;
-  top: 0;
-  left: 0;
   gap: 0.8rem;
 }
 
@@ -24,7 +24,7 @@
 
 .gr-creation-bot {
   background: var(--background-color);
-  height: fit-content;
+  height: 100%;
   margin: 0;
   padding-bottom: 0.6rem;
   display: flex;
@@ -43,13 +43,15 @@
 }
 
 .gr-creation-bot ul {
-  margin: 0 auto; /* Add margin to center the ul horizontally */
+  margin: 0 auto;
+  /* Add margin to center the ul horizontally */
   max-width: 91%;
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center items horizontally */
-  
+  align-items: left;
+  /* Center items horizontally */
+
 }
 
 .gr-creation-bot ul li {
@@ -67,6 +69,7 @@
 }
 
 .gr-creation-bot ul li .user {
+  width: 100%;
   display: grid;
   grid-template-columns: 20% 80%;
   align-items: center;
@@ -154,7 +157,8 @@
   right: 0;
   text-align: right;
   top: 0;
-  z-index: 2; /* Ensure the input is on top */
+  z-index: 2;
+  /* Ensure the input is on top */
 }
 
 .image-container {
@@ -186,7 +190,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2; /* Make sure this pseudo-element is above the image */
+  z-index: 2;
+  /* Make sure this pseudo-element is above the image */
   filter: grayscale(25%) brightness(70%);
 }
 
@@ -198,22 +203,23 @@
   bottom: 0;
   margin: auto;
   z-index: 4;
-  pointer-events: none; /* Prevents the icon from being interactive */
+  pointer-events: none;
+  /* Prevents the icon from being interactive */
 }
 
 /* pop up */
 .overlay {
-  z-index: 4;
-    position: fixed;
-    left: -100vw;
-    right: -100vw;
-    top: -100vh;
-    bottom: -100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+  z-index: 6;
+  position: fixed;
+  left: -100vw;
+  right: -100vw;
+  top: -100vh;
+  bottom: -100vh;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .backdrop {
-  z-index: 11;
+  z-index: 1;
   position: fixed;
   left: -100vw;
   right: -100vw;

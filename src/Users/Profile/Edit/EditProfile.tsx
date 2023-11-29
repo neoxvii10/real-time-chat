@@ -236,9 +236,6 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
                                     title=""
                                 />
                             </div>
-                            {/*  */}
-                            {/* <button onClick={handleSubmitAvatar}>test submit file</button> */}
-                            {/*  */}
                             <div className="input-group">
                                 <input onChange={handleInputChange} className='form-control' dir='auto' type="text" name='first_name' value={data.user?.first_name} placeholder='Fist name' />
                                 <label>First name</label>

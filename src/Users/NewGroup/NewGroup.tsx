@@ -4,15 +4,7 @@ import { CSSProperties, Dispatch, SetStateAction, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa6'
 import Selects from './Selects/Selects'
 import Option from '../NewGroup/Selects/Option'
-
-type UserProp = {
-  name: string,
-  id: string,
-  avatar: string,
-  chat: string,
-  time: string,
-  no_id: number,
-}
+import GroupCreation from './Selects/GroupCreation/GroupCreation';
 
 type UserType = {
   id: number,
@@ -46,38 +38,66 @@ const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, us
     }));
   };
 
+  // group creation
+  const [isNewGroup, setNewGroup] = useState<boolean>(false);
+
+  const [slideRight, setSlideRight] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-480px)',
+  });
+
+  const handleNewGroupAnimation = () => {
+    setNewGroup(!isNewGroup);
+    setSlideRight((slideRight) => ({
+      ...slideRight,
+      visibility: isNewGroup ? 'hidden' : 'visible' ,
+      opacity: isNewGroup ? 0 : 1,
+      transform: isNewGroup ? 'translateX(-480px)' : 'translateX(0px)',
+    }));
+};
+
   return (
-    <div className="new-group-container" style={translateX}>
-      <div className="new-group-header">
-        <span className="new-gr-back-icon-container">
-          <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon'/>
-        </span>
-        <h4>Add Member</h4>
-      </div>
-      <div className="select-values-container">
-        <div className="select-values-content">
-          {
-            selectedOptions.map((singleOption) => 
-              <Option 
-                id={singleOption.id}
-                first_name={singleOption.first_name}
-                last_name={singleOption.last_name}
-                fullname={singleOption.fullname}
-                username={singleOption.username}
-                avatar_url={singleOption.avatar_url}
-                deleteOption={deleteOption}
-              />
-            )
-          }
+    <>
+      <div className="new-group-container" style={translateX}>
+        <div className="new-group-header">
+          <span className="new-gr-back-icon-container">
+            <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon'/>
+          </span>
+          <h4>Add Member</h4>
         </div>
+        <div className="select-values-container">
+          <div className="select-values-content">
+            {
+              selectedOptions.map((singleOption) => 
+                <Option 
+                  id={singleOption.id}
+                  first_name={singleOption.first_name}
+                  last_name={singleOption.last_name}
+                  fullname={singleOption.fullname}
+                  username={singleOption.username}
+                  avatar_url={singleOption.avatar_url}
+                  deleteOption={deleteOption}
+                />
+              )
+            }
+          </div>
+        </div>
+        <Selects
+          slideRight={slideRight}
+          setSlideRight={setSlideRight}
+          handleNewGroupAnimation={handleNewGroupAnimation}
+          selectedOptions = {selectedOptions}
+          setSelectedOptions = {setSelectedOptions}
+          users = {users}
+        />
       </div>
-      <Selects
-        selectedOptions = {selectedOptions}
-        setSelectedOptions = {setSelectedOptions}
-        users = {users}
+      <GroupCreation
+      slideRight={slideRight}
+      handleNewGroupAnimation={handleNewGroupAnimation}
+      selectedOptions={selectedOptions}
       />
-      
-    </div>
+    </>
   );
 };
 

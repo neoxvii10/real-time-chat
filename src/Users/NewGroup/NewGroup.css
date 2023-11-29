@@ -3,7 +3,7 @@
   height: 100vh;
   background: var(--background-color);
   position: absolute;
-  z-index: 5;
+  z-index: 3;
   transition: 300ms;
   box-shadow: 0 0 3px black;
   display: flex;

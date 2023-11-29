@@ -19,15 +19,6 @@ import EmojiPicker, {
 } from "emoji-picker-react";
 import "./UserInbox.css";
 
-type UserProp = {
-  name: string;
-  id: string;
-  avatar: string;
-  chat: string;
-  time: string;
-  no_id: number;
-};
-
 // use api
 type UserType = {
   id: number,

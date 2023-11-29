@@ -1,6 +1,7 @@
 .select-container {
+  position: relative;
   padding: 0 0.6rem 1rem;
-  max-height: calc(100vh - 4.2rem);
+  height: calc(100vh - 4.2rem);
   overflow-x: hidden;
 }
 

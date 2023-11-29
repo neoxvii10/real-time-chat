@@ -241,7 +241,6 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                     </div>
                 </div>
             </div>
-
             <EditProfile translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
         </>
     )
