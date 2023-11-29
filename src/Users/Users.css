@@ -278,9 +278,16 @@
   justify-content: center;
   padding: 0.7rem;
   background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+  background-color: transparent;
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
+}
+
+.user-avatar-img {
+  padding: 0.7rem;
+  width: 100%;
+  border-radius: 50%;
 }
 
 .user-avatar span {

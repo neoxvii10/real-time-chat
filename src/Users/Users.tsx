@@ -1,4 +1,4 @@
-import { useState, useRef, CSSProperties } from 'react';
+import { useState, useRef, CSSProperties, useEffect } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
 import { GoSearch, GoX } from 'react-icons/go' 
@@ -11,6 +11,8 @@ import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
 
+import UserApi from '../Api/UserApi';
+
 type UserProp = {
   name: string;
   id: string;
@@ -21,9 +23,18 @@ type UserProp = {
 };
 
 type UsersProps = {
-  onUserClick: (selectedUsername: UserProp) => void;
-  selectedUser: UserProp;
+  onUserClick: (selectedUsername: UserType) => void;
+  selectedUser: UserType;
 };
+
+type UserType = {
+  id: number,
+  username: string,
+  avatar_url: string,
+  first_name: string,
+  last_name: string,
+  fullname: string
+}
 
 const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
   const users: UserProp[] = [
@@ -84,6 +95,23 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       no_id: 7,
      },
   ];
+
+  // handle list friends
+  const [listFriends, setListFriends] = useState<UserType[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await UserApi.getFriends();
+        setListFriends(response?.data)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+    console.log(listFriends);
+  }, [])
+
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
 
@@ -185,7 +213,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       <NewGroup
       translateX={translateX}
       handleSlideAnimation={handleSlideAnimation}
-      users={users}
+      users={listFriends}
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
@@ -269,19 +297,19 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {filteredUsers.map((user) => (
-            <li tabIndex={user.no_id} key={user.no_id} onClick={() => onUserClick(user)}
-            className={selectedUser === user ? 'user-selected' : ''}>
+          {listFriends.map((user) => (
+            <li tabIndex={user?.id} key={user?.id} onClick={() => onUserClick(user)} 
+            className={(selectedUser === user) ? 'user-selected' : ''}>
               <div className="user">
                 <div className="user-avatar">
-                  <span>{user.avatar}</span>
+                  <img src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
                 </div>
                 <div className="user-label-timestamps">
                   <div className="user-labels">
-                    <h5>{user.name}</h5>
-                    <p>{user.chat}</p>
+                    <h5>{user.fullname}</h5>
+                    <p>Unknown</p>
                   </div>
-                  <span className="latest-timestamps">{user.time}</span>
+                  <span className="latest-timestamps">Unknown</span>
                 </div>
               </div>
             </li>

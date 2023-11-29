@@ -201,3 +201,22 @@
   pointer-events: none; /* Prevents the icon from being interactive */
 }
 
+/* pop up */
+.overlay {
+  z-index: 4;
+    position: fixed;
+    left: -100vw;
+    right: -100vw;
+    top: -100vh;
+    bottom: -100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.backdrop {
+  z-index: 11;
+  position: fixed;
+  left: -100vw;
+  right: -100vw;
+  top: -100vh;
+  bottom: -100vh;
+}

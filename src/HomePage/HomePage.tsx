@@ -13,20 +13,30 @@ type UserProp = {
   no_id: number;
 };
 
+// use api
+type UserType = {
+  id: number,
+  username: string,
+  avatar_url: string,
+  first_name: string,
+  last_name: string,
+  fullname: string
+}
+
 function HomePage() {
-  const [user, setUser] = useState<UserProp>(() => {
+  const [user, setUser] = useState<UserType>(() => {
     const selectedUser = localStorage.getItem("user");
     if (selectedUser) {
       return JSON.parse(selectedUser);
       // otherwise
     } else {
       return {
-        name: "",
-        id: "",
-        avatar: "",
-        chat: "",
-        time: "",
-        no_id: 0,
+        id: 0,
+        username: '',
+        avatar_url: '',
+        first_name: '',
+        last_name: '',
+        fullname: ''
       };
     }
   });
@@ -37,8 +47,8 @@ function HomePage() {
 
   const navigate = useNavigate();
 
-  const handleUserClick = (selectedUser: UserProp) => {
-    navigate(`/${selectedUser.id}`);
+  const handleUserClick = (selectedUser: UserType) => {
+    navigate(`/${selectedUser?.id}`);
     setUser(selectedUser);
   };
 

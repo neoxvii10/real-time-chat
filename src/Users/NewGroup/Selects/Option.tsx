@@ -12,10 +12,20 @@ type User = {
   deleteOption: (id: number) => void;
 };
 
-const Option = (props: User) => {
+type UserType = {
+  id: number,
+  username: string,
+  avatar_url: string,
+  first_name: string,
+  last_name: string,
+  fullname: string
+  deleteOption: (id: number) => void;
+}
+
+const Option = (props: UserType) => {
   const handleDeleteOption = (event: MouseEvent<Element>) => {
     event.stopPropagation();
-    props.deleteOption(props.no_id);
+    props.deleteOption(props.id);
   };
 
   const [isHovered, setHover] = useState<boolean>(false);
@@ -34,11 +44,12 @@ const Option = (props: User) => {
         </div>
       ) : (
         <div className="user-avatar">
-          <span>{props.avatar}</span>
+          {/* <span>{props.avatar_url}</span> */}
+          <img src={props.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
         </div>
       )}
       <div className="option-info">
-        <h5>{props.name}</h5>
+        <h5>{props.fullname}</h5>
       </div>
     </div>
   );
