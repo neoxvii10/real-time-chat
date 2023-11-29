@@ -61,7 +61,7 @@ export default function CountrySelect() {
     };
 
     try {      
-      toast.success('Verification successful. Redirecting...', {
+      toast.success('Signup successful. Redirecting...', {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
         hideProgressBar: true,
