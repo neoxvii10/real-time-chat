@@ -161,6 +161,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
+    
   };
 
   // handle visiable profile
