@@ -27,6 +27,7 @@ export default function CountrySelect() {
   });
 
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -39,7 +40,10 @@ export default function CountrySelect() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    setLoading(true);
+
     if (data.password !== confirmPassword) {
+      toast.dismiss();
       toast.error('Password and Confirm Password do not match!', {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
@@ -48,7 +52,7 @@ export default function CountrySelect() {
         closeOnClick: false,
         theme: "dark",
       });
-      console.error('Password and Confirm Password do not match');
+      setLoading(false);
       return;
     }
 
@@ -60,22 +64,47 @@ export default function CountrySelect() {
       email: (event.target as any).email.value,
     };
 
-    try {      
-      toast.success('Signup successful. Redirecting...', {
+    try {
+      toast.dismiss();
+      toast.info('Signing up, please wait...', {
         position: toast.POSITION.TOP_CENTER,
-        autoClose: 2500,
+        autoClose: false, // Do not auto close during loading
         hideProgressBar: true,
         pauseOnHover: true,
         closeOnClick: false,
         theme: "dark",
       });
 
-      setTimeout(async () => {
-        const response = await axios.post('http://16.162.46.190/api/user/signup/', formData);
-        console.log(response.data);
-        navigate(`/redirect/${formData.username}`);
-      }, 2000);
+      const response = await axios.post('http://16.162.46.190/api/user/signup/', formData);
+
+      if (response.status === 200) {
+        toast.dismiss();
+        setTimeout(() => {
+        toast.success('Signup successful. Redirecting...', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeOnClick: false,
+          theme: "dark",
+        })}, 500);
+
+        setTimeout(() => {
+          navigate(`/redirect/${formData.username}`);
+        }, 2500);
+      } else {
+        toast.dismiss();
+        toast.error('Username or Email already taken', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeOnClick: false,
+          theme: "dark",
+        });
+      }
     } catch (error) {
+      toast.dismiss();
       toast.error('Error sending data!', {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
@@ -85,12 +114,15 @@ export default function CountrySelect() {
         theme: "dark",
       });
       console.error('Error sending data:', error);
+    } finally {
+      setLoading(false);
     }
+    
   };
 
   return (
     <section className="signup-form-container">
-      
+      <ToastContainer />
       <div className="logo-icon-container">
         <BsTelegram size={150} style={{color: "var(--icon-color-active)"}}/>
       </div>
@@ -171,7 +203,9 @@ export default function CountrySelect() {
           />
           <span>Confirm Password</span>
         </div>
-        <button className='signup-btn' type="submit">Submit</button>
+        <button className='signup-btn' type="submit" disabled={loading}>
+          Submit
+        </button>
       </form>
       
       <span>Already have an account? <Link to="/signin">Signin</Link></span>
