@@ -212,7 +212,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       <NewGroup
       translateX={translateX}
       handleSlideAnimation={handleSlideAnimation}
-      users={users}
+      users={listFriends}
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
@@ -296,23 +296,6 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {/* {filteredUsers.map((user) => (
-            <li tabIndex={user.no_id} key={user.no_id} onClick={() => onUserClick(user)}
-            className={selectedUser === user ? 'user-selected' : ''}>
-              <div className="user">
-                <div className="user-avatar">
-                  <span>{user.avatar}</span>
-                </div>
-                <div className="user-label-timestamps">
-                  <div className="user-labels">
-                    <h5>{user.name}</h5>
-                    <p>{user.chat}</p>
-                  </div>
-                  <span className="latest-timestamps">{user.time}</span>
-                </div>
-              </div>
-            </li>
-          ))} */}
           {listFriends.map((user) => (
             <li tabIndex={user?.id} key={user?.id} onClick={() => onUserClick(user)} 
             className={(selectedUser === user) ? 'user-selected' : ''}>

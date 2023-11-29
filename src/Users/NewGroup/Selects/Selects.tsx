@@ -24,9 +24,9 @@ type UserType = {
 }
 
 type SelectsProps = {
-  selectedOptions: UserProp[];
-  setSelectedOptions: Dispatch<SetStateAction<UserProp[]>>;
-  users: UserProp[];
+  selectedOptions: UserType[];
+  setSelectedOptions: Dispatch<SetStateAction<UserType[]>>;
+  users: UserType[];
 };
 
 const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, users }) => {
@@ -49,22 +49,24 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       }));
   };
 
-  const handleOptionClick = (selectedValue: UserProp) => {
-    const option: UserProp = {
-      name: selectedValue.name,
+  //
+
+  const handleOptionClick = (selectedValue: UserType) => {
+    const option: UserType = {
       id: selectedValue.id,
-      avatar: selectedValue.avatar,
-      chat: selectedValue.chat,
-      time: selectedValue.time,
-      no_id: selectedValue.no_id,
+      avatar_url: selectedValue.avatar_url,
+      username: selectedValue.username,
+      first_name: selectedValue.first_name,
+      last_name: selectedValue.last_name,
+      fullname: selectedValue.fullname
     };
     
     const isOptionSelected = selectedOptions.some(
-      (selectedOption) => selectedOption.no_id === option.no_id
+      (selectedOption) => selectedOption.id === option.id
     );
 
     if (isOptionSelected) {
-      setSelectedOptions(selectedOptions.filter((selectedOption) => selectedOption.no_id !== option.no_id));
+      setSelectedOptions(selectedOptions.filter((selectedOption) => selectedOption.id !== option.id));
     } else {
       setSelectedOptions([...selectedOptions, option]);
     }
@@ -75,16 +77,16 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       <ul>
         {users.map((user) => (
           <li
-            key={user.no_id}
+            key={user.id}
             onClick={() => handleOptionClick(user)}
             className={
-              selectedOptions.some((selectedOption) => selectedOption.no_id === user.no_id)
+              selectedOptions.some((selectedOption) => selectedOption.id === user.id)
                 ? "selected"
                 : ""
             }
           >
             <Checkbox
-              checked={selectedOptions.some((selectedOption) => selectedOption.no_id === user.no_id)}
+              checked={selectedOptions.some((selectedOption) => selectedOption.id === user.id)}
               sx={{ 
                 '& .MuiSvgIcon-root': { fontSize: 26 },
                 color: 'var(--icon-color)',
@@ -95,12 +97,10 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
             />
             <div className="user">
               <div className="user-avatar">
-                <span>
-                  {user.avatar}
-                </span>
+                  <img src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
               </div>
               <div className="user-labels">
-                <h5>{user.name}</h5>
+                <h5>{user.fullname}</h5>
                 <p>Last seen now</p>
               </div>
             </div>

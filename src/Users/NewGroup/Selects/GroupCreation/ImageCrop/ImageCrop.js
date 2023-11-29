@@ -25,6 +25,8 @@ const ImageCrop = ({ selectedImage, onCropImage }) => {
       console.log('Cropped Blob:', blob);
       console.log('Cropped URL:', url);
       onCropImage({ blob, url });
+
+      // 
     } catch (e) {
       console.error(e);
     }

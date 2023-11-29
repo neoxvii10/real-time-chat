@@ -23,20 +23,18 @@ type UserType = {
   fullname: string
 }
 
-
-
 type NewGroupProp = {
   translateX: CSSProperties;
   handleSlideAnimation: Dispatch<SetStateAction<CSSProperties>>;
-  users: UserProp[];
+  users: UserType[];
 }
 
 const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, users }) => {
-  const deleteOption = (no_id: number) => {
-    setSelectedOptions(selectedOptions.filter((option) => option.no_id !== no_id));
+  const deleteOption = (id: number) => {
+    setSelectedOptions(selectedOptions.filter((option) => option.id !== id));
   };
 
-  const [selectedOptions, setSelectedOptions] = useState<UserProp[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<UserType[]>([]);
 
   const handleClose = () => {
     // Call the handleSlideAnimation function to close the new-group-container
@@ -61,12 +59,12 @@ const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, us
           {
             selectedOptions.map((singleOption) => 
               <Option 
-                name={singleOption.name}
                 id={singleOption.id}
-                avatar={singleOption.avatar}
-                chat={singleOption.chat}
-                time={singleOption.time}
-                no_id={singleOption.no_id}
+                first_name={singleOption.first_name}
+                last_name={singleOption.last_name}
+                fullname={singleOption.fullname}
+                username={singleOption.username}
+                avatar_url={singleOption.avatar_url}
                 deleteOption={deleteOption}
               />
             )
