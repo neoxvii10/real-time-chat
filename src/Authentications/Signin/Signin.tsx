@@ -29,6 +29,8 @@ export default function CountrySelect() {
     password: '',
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -43,41 +45,57 @@ export default function CountrySelect() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
+    setLoading(true);
+  
     const formData = {
       username: data.username,
       password: data.password,
     };
   
     try {
-      setTimeout(async () => {
-        const response: ApiResponse = await UserApi.signin(formData);
+      toast.dismiss();
+      toast.info('Signing in, please wait...', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: false, // Do not auto close during loading
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeOnClick: false,
+        theme: "dark",
+      });
   
-        if (response.message === 'Login successfully') {
-          localStorage.setItem('user', JSON.stringify(data));
-          localStorage.setItem('accessToken', JSON.stringify(response?.data?.access))
-          toast.success('Login successful. Redirecting...', {
+      const response: ApiResponse = await UserApi.signin(formData);
+  
+      if (response.message === 'Login successfully') {
+        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('accessToken', JSON.stringify(response?.data?.access));
+        toast.dismiss();
+        setTimeout(() => {
+          toast.success('Signin successful. Redirecting...', {
             position: toast.POSITION.TOP_CENTER,
             autoClose: 2500,
             hideProgressBar: true,
             pauseOnHover: true,
             closeOnClick: false,
             theme: "dark",
-          });
+          })}, 500);
+  
+        setTimeout(() => {
           navigate('/');
-        } else if (response.message === 'Password not match') {
-          toast.error('Invalid username or password!', {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 2500,
-            hideProgressBar: true,
-            pauseOnHover: true,
-            closeOnClick: false,
-            theme: "dark",
-          });
-        }
-      }, 500);
+        }, 2500);
+      } else if (response.message === 'Password not match') {
+        toast.dismiss();
+        toast.error('Invalid username or password!', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeOnClick: false,
+          theme: "dark",
+        });
+      }
     } catch (error) {
-      console.log(error);
-      toast.error('Invalid username or password!', {
+      toast.dismiss();
+      toast.error('Error sending data!', {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
         hideProgressBar: true,
@@ -85,6 +103,8 @@ export default function CountrySelect() {
         closeOnClick: false,
         theme: "dark",
       });
+    } finally {
+      setLoading(false);
     }
   
     setData({
@@ -93,7 +113,6 @@ export default function CountrySelect() {
     });
   };
   
-
   return (
     <section className="signin-form-container">
       <ToastContainer />
@@ -110,7 +129,7 @@ export default function CountrySelect() {
           <input onChange={handleInputChange} value={data.password} className='form-control' dir='auto' type="password" name='password' placeholder='' />
           <label>Password</label>
         </div>
-        <button className='submit-btn signin' type='submit'>Submit</button>
+        <button className='submit-btn signin' type='submit' disabled={loading}>Submit</button>
       </form>
       <div className="label-utils">
         <span>

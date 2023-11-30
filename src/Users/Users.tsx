@@ -13,16 +13,7 @@ import Profile from './Profile/Profile';
 
 import UserApi from '../Api/UserApi';
 
-type UserProp = {
-  name: string;
-  id: string;
-  avatar: string;
-  chat: string;
-  time: string;
-  no_id: number;
-};
-
-type UsersProps = {
+type UsersTypes = {
   onUserClick: (selectedUsername: UserType) => void;
   selectedUser: UserType;
 };
@@ -36,63 +27,55 @@ type UserType = {
   fullname: string
 }
 
-const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
-  const users: UserProp[] = [
+const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
+  const users: UserType[] = [
     {
-      name: "Lê Minh Thuận",
-      id: "#@thuanle409",
-      avatar: "LT",
-      chat: "Đc thế nhờ",
-      time: "Sep 14",
-      no_id: 1,
+      id: 1,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Thuận"
      },
      {
-      name: "Phạm Tùng Thủy",
-      id: "#@thuypham412",
-      avatar: "PT",
-      chat: "Đc thế nhờ",
-      time: "Sep 13",
-      no_id: 2,
+      id: 2,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Đạt"
      },
      {
-      name: "Đinh Đức Thuận",
-      id: "#@thuandinh795",
-      avatar: "DT",
-      chat: "Đc thế nhờ",
-      time: "Sep 7",
-      no_id: 3,
+      id: 3,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Thủy"
      },
      {
-      name: "Nguyễn Trung Hiếu",
-      id: "#@hieunguyen318",
-      avatar: "NH",
-      chat: "Đc thế nhờ",
-      time: "Sep 8",
-      no_id: 4,
+      id: 4,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Việt"
      },
      {
-      name: "Triệu Thanh Tùng",
-      id: "#@tungtrieu799",
-      avatar: "TT",
-      chat: "Đc thế nhờ",
-      time: "Sep 12",
-      no_id: 5,
+      id: 5,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Tùng"
      },
      {
-      name: "Trần Tất Việt",
-      id: "#@viettt132",
-      avatar: "TV",
-      chat: "Đc thế nhờ",
-      time: "Sep 11",
-      no_id: 6,
-     },
-     {
-      name: "Sample Group",
-      id: "#@sg",
-      avatar: "SG",
-      chat: "Đc thế nhờ",
-      time: "Sep 11",
-      no_id: 7,
+      id: 6,
+      username: "#@thuanle409",
+      avatar_url: "LT",
+      first_name: "Thuận",
+      last_name: "Lê",
+      fullname: "Lê Minh Hiếu"
      },
   ];
 
@@ -162,17 +145,16 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
     setFilteredUsers(users);
   };
 
-  const [filteredUsers, setFilteredUsers] = useState<UserProp[]>(users);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>(listFriends);
 
   const filterUsers = (searchText: string) => {
     if (searchText.trim() === '') {
       // If the search input is empty, show all users
-      setFilteredUsers(users);
+      setFilteredUsers(listFriends);
     } else {
       // Filter the users whose name or chat contains the search text
-      const filtered = users.filter((user) =>
-        user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        user.chat.toLowerCase().includes(searchText.toLowerCase())
+      const filtered = listFriends.filter((user) =>
+        user.fullname.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredUsers(filtered);
     }
@@ -213,7 +195,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       <NewGroup
       translateX={translateX}
       handleSlideAnimation={handleSlideAnimation}
-      users={listFriends}
+      users={users}
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
@@ -297,7 +279,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {listFriends.map((user) => (
+          {filteredUsers.map((user) => (
             <li tabIndex={user?.id} key={user?.id} onClick={() => onUserClick(user)} 
             className={(selectedUser === user) ? 'user-selected' : ''}>
               <div className="user">
