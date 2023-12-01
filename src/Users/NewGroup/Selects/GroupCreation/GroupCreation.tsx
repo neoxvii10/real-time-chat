@@ -98,8 +98,6 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
     setSelectedImage("");
   }
 
-  console.log(disEditAvatar)
-
   const defaultGrName = selectedOptions.map(option => option.fullname).join(', ');
   return (
     <>

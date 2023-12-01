@@ -42,16 +42,29 @@ export default function CountrySelect() {
     }
   };
 
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
     setLoading(true);
-  
-    const formData = {
+
+    const formDataUser = {
       username: data.username,
-      password: data.password,
+      password: data.password
     };
-  
+
+    const formDataEmail = {
+      email: data.username,
+      password: data.password
+    }
+      
     try {
       toast.dismiss();
       toast.info('Signing in, please wait...', {
@@ -62,9 +75,17 @@ export default function CountrySelect() {
         closeOnClick: false,
         theme: "dark",
       });
-  
-      const response: ApiResponse = await UserApi.signin(formData);
-  
+      
+      let response: ApiResponse;
+
+      if(validateEmail(data.username)) {
+        response = await UserApi.signin(formDataEmail);
+        console.log("email: " + data.username);
+      } else {
+        response = await UserApi.signin(formDataUser);
+        console.log("username: " + data.username)
+      }
+      
       if (response.message === 'Login successfully') {
         localStorage.setItem('user', JSON.stringify(data));
         localStorage.setItem('accessToken', JSON.stringify(response?.data?.access));
