@@ -28,16 +28,16 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
     opacity: 0,
     transform: 'translateX(-480px)',
   });
-  
+
   const handleNewGroupAnimation = () => {
-      setNewGroup(!isNewGroup);
-      console.log(isNewGroup);
-      setSlideRight((slideRight) => ({
-        ...slideRight,
-        visibility: isNewGroup ? 'hidden' : 'visible' ,
-        opacity: isNewGroup ? 0 : 1,
-        transform: isNewGroup ? 'translateX(-480px)' : 'translateX(0px)',
-      }));
+    setNewGroup(!isNewGroup);
+    console.log(isNewGroup);
+    setSlideRight((slideRight) => ({
+      ...slideRight,
+      visibility: isNewGroup ? 'hidden' : 'visible',
+      opacity: isNewGroup ? 0 : 1,
+      transform: isNewGroup ? 'translateX(-480px)' : 'translateX(0px)',
+    }));
   };
 
   const handleOptionClick = (selectedValue: UserProp) => {
@@ -49,7 +49,7 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       time: selectedValue.time,
       no_id: selectedValue.no_id,
     };
-    
+
     const isOptionSelected = selectedOptions.some(
       (selectedOption) => selectedOption.no_id === option.no_id
     );
@@ -60,9 +60,9 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       setSelectedOptions([...selectedOptions, option]);
     }
   };
- 
+
   return (
-    <div className='select-container'>       
+    <div className='select-container'>
       <ul>
         {users.map((user) => (
           <li
@@ -76,13 +76,13 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
           >
             <Checkbox
               checked={selectedOptions.some((selectedOption) => selectedOption.no_id === user.no_id)}
-              sx={{ 
+              sx={{
                 '& .MuiSvgIcon-root': { fontSize: 26 },
                 color: 'var(--icon-color)',
                 '&.Mui-checked': {
                   color: 'var(--checkbox-fill)',
                 },
-            }}
+              }}
             />
             <div className="user">
               <div className="user-avatar">
@@ -99,12 +99,12 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
         ))}
       </ul>
       <div className="create-gr-btn-container" onClick={handleNewGroupAnimation}>
-        <FaArrowRight className="create-gr-icon" size={22}/>
+        <FaArrowRight className="create-gr-icon" size={22} />
       </div>
       <GroupCreation
-      slideRight={slideRight}
-      handleNewGroupAnimation={handleNewGroupAnimation}
-      selectedOptions={selectedOptions}
+        slideRight={slideRight}
+        handleNewGroupAnimation={handleNewGroupAnimation}
+        selectedOptions={selectedOptions}
       />
     </div>
   );

@@ -10,7 +10,7 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import { GoSearch, GoX } from 'react-icons/go' 
+import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
 import EmojiPicker, {
@@ -18,6 +18,15 @@ import EmojiPicker, {
   EmojiClickData,
 } from "emoji-picker-react";
 import "./UserInbox.css";
+
+const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+const token = _token?.slice(1, _token.length -1);
+console.log(token);
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+console.log(socket);
+socket.onopen = () => {
+  console.log('WebSocket connection established');
+};
 
 type UserProp = {
   name: string;
@@ -40,7 +49,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     opacity: 0,
     transform: "translateX(480px)",
   });
-  
+
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
     // Check if the clicked element is the chat-utils element or one of its descendants
     const clickedElement = event.target as Element;
@@ -76,6 +85,8 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   };
 
+  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
       const textMessage = {
@@ -85,43 +96,40 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       };
       setMessages([...messages, textMessage]);
       setInputValue("");
+
+      const messageObject = {
+        action: "create_message",
+        target: "channel",
+        targetId: 29,
+        data: {
+          member: "hieu_nguyen",
+          channel: 29,
+          content: inputValue,
+          reply: null,
+        },
+      };
+
+      const messageJSON = JSON.stringify(messageObject);
+
+      if (!isOpen(socket)) {
+        console.log("Message can't be sent");
+        return;
+      }
+
+      socket.send(messageJSON);
+
+
+      setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
       setSelectedFile(null);
     }
+
   }
-  const token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-
-  const socket = new WebSocket(`ws://16.162.46.190/chat/?token=${token}`);
-
-  socket.onopen = () => {
-    console.log('WebSocket connection established');
-  };
-
-  // const handleSendingInputs = () => {
-  // Construct the message object based on the protocol
-    // const messageObject = {
-    //   action: "create_message",
-    //   target: "channel",
-    //   targetId: channelID,
-    //   data: {
-    //     member: userID,
-    //     channel: channelID,
-    //     content: inputValue,
-    //     reply: null,
-    //   },
-    // // };
-
-    // const messageString = JSON.stringify(messageObject);
-    // socket.send(messageString);
-    // setInputValue("");
 
 
-  
-  
-  
   const [popupVisible, setPopupVisible] = useState(false);
-  
+
   const attachmentButtonRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -132,10 +140,10 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       attachmentButtonRef.current.click();
     }
   };
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-  
+
     if (file) {
       setSelectedFile(file);
       setPopupVisible(true);
@@ -155,7 +163,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       setPopupVisible(false);
     }
   };
-  
+
   const handleClosePopup = () => {
     setPopupVisible(false);
     setSelectedFile(null);
@@ -180,7 +188,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     setEmojiPickerVisible(!isEmojiPickerVisible);
     setIsEmojiIconClicked(!isEmojiIconClicked);
   };
-  
+
   return (
     <div className="user-box-chat">
       <div
@@ -261,9 +269,8 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${
-              message.type === "file" ? "file" : ""
-            }`}
+            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "file" ? "file" : ""
+              }`}
           >
             {message.type === "file" && message.file ? (
               <a
@@ -281,14 +288,14 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       </div>
       <div className="message-input-container">
         <div className="input-container">
-        <MdOutlineEmojiEmotions
-          style={{
-            marginLeft: "0.2rem",
-            color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
-          }}
-          size={25}
-          onClick={toggleEmojiPicker}
-        />
+          <MdOutlineEmojiEmotions
+            style={{
+              marginLeft: "0.2rem",
+              color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
+            }}
+            size={25}
+            onClick={toggleEmojiPicker}
+          />
           {isEmojiPickerVisible && (
             <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
               <EmojiPicker
@@ -305,12 +312,12 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             </div>
           )}
           <input
-          type="text"
-          className="input-area"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.currentTarget.value)}
-          onKeyDown={handleInputKeyDown}
-          placeholder="Message"
+            type="text"
+            className="input-area"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.currentTarget.value)}
+            onKeyDown={handleInputKeyDown}
+            placeholder="Message"
           />
           <div className="file-import-container" onClick={handleAttachmentButtonClick}>
             <ImAttachment size={24} />
@@ -329,7 +336,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       {popupVisible && selectedFile && (
         <div className={`file-popup file-popup-${contentType}`}>
           <div className="file-popup-header file">
-            <GoX size={24} onClick={handleClosePopup}/>
+            <GoX size={24} onClick={handleClosePopup} />
             <span>Send {contentType === "image" ? "Photo" : "File"}</span>
           </div>
           {contentType === "image" ? (
@@ -341,7 +348,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             </div>
           )}
           <div className="file-popup-footer">
-            <input type="text" placeholder="Add a caption"/>
+            <input type="text" placeholder="Add a caption" />
             <button onClick={handleSendingInputs}><span>SEND</span></button>
           </div>
         </div>

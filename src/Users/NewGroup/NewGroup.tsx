@@ -41,15 +41,15 @@ const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, us
     <div className="new-group-container" style={translateX}>
       <div className="new-group-header">
         <span className="new-gr-back-icon-container">
-          <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon'/>
+          <FaArrowLeft onClick={handleClose} size={22} className='new-gr-back-icon' />
         </span>
         <h4>Add Member</h4>
       </div>
       <div className="select-values-container">
         <div className="select-values-content">
           {
-            selectedOptions.map((singleOption) => 
-              <Option 
+            selectedOptions.map((singleOption) =>
+              <Option
                 name={singleOption.name}
                 id={singleOption.id}
                 avatar={singleOption.avatar}
@@ -63,11 +63,11 @@ const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, us
         </div>
       </div>
       <Selects
-        selectedOptions = {selectedOptions}
-        setSelectedOptions = {setSelectedOptions}
-        users = {users}
+        selectedOptions={selectedOptions}
+        setSelectedOptions={setSelectedOptions}
+        users={users}
       />
-      
+
     </div>
   );
 };

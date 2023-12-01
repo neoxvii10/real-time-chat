@@ -60,7 +60,7 @@ export default function CountrySelect() {
       email: (event.target as any).email.value,
     };
 
-    try {      
+    try {
       toast.success('Verification successful. Redirecting...', {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
@@ -90,73 +90,73 @@ export default function CountrySelect() {
 
   return (
     <section className="signup-form-container">
-      
+
       <div className="logo-icon-container">
-        <BsTelegram size={150} style={{color: "var(--icon-color-active)"}}/>
+        <BsTelegram size={150} style={{ color: "var(--icon-color-active)" }} />
       </div>
       <h4>Signup Form</h4>
       <form action="" className='signup-contents' onSubmit={handleSubmit}>
         <div className="inputBox">
           <input
-          id="firstname"
-          name="first_name"
-          value = {data.first_name}
-          onChange={handleChange}
-          type='text'
-          required
+            id="firstname"
+            name="first_name"
+            value={data.first_name}
+            onChange={handleChange}
+            type='text'
+            required
           />
           <span>First Name</span>
         </div>
         <div className="inputBox">
           <input
-          id="lastname"
-          name="last_name"
-          value={data.last_name}
-          onChange={handleChange}
-          type='text'
-          required
+            id="lastname"
+            name="last_name"
+            value={data.last_name}
+            onChange={handleChange}
+            type='text'
+            required
           />
           <span>Last Name</span>
         </div>
         <div className="inputBox">
           <input
-          id="phone"
-          name="phone"
-          type='text'
-          required
+            id="phone"
+            name="phone"
+            type='text'
+            required
           />
           <span>Phone Number</span>
         </div>
         <div className="inputBox">
           <input
-          id="email"
-          name="email"
-          value={data.email}
-          onChange={handleChange}
-          type='email'
-          required
+            id="email"
+            name="email"
+            value={data.email}
+            onChange={handleChange}
+            type='email'
+            required
           />
           <span>Email</span>
         </div>
         <div className="inputBox">
           <input
-          id="username"
-          name="username"
-          value={data.username}
-          onChange={handleChange}
-          type='text'
-          required
+            id="username"
+            name="username"
+            value={data.username}
+            onChange={handleChange}
+            type='text'
+            required
           />
           <span>User Name</span>
         </div>
         <div className="inputBox">
           <input
-          id="password"
-          name="password"
-          value={data.password}
-          onChange={handleChange}
-          type='password'
-          required
+            id="password"
+            name="password"
+            value={data.password}
+            onChange={handleChange}
+            type='password'
+            required
           />
           <span>Password</span>
         </div>
@@ -173,9 +173,9 @@ export default function CountrySelect() {
         </div>
         <button className='signup-btn' type="submit">Submit</button>
       </form>
-      
+
       <span>Already have an account? <Link to="/signin">Signin</Link></span>
-      
+
     </section>
   );
 }

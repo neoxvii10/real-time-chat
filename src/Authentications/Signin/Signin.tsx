@@ -1,4 +1,4 @@
-  import { useState } from 'react';
+import { useState } from 'react';
 import { BsTelegram } from 'react-icons/bs'
 import Checkbox from '@mui/material/Checkbox'
 import { Link } from "react-router-dom";
@@ -15,7 +15,7 @@ type SigninProp = {
 
 type ApiResponse = {
   message?: string;
-  data?:{
+  data?: {
     refresh?: string,
     access?: string
   }
@@ -42,16 +42,16 @@ export default function CountrySelect() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     const formData = {
       username: data.username,
       password: data.password,
     };
-  
+
     try {
       setTimeout(async () => {
         const response: ApiResponse = await UserApi.signin(formData);
-  
+
         if (response.message === 'Login successfully') {
           localStorage.setItem('user', JSON.stringify(data));
           localStorage.setItem('accessToken', JSON.stringify(response?.data?.access))
@@ -86,13 +86,13 @@ export default function CountrySelect() {
         theme: "dark",
       });
     }
-  
+
     setData({
       username: '',
       password: '',
     });
   };
-  
+
 
   return (
     <section className="signin-form-container">

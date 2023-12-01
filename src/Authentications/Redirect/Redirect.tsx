@@ -11,7 +11,7 @@ type VerifyProp = {
   verification_code: string;
 };
 
-const MediumPage= () => {
+const MediumPage = () => {
   const { username } = useParams();
   const navigate = useNavigate();
 
@@ -45,7 +45,7 @@ const MediumPage= () => {
       setTimeout(async () => {
         const response = await axios.post('http://16.162.46.190/api/user/verify/', formData);
         console.log(response.data);
-      navigate('/signin');
+        navigate('/signin');
       }, 2000);
     } catch (error) {
       toast.error('Wrong Verification Code!', {
@@ -67,13 +67,13 @@ const MediumPage= () => {
         <h2>Medium Page</h2>
         <p>Username: {username}</p>
         <input
-        id="verification_code"
-        name="verification_code"
-        value = {data.verification_code}
-        onChange={handleChange}
-        type='text'
-        placeholder='Verification Code'
-        required
+          id="verification_code"
+          name="verification_code"
+          value={data.verification_code}
+          onChange={handleChange}
+          type='text'
+          placeholder='Verification Code'
+          required
         />
         <button className='verify-btn' type="submit">Submit</button>
       </form>

@@ -42,11 +42,11 @@
   width: 16px;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(24px);
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #8774e1;
 }
 

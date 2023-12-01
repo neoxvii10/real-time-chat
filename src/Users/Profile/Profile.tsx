@@ -1,5 +1,5 @@
 import './Profile.css'
-import {useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { CSSProperties, useEffect, useState } from 'react';
 import { TfiArrowLeft } from 'react-icons/tfi'
 import { MdOutlineModeEditOutline } from 'react-icons/md'
@@ -36,7 +36,7 @@ type TypeUserProfile = {
     online?: boolean
 }
 
-const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
+const Profile: React.FC<ProfileProps> = ({ translateX, setTranslateX }) => {
 
     // handle slide for profile
     const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
@@ -87,7 +87,7 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
         online: true
     })
 
-    
+
     useEffect(() => {
         const fetchData = async () => {
 
@@ -137,7 +137,7 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                             }}
                                 onMouseLeave={() => setvisibleLogout(false)}
                             >
-                            
+
                                 <div className='wrapper' onClick={handleLogout}>
                                     <span className='logout-icon'><TbLogout size={22} /></span>
                                     <span className='logout-lable'>Log out</span>

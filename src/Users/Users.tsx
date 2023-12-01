@@ -1,7 +1,7 @@
 import { useState, useRef, CSSProperties } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
-import { GoSearch, GoX } from 'react-icons/go' 
+import { GoSearch, GoX } from 'react-icons/go'
 import { BsCloudCheck, BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
@@ -34,55 +34,55 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
       chat: "Đc thế nhờ",
       time: "Sep 14",
       no_id: 1,
-     },
-     {
+    },
+    {
       name: "Phạm Tùng Thủy",
       id: "#@thuypham412",
       avatar: "PT",
       chat: "Đc thế nhờ",
       time: "Sep 13",
       no_id: 2,
-     },
-     {
+    },
+    {
       name: "Đinh Đức Thuận",
       id: "#@thuandinh795",
       avatar: "DT",
       chat: "Đc thế nhờ",
       time: "Sep 7",
       no_id: 3,
-     },
-     {
+    },
+    {
       name: "Nguyễn Trung Hiếu",
       id: "#@hieunguyen318",
       avatar: "NH",
       chat: "Đc thế nhờ",
       time: "Sep 8",
       no_id: 4,
-     },
-     {
+    },
+    {
       name: "Triệu Thanh Tùng",
       id: "#@tungtrieu799",
       avatar: "TT",
       chat: "Đc thế nhờ",
       time: "Sep 12",
       no_id: 5,
-     },
-     {
+    },
+    {
       name: "Trần Tất Việt",
       id: "#@viettt132",
       avatar: "TV",
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 6,
-     },
-     {
+    },
+    {
       name: "Sample Group",
       id: "#@sg",
       avatar: "SG",
       chat: "Đc thế nhờ",
       time: "Sep 11",
       no_id: 7,
-     },
+    },
   ];
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
@@ -93,7 +93,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
     transform: 'translateX(-480px)',
   });
 
-  
+
   const handleSlideAnimation = () => {
     setSlided(!isSlided);
     setTranslateX((translateX) => ({
@@ -182,9 +182,9 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
   return (
     <div className="users-container">
       <NewGroup
-      translateX={translateX}
-      handleSlideAnimation={handleSlideAnimation}
-      users={users}
+        translateX={translateX}
+        handleSlideAnimation={handleSlideAnimation}
+        users={users}
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
@@ -234,7 +234,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
                 <span className='dropdown-label'>Settings</span>
               </li>
               <li onClick={handleSlideAnimation}>
-                <span className='dropdown-icon'><BsPeople size={22}/></span>
+                <span className='dropdown-icon'><BsPeople size={22} /></span>
                 <span className='dropdown-label'>New Group</span>
               </li>
             </ul>
@@ -270,7 +270,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
         <ul>
           {filteredUsers.map((user) => (
             <li tabIndex={user.no_id} key={user.no_id} onClick={() => onUserClick(user)}
-            className={selectedUser === user ? 'user-selected' : ''}>
+              className={selectedUser === user ? 'user-selected' : ''}>
               <div className="user">
                 <div className="user-avatar">
                   <span>{user.avatar}</span>
@@ -290,7 +290,7 @@ const Users: React.FC<UsersProps> = ({ onUserClick, selectedUser }) => {
 
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
 
-     </div>
+    </div>
   );
 }
 
