@@ -80,7 +80,7 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
   ];
 
   // handle list friends
-  const [listFriends, setListFriends] = useState<UserType[]>([]);
+  const [listFriends, setListFriends] = useState<UserType[]>(users);
 
   useEffect(() => {
     const fetchData = async () => {
