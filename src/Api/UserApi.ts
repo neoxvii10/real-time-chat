@@ -6,7 +6,17 @@ class UserApi {
         const url = '/api/user/login/';
         return await axiosClient.post(url, data);
     }
+
+    requestResetPassword = async (data: object) => {
+        const url = '/api/user/passwordreset/';
+        return await axiosClient.post(url, data);
+    }
     
+    resetPassword = async (data: object) => {
+        const url = '/api/user/passwordreset/confirm/';
+        return await axiosClient.post(url, data);
+    }
+
     getFriends = async () => {
         const url = '/api/user/friends/';
         return await axiosClient.get(url);

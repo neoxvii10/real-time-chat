@@ -1,4 +1,4 @@
-  import { useState } from 'react';
+import { useState } from 'react';
 import { BsTelegram } from 'react-icons/bs'
 import Checkbox from '@mui/material/Checkbox'
 import { Link } from "react-router-dom";
@@ -165,7 +165,7 @@ export default function CountrySelect() {
               padding: 0,
             }}
           /> Keep me signed in</span>
-        <a href="">Forgot password?</a>
+          <Link to="/reset-password/email">Forgot password?</Link>
       </div>
       <span>Dont't have an account? <Link to="/signup">Signup</Link></span>
     </section>
