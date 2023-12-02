@@ -1,10 +1,21 @@
-import './Dashboard.css'
-
-const Dashboard= () => {
+import "./Dashboard.css";
+import Header from "../../components/Header";
+import { Box } from "@mui/material";
+const Dashboard = () => {
     return (
-        <div>Dashboard</div>
-    )
-};
+        <Box m="20px">
+            <Box 
+            display="flex" justifyContent="space-between"
+            alignItems="center"
+            >
 
+                <Header 
+                title="DASHBOARD" 
+                subtitle="Welcome to admin dashboard" />
+            </Box>
+
+        </Box>
+    );
+};
 
 export default Dashboard;
