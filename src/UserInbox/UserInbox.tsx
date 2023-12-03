@@ -98,16 +98,16 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       setInputValue("");
 
       const messageObject = {
-        action: "create_message",
-        target: "channel",
-        targetId: 29,
-        data: {
-          member: "hieu_nguyen",
-          channel: 29,
-          content: inputValue,
-          reply: null,
-        },
+        "action": "create_message",
+        "target": "channel",
+        "targetId": 29,
+        "data": {
+          "channel": 29,
+          "content": inputValue,
+          "reply": null
+        }
       };
+      
 
       const messageJSON = JSON.stringify(messageObject);
 
@@ -117,8 +117,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       }
 
       socket.send(messageJSON);
-
-
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
