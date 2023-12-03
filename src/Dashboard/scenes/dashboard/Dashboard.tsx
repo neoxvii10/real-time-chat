@@ -28,21 +28,22 @@ const Dashboard = () => {
                     title="DASHBOARD"
                     subtitle="Welcome to admin dashboard"
                 />
+                <Box>
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                        }}
+                    >
+                        <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+                        Download Reports
+                    </Button>
+                </Box>
             </Box>
-            <Box>
-                <Button
-                    sx={{
-                        backgroundColor: colors.blueAccent[700],
-                        color: colors.grey[100],
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        padding: "10px 20px",
-                    }}
-                >
-                    <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-                    Download Reports
-                </Button>
-            </Box>
+
             {/* GRID & CHART */}
             <Box
                 display="grid"
@@ -256,8 +257,7 @@ const Dashboard = () => {
                     gridColumn="span 4"
                     gridRow="span 2"
                     sx={{
-                        backgroundColor:colors.primary[400]
-
+                        backgroundColor: colors.primary[400],
                     }}
                     p="30px"
                 >
@@ -287,7 +287,7 @@ const Dashboard = () => {
                     gridColumn="span 4"
                     gridRow="span 2"
                     sx={{
-                        backgroundColor:colors.primary[400]
+                        backgroundColor: colors.primary[400],
                     }}
                 >
                     <Typography
@@ -305,7 +305,7 @@ const Dashboard = () => {
                     gridColumn="span 4"
                     gridRow="span 2"
                     sx={{
-                        backgroundColor: colors.primary[400]
+                        backgroundColor: colors.primary[400],
                     }}
                     padding="30px"
                 >
