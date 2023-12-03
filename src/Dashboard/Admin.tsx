@@ -9,6 +9,8 @@ import Contacts from './scenes/contacts/Contacts';
 import "./Admin.css"
 import Invoices from './scenes/invoices/Invoices';
 import Form from './scenes/form/Form';
+import Calendar from './scenes/calendar/Calendar';
+import FAQ from './scenes/faq/FAQ';
 const Admin= () => {
     const {theme, colorMode} = useMode();
 
@@ -29,9 +31,9 @@ const Admin= () => {
                             <Route path="/bar" element={<Dashboard/>}/>
                             <Route path="/pie" element={<Dashboard/>}/>
                             <Route path="/line" element={<Dashboard/>}/>
-                            <Route path="/faq" element={<Dashboard/>}/>
+                            <Route path="/faq" element={<FAQ/>}/>
                             <Route path="/geography" element={<Dashboard/>}/>
-                            <Route path="/calendar" element={<Dashboard/>}/>
+                            <Route path="/calendar" element={<Calendar/>}/>
                         </Routes>
                     </main>
                 </div>
