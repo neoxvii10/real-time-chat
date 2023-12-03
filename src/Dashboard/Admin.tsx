@@ -8,6 +8,7 @@ import Team from './scenes/team/Team';
 import Contacts from './scenes/contacts/Contacts';
 import "./Admin.css"
 import Invoices from './scenes/invoices/Invoices';
+import Form from './scenes/form/Form';
 const Admin= () => {
     const {theme, colorMode} = useMode();
 
@@ -24,7 +25,7 @@ const Admin= () => {
                             <Route path="/team" element={<Team/>}/>
                             <Route path="/contacts" element={<Contacts/>}/>
                             <Route path="/invoices" element={<Invoices/>}/>
-                            <Route path="/form" element={<Dashboard/>}/>
+                            <Route path="/form" element={<Form/>}/>
                             <Route path="/bar" element={<Dashboard/>}/>
                             <Route path="/pie" element={<Dashboard/>}/>
                             <Route path="/line" element={<Dashboard/>}/>
