@@ -4,8 +4,8 @@ import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import ReportIcon from '@mui/icons-material/Report';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TrafficIcon from "@mui/icons-material/Traffic";
 import LineChart from "../../components/LineChart";
@@ -13,9 +13,53 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import { useState, useEffect } from "react";
+import UserApi from "../../../Api/UserApi";
+import ReportApi from "../../../Api/ReportApi";
+import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import ChannelApi from "../../../Api/ChannelApi";
+
+interface ReportType {
+    id: BigInteger;
+    report_type: string;
+    create_at: string;
+    reason: string;
+}
+
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [userReports, setUserReports] = useState([]);
+    const [channelReports, setChannelReports] = useState([]);
+    const [userList, setUserList] = useState([]);
+    const [channelList, setChannelList] = useState([]);
+    const [totalReports, setTotalReports] = useState<ReportType[]>([]);
+
+    const handleReport = async () => {
+        const userReportResponse = await ReportApi.getUserReports();
+        const channelReportResponse = await ReportApi.getChannelReports();
+        setUserReports(userReportResponse.data);
+        setChannelReports(channelReportResponse.data);
+        const reports = [...userList, ...channelList];
+        setTotalReports(reports);
+    }
+
+    const handleUserList = async () => {
+        const userListResponse = await UserApi.getUserList();
+        setUserList(userListResponse.data);
+    }
+
+    const handleChannelList = async () => {
+        const channelListResponse = await ChannelApi.getChannelList();
+        console.log(channelListResponse.data);
+        setChannelList(channelListResponse.data);
+    }
+
+    useEffect(() => {
+        handleReport();
+        handleUserList();
+        handleChannelList();
+    }, [])
 
     return (
         <Box m="20px">
@@ -61,12 +105,12 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title="12,361"
-                        subtitle="Emails Sent"
+                        title={userReports.length}
+                        subtitle="User Reports"
                         progress="0.75"
                         increase="+14%"
                         icon={
-                            <EmailIcon
+                            <NoAccountsIcon
                                 sx={{
                                     color: colors.greenAccent[600],
                                     fontSize: "26px",
@@ -85,12 +129,12 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title="431,225"
-                        subtitle="Sales Obtained"
+                        title={channelReports.length}
+                        subtitle="Channel Reports"
                         progress="0.5"
                         increase="+21%"
                         icon={
-                            <PointOfSaleIcon
+                            <ReportIcon
                                 sx={{
                                     color: colors.greenAccent[600],
                                     fontSize: "26px",
@@ -109,7 +153,7 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title="32,441"
+                        title={userList.length}
                         subtitle="New Clients"
                         progress="0.75"
                         increase="+14%"
@@ -133,12 +177,12 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title="1,325,134"
-                        subtitle="Traffic Inbound"
+                        title={channelList.length}
+                        subtitle="New Channels"
                         progress="0.80"
                         increase="+43%"
                         icon={
-                            <TrafficIcon
+                            <GroupAddIcon
                                 sx={{
                                     color: colors.greenAccent[600],
                                     fontSize: "26px",
@@ -169,7 +213,7 @@ const Dashboard = () => {
                                 fontWeight="600"
                                 color={colors.grey[100]}
                             >
-                                Revenue Generated
+                                Recent Activities
                             </Typography>
                             <Typography
                                 variant="h3"
@@ -213,12 +257,12 @@ const Dashboard = () => {
                             variant="h5"
                             fontWeight="600"
                         >
-                            Recent Transactions
+                            Recent Reports
                         </Typography>
                     </Box>
-                    {mockTransactions.map((transaction, i) => (
-                        <Box
-                            key={`${transaction.txId}-${i}`}
+                    {totalReports.map((report, i) => (
+                            <Box
+                            key={`${report.id}`}
                             display="flex"
                             justifyContent="space-between"
                             alignItems="center"
@@ -231,14 +275,14 @@ const Dashboard = () => {
                                     variant="h5"
                                     fontWeight="600"
                                 >
-                                    {transaction.txId}
+                                    {report.id}
                                 </Typography>
                                 <Typography color={colors.grey[100]}>
-                                    {transaction.user}
+                                    {report.reason}
                                 </Typography>
                             </Box>
                             <Box color={colors.grey[100]}>
-                                {transaction.date}
+                                {report.create_at}
                             </Box>
                             <Box
                                 sx={{
@@ -247,10 +291,11 @@ const Dashboard = () => {
                                 p="5px 10px"
                                 borderRadius="4px"
                             >
-                                ${transaction.cost}
+                                ${report.report_type}
                             </Box>
                         </Box>
                     ))}
+
                 </Box>
                 {/* ROW 3 */}
                 <Box
@@ -314,7 +359,7 @@ const Dashboard = () => {
                         fontWeight="600"
                         sx={{ marginBottom: "15px" }}
                     >
-                        Geography Based Traffic
+                        User Geography Chart
                     </Typography>
                     <Box height="200px">
                         <GeographyChart isDashboard={true} />

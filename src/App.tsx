@@ -3,7 +3,7 @@ import Signup from './Authentications/Signup/Signup'
 import Signin from './Authentications/Signin/Signin'
 import Redirect from './Authentications/Redirect/Redirect'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Admin from './Dashboard/Admin';
+import AdminManagement from './Dashboard/Admin';
 
 function App() {
   return (
@@ -14,17 +14,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/redirect/:username" element={<Redirect />} />
-        <Route path="/admin" element = {<Admin/>}>
-          <Route path="team"/> 
-          <Route path="contacts"/>
-          <Route path="invoices"/>
-          <Route path="form"/>
-          <Route path="bar"/>
-          <Route path="pie"/>
-          <Route path="line"/>
-          <Route path="faq"/>
-          <Route path="geography"/>
-          <Route path="calendar"/>
+        <Route path="/admin" element = {<AdminManagement/>}>
+          <Route path="*"/> 
         </Route>
       </Routes>
     </Router>

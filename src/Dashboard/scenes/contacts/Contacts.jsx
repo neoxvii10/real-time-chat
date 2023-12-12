@@ -2,59 +2,60 @@ import { Box, useTheme} from "@mui/material";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataContacts } from "../../data/mockData";
-
+import { useState, useEffect } from "react";
+import UserApi from "../../../Api/UserApi";
 import Header from "../../components/Header";
 
 const Contacts= () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [userData, setUserData] = useState([]);
+
+    const getUserData = async () => {
+        const userListResponse = await UserApi.getUserList();
+        setUserData(userListResponse.data);
+    }
+
+    useEffect(() => {
+        getUserData();
+    }, []);
 
     const columns = [
         {
             field: "id",
             headerName: "ID",
             flex: 0.5
-        },{
-            field: "registrarId",
-            headerName: "Registrar ID",
         },
         {
-            field: "name",
-            headerName: "Name",
+            field: "username",
+            headerName: "Username",
             flex: 1,
             cellClassName: "name-column--cell"
-        },
-        {
-            field: "age",
-            headerName: "Age",
-            type: "number",
-            headerAlign: "left",
-            align: "left"
-        },
-        {
-            field: "phone",
-            headerName: "Phone Number",
-            flex: 1,
         },
         {
             field: "email",
             headerName: "Email",
             flex: 1,
+            cellClassName: "name-column--cell"
         },
         {
-            field: "address",
-            headerName: "Address",
-            flex: 1
+            field: "first_name",
+            headerName: "First Name",
+            headerAlign: "left",
+            align: "left",
+            cellClassName: "name-column--cell"
         },
         {
-            field: "city",
-            headerName: "City",
-            flex: 1
+            field: "last_name",
+            headerName: "Last Name",
+            flex: 1,
+            cellClassName: "name-column--cell"
         },
         {
-            field: "zipCode",
-            headerName: "ZipCode",
-            flex: 1
+            field: "fullname",
+            headerName: "Full Name",
+            flex: 1,
+            cellClassName: "name-column--cell"
         },
     ]
 
@@ -94,7 +95,7 @@ const Contacts= () => {
               }}
             >
                 <DataGrid 
-                    rows ={mockDataContacts}
+                    rows ={userData}
                     columns={columns}
                     components={{Toolbar: GridToolbar}}
                 />

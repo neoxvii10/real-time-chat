@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import "react-pro-sidebar/dist/css/styles.css";
@@ -16,6 +16,8 @@ import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import UserProfileApi from "../../../Api/UserProfileApi";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -38,7 +40,29 @@ const Sidebar = () => {
     const colors = tokens(theme.palette.mode);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selected, setSelected] = useState("Dashboard");
-    console.log(colors.primary[400]);
+    const [adminProfile, setAdminProfile] = useState({
+        avatar_url: "/assets/user.png",
+        username: "admin",
+        fullname: "I am an admin"
+    });
+
+    const getProfileInformation = async () => {
+        const response = await UserProfileApi.getProfile();
+        setAdminProfile({
+            avatar_url: "/assets/user.png",
+            username: response.data.user.username,
+            fullname: response.data.user.fullname
+        })
+    }
+
+    useEffect( () => {
+        
+        // getProfileInformation();
+        // setAdminProfile({
+        //     avatar_url: response.data.avatar_url
+        // })
+    })
+
     return (
         <Box
             sx={{
@@ -103,7 +127,7 @@ const Sidebar = () => {
                                     alt="profile-user"
                                     width="100px"
                                     height="100px"
-                                    src={`/assets/user.png`}
+                                    src={adminProfile.avatar_url}
                                     style={{
                                         cursor: "pointer",
                                         borderRadius: "50%",
@@ -117,13 +141,13 @@ const Sidebar = () => {
                                     fontWeight="bold"
                                     sx={{ m: "10px 0 0 0" }}
                                 >
-                                    Ed Roh
+                                    {adminProfile.username}
                                 </Typography>
                                 <Typography
                                     variant="h5"
                                     color={colors.greenAccent[500]}
                                 >
-                                    VP Fancy Admin
+                                    {adminProfile.fullname}
                                 </Typography>
                             </Box>
                         </Box>
@@ -146,14 +170,14 @@ const Sidebar = () => {
                             Data
                         </Typography>
                         <Item
-                            title="Manage Team"
+                            title="Manage Channels"
                             to="/team"
                             icon={<PeopleOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
                         <Item
-                            title="Contacts Information"
+                            title="Manage Users"
                             to="/contacts"
                             icon={<ContactsOutlinedIcon />}
                             selected={selected}
@@ -192,6 +216,13 @@ const Sidebar = () => {
                             title="FAQ Page"
                             to="/faq"
                             icon={<HelpOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Report Page"
+                            to="/report"
+                            icon={<ReportProblemIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
