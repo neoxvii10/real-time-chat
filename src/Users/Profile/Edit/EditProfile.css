@@ -24,8 +24,6 @@
     background: var(--background-color);
 }
 
-
-
 .wrapper {
     width: 100%;
     height: calc(100% - 3.5rem);

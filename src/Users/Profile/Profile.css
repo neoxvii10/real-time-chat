@@ -189,6 +189,10 @@
     line-height: 1.5rem;
 }
 
+.change-password:hover {
+    cursor: pointer;
+}
+
 .setting {
     border: none;
 }

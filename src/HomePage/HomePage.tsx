@@ -4,15 +4,6 @@ import UserInbox from '../UserInbox/UserInbox';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-type UserProp = {
-  name: string;
-  id: string;
-  avatar: string;
-  chat: string;
-  time: string;
-  no_id: number;
-};
-
 // use api
 type UserType = {
   id: number,

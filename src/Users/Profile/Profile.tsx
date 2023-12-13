@@ -13,8 +13,8 @@ import { PiAddressBook } from 'react-icons/pi';
 import { PiWarningCircle } from "react-icons/pi";
 
 import EditProfile from './Edit/EditProfile';
+import ChangePassword from './ChangePassword/ChangePassword';
 import UserProfileApi from '../../Api/UserProfileApi';
-
 
 type ProfileProps = {
     translateX: CSSProperties;
@@ -63,6 +63,22 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
             transform: 'translateX(0px)',
         }));
     }
+    
+    //handle slide for change password
+    const [translateXForChangePassword, setTranslateXForChangePassword] = useState<CSSProperties>({
+        visibility: 'hidden',
+        opacity: 0,
+        transform: 'translateX(-480px)',
+    })
+
+    const handleSlideChangePassword = (event: React.MouseEvent<Element>) => {
+        setTranslateXForChangePassword((translateXForChangePassword) => ({
+            ...translateXForChangePassword,
+            visibility: 'visible',
+            opacity: 1,
+            transform: 'translateX(0px)',
+        }));
+    }
 
     // handle visbile button logout
     const [visibleLogout, setvisibleLogout] = useState<boolean>(false);
@@ -87,10 +103,8 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
         online: true
     })
 
-    
     useEffect(() => {
         const fetchData = async () => {
-
             try {
                 const response = await UserProfileApi.getProfile();
                 setDataUser(response?.data);
@@ -98,7 +112,6 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                 console.log(error);
             }
         }
-
         fetchData();
     }, [translateXForEdit])
 
@@ -107,10 +120,8 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
 
     const handleLogout = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.preventDefault();
-
         await localStorage.removeItem('accessToken');
         await localStorage.removeItem('user');
-
         navigate('/signin');
     }
 
@@ -214,6 +225,14 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                     <div className="setting">
                         <ul>
                             <li>
+                                <div className="list-setting change-password" onClick={e => handleSlideChangePassword(e)}>
+                                    <span className="icon">
+                                        <HiOutlineLockClosed size={24} />
+                                    </span>
+                                    <span className="title">Change password</span>
+                                </div>
+                            </li>
+                            <li>
                                 <div className="list-setting">
                                     <span className="icon">
                                         <IoNotificationsOutline size={24} />
@@ -229,19 +248,13 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                                     <span className="title">Data and Storage</span>
                                 </div>
                             </li>
-                            <li>
-                                <div className="list-setting">
-                                    <span className="icon">
-                                        <HiOutlineLockClosed size={24} />
-                                    </span>
-                                    <span className="title">Policy and security</span>
-                                </div>
-                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <EditProfile translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
+            <ChangePassword translateXForChangePassword={translateXForChangePassword} 
+                           setTranslateXForChangePassword={setTranslateXForChangePassword} />
         </>
     )
 }

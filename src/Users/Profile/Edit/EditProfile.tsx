@@ -169,8 +169,6 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
         }));
     }
 
-    //
-
     const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
         visibility: 'hidden',
         bottom: '-4rem'

@@ -17,6 +17,11 @@ class UserApi {
         return await axiosClient.post(url, data);
     }
 
+    changePassword = async (data: object) => {
+        const url = '/api/user/change-password/'
+        return await axiosClient.put(url, data);
+    }
+
     getFriends = async () => {
         const url = '/api/user/friends/';
         return await axiosClient.get(url);
