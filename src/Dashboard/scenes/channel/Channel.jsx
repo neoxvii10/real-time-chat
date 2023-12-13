@@ -8,7 +8,7 @@ import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 import { useState, useEffect } from "react";
 import ChannelApi from "../../../Api/ChannelApi";
-const Team= () => {
+const Channel= () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [channelData, setChannelData] = useState([]);
@@ -142,4 +142,4 @@ const Team= () => {
 };
 
 
-export default Team;
+export default Channel;

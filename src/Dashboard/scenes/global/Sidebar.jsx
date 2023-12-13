@@ -171,14 +171,14 @@ const Sidebar = () => {
                         </Typography>
                         <Item
                             title="Manage Channels"
-                            to="/team"
+                            to="/channels"
                             icon={<PeopleOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
                         <Item
                             title="Manage Users"
-                            to="/contacts"
+                            to="/users"
                             icon={<ContactsOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
@@ -198,13 +198,13 @@ const Sidebar = () => {
                         >
                             Pages
                         </Typography>
-                        <Item
+                        {/* <Item
                             title="Profile Form"
                             to="/form"
                             icon={<PersonOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
-                        />
+                        /> */}
                         <Item
                             title="Calendar"
                             to="/calendar"

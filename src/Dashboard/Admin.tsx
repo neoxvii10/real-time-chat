@@ -6,8 +6,8 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import Sidebar from './scenes/global/Sidebar';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './scenes/dashboard/Dashboard';
-import Team from './scenes/team/Team';
-import Contacts from './scenes/contacts/Contacts';
+import Channel from './scenes/channel/Channel';
+import ManageUser from './scenes/user/ManageUser';
 import "./Admin.css"
 import Invoices from './scenes/invoices/Invoices';
 import Form from './scenes/form/Form';
@@ -19,6 +19,8 @@ import Line from './scenes/line/Line';
 import Geography from './scenes/geography/Geography';
 import AdminLogin from './authentications/AdminLogin';
 import Report from './scenes/report/Report';
+import 'react-toastify/dist/ReactToastify.css';
+import User from './scenes/user/User';
 const AdminManagement = () => {
     const navigate = useNavigate();
     const isAuthenticated = () => {
@@ -64,8 +66,11 @@ const Admin= () => {
                         <Topbar/>
                         <Routes>
                             <Route path="/" element={<Dashboard/>}/>
-                            <Route path="/team" element={<Team/>}/>
-                            <Route path="/contacts" element={<Contacts/>}/>
+                            <Route path="/channels" element={<Channel/>}/>
+                            <Route path="/users" element={<User/>} />
+                            <Route path="/user" element={<ManageUser />}>
+                                <Route path="*" />
+                            </Route>
                             <Route path="/invoices" element={<Invoices/>}/>
                             <Route path="/form" element={<Form/>}/>
                             <Route path="/bar" element={<Bar/>}/>
