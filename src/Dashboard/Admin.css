@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
+
+html,
+body,
+#root,
+.admin,
+.content {
+    height: 100%;
+    width: 100%;
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+.admin {
+    display: flex;
+    position: relative;
+    height: 100%;
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #8b5e5e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on Hover */
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

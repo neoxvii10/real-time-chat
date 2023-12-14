@@ -5,6 +5,7 @@ import Redirect from './Authentications/Redirect/Redirect'
 import ResetPassword from './Authentications/ResetPassword/ResetPassword';
 import InputEmail from './Authentications/ResetPassword/InputEmail/InputEmail';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AdminManagement from './Dashboard/Admin';
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
         <Route path="/redirect/:username" element={<Redirect />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password/email" element={<InputEmail />} />
+        <Route path="/admin" element = {<AdminManagement/>}>
+          <Route path="*"/> 
+        </Route>
       </Routes>
     </Router>
   );
