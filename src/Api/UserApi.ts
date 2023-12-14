@@ -22,6 +22,16 @@ class UserApi {
         return await axiosClient.put(url, data);
     }
 
+    changeEmail = async (data: object) => {
+        const url = '/api/user/change-email/'
+        return await axiosClient.put(url, data);
+    }
+
+    verifyChangeEmail = async (data: object) => {
+        const url = '/api/user/verify-email/'
+        return await axiosClient.post(url, data);
+    }
+
     getFriends = async () => {
         const url = '/api/user/friends/';
         return await axiosClient.get(url);

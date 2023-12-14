@@ -7,13 +7,15 @@ import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlineCall, MdAlternateEmail } from 'react-icons/md'
 import { IoNotificationsOutline } from 'react-icons/io5'
 import { FiDatabase } from 'react-icons/fi'
-import { HiOutlineLockClosed } from 'react-icons/hi'
+import { MdOutlineEmail } from "react-icons/md";
 import { TbLogout } from 'react-icons/tb'
 import { PiAddressBook } from 'react-icons/pi';
+import { RiLockPasswordLine } from "react-icons/ri";
 import { PiWarningCircle } from "react-icons/pi";
 
 import EditProfile from './Edit/EditProfile';
 import ChangePassword from './ChangePassword/ChangePassword';
+import ChangeEmail from './ChangeEmail/ChangeEmail';
 import UserProfileApi from '../../Api/UserProfileApi';
 
 type ProfileProps = {
@@ -80,6 +82,22 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
         }));
     }
 
+    //handle slide for change email
+    const [translateXForChangeEmail, setTranslateXForChangeEmail] = useState<CSSProperties>({
+        visibility: 'hidden',
+        opacity: 0,
+        transform: 'translateX(-480px)',
+    })
+
+    const handleSlideChangeEmail = (event: React.MouseEvent<Element>) => {
+        setTranslateXForChangeEmail((translateXForChangeEmail) => ({
+            ...translateXForChangeEmail,
+            visibility: 'visible',
+            opacity: 1,
+            transform: 'translateX(0px)',
+        }));
+    }
+
     // handle visbile button logout
     const [visibleLogout, setvisibleLogout] = useState<boolean>(false);
 
@@ -108,6 +126,7 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
             try {
                 const response = await UserProfileApi.getProfile();
                 setDataUser(response?.data);
+                console.log(response.data);
             } catch (error) {
                 console.log(error);
             }
@@ -141,7 +160,6 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                             <BsThreeDotsVertical size={22} className='header-icon'
                                 onClick={handleVisibleLogout}
                             />
-                            {/* <div className="backdrop"></div> */}
                             <div className='logout-button' style={{
                                 visibility: visibleLogout ? 'visible' : 'hidden',
                                 opacity: visibleLogout ? 1 : 0,
@@ -225,11 +243,19 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
                     <div className="setting">
                         <ul>
                             <li>
-                                <div className="list-setting change-password" onClick={e => handleSlideChangePassword(e)}>
+                                <div className="list-setting input-change" onClick={e => handleSlideChangePassword(e)}>
                                     <span className="icon">
-                                        <HiOutlineLockClosed size={24} />
+                                        <RiLockPasswordLine  size={24} />
                                     </span>
                                     <span className="title">Change password</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="list-setting input-change" onClick={e => handleSlideChangeEmail(e)}>
+                                    <span className="icon">
+                                        <MdOutlineEmail  size={24} />
+                                    </span>
+                                    <span className="title">Change email</span>
                                 </div>
                             </li>
                             <li>
@@ -255,6 +281,8 @@ const Profile: React.FC<ProfileProps> = ({translateX, setTranslateX }) => {
             <EditProfile translateXForEdit={translateXForEdit} setTranslateXForEdit={setTranslateXForEdit} />
             <ChangePassword translateXForChangePassword={translateXForChangePassword} 
                            setTranslateXForChangePassword={setTranslateXForChangePassword} />
+            <ChangeEmail translateXForChangeEmail={translateXForChangeEmail}
+                             setTranslateXForChangeEmail={setTranslateXForChangeEmail}/>   
         </>
     )
 }
