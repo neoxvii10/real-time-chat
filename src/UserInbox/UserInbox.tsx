@@ -19,12 +19,13 @@ import EmojiPicker, {
   EmojiClickData,
 } from "emoji-picker-react";
 import "./UserInbox.css";
+import axiosClient from "../Api/AxiosClient";
 
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 // const token = _token?.slice(1, _token.length - 1);
 const token = JSON.parse(_token || '{}')
 const userId = (jwtDecode(token) as any).user_id
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
@@ -78,7 +79,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
   const [isEmojiIconClicked, setIsEmojiIconClicked] = useState(false);
 
-
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -88,6 +88,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   };
 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
 
@@ -114,7 +115,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       handleFileMessage();
       setSelectedFile(null);
     }
-
   }
 
   // handle receive message
@@ -123,10 +123,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     const serverMessage = JSON.parse(e.data);
 
     // Check if the action is "create_message" and the message_type is "TEXT"
-    if (
-      serverMessage.action === "create_message" &&
-      serverMessage.data.message_type === "TEXT"
-    ) {
+    if (serverMessage.action === "create_message") {
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
 
@@ -136,14 +133,31 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       let textMessage = {
         text: messageContent,
         sender: 'user',
-        type: 'text'
+        type: 'text',
+      }
+
+      if (serverMessage.data.message_type === "IMAGE") {
+        textMessage.type = 'image'
       }
 
       let senderId = serverMessage.data.member.user.id      
       if (senderId === userId) {
         textMessage.sender = 'self'
       }
+
+      let messageContainer = document.querySelector('.message-container')
+      let onBottom = false
+      if (messageContainer) {
+        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+          onBottom = true
+        }
+      }
+
       setMessages([...messages, textMessage]);      
+
+      if (messageContainer && onBottom) {
+        messageContainer.scrollTop = messageContainer?.scrollHeight
+      }
     }
   };
 
@@ -170,15 +184,23 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   };
 
-  const handleFileMessage = () => {
+  const handleFileMessage = async () => {
     if (selectedFile) {
-      const fileMessage = {
-        text: `${selectedFile.name}\n${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
-        sender: "self",
-        type: "file",
-        file: selectedFile,
-      };
-      setMessages([...messages, fileMessage]);
+      // const fileMessage = {
+      //   text: `${selectedFile.name}\n${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
+      //   sender: "self",
+      //   type: "file",
+      //   file: selectedFile,
+      // };
+      // setMessages([...messages, fileMessage]);
+      const formData = new FormData();
+      formData.append('file', selectedFile)
+      formData.append('channel', "4")
+      await axiosClient.post('http://127.0.0.1:8000/api/message/upload/image/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       setInputValue("");
       setPopupVisible(false);
     }
@@ -289,17 +311,17 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "file" ? "file" : ""
-              }`}
+            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}
           >
-            {message.type === "file" && message.file ? (
-              <a
-                href={URL.createObjectURL(message.file)}
-                download={message.file.name}
-                className="file-downloader"
-              >
-                {message.text}
-              </a>
+            {message.type === "image" ? (
+              <img src={message.text.split(' ')[0]} alt={message.type}></img>
+              // <a
+              //   href={URL.createObjectURL(message.file)}
+              //   download={message.file.name}
+              //   className="file-downloader"
+              // >
+              //   {message.text}
+              // </a>
             ) : (
               message.text
             )}

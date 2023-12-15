@@ -171,7 +171,7 @@ h5, p {
 
 .message-input-container {
   display: flex;
-  width: 58%;
+  width: 60%;
   align-items: center;
   position: fixed;
   z-index: 6;
@@ -406,17 +406,13 @@ h5, p {
 .message-container {
   position: absolute;
   z-index: 5;
-  width: 62%;
+  width: 63%;
   display: grid;
-  top: 8rem;
+  top: 4rem;
   gap: 0.2rem;
   overflow-y: auto;
-  max-height: 63.5vh;
+  max-height: 86%;
   margin-left: 0.8rem;
-}
-
-.message {
-  height: fit-content;
 }
 
 .message.self {
@@ -443,16 +439,15 @@ h5, p {
   width: fit-content;
 }
 
-.message.self.file {
-  background-color: var(--chat-ib-color-self);
-  color: #000;
-  border-radius: 10px;
-  justify-self: end;
-  margin-right: 10px;
-  margin-left: 50px;
-  width: fit-content;
-  padding: 8px;
-  white-space: pre-wrap;
+.message.image {
+  display: flex;
+  justify-content: right;
+  background-color: transparent;
+}
+
+.message img {
+  max-width: 60% !important;
+  border-radius: 15px;
 }
 
 .file-downloader {
