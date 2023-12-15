@@ -20,7 +20,7 @@ import EmojiPicker, {
 import "./UserInbox.css";
 
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-const token = _token?.slice(1, _token.length -1);
+const token = _token?.slice(1, _token.length - 1);
 console.log(token);
 const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
 console.log(socket);
@@ -86,28 +86,19 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
   };
 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
-
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
-      const textMessage = {
-        text: inputValue,
-        sender: "self",
-        type: "text",
-      };
-      setMessages([...messages, textMessage]);
-      setInputValue("");
 
       const messageObject = {
         "action": "create_message",
         "target": "channel",
         "targetId": 29,
         "data": {
-          "channel": 29,
           "content": inputValue,
-          "reply": null
+          // "reply": null
         }
       };
-      
+
 
       const messageJSON = JSON.stringify(messageObject);
 
@@ -124,6 +115,30 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
 
   }
+
+  // handle receive message
+  socket.onmessage = (e) => {
+    // Parse the JSON data from the server
+    const serverMessage = JSON.parse(e.data);
+
+    // Check if the action is "create_message" and the message_type is "TEXT"
+    if (
+      serverMessage.action === "create_message" &&
+      serverMessage.data.message_type === "TEXT"
+    ) {
+      // Extract the content of the message
+      const messageContent = serverMessage.data.content;
+
+      console.log("Received message content:", messageContent);
+      // Render the message received
+      const textMessage = {
+        text: messageContent,
+        sender: "self",
+        type: "text",
+      };
+      setMessages([...messages, textMessage]);
+    }
+  };
 
 
   const [popupVisible, setPopupVisible] = useState(false);
@@ -170,7 +185,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   }
 
-  const [messages, setMessages] = useState<{ text: string; sender: string; type: string; file?: File }[]>([]);
+  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File}[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
