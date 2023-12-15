@@ -20,13 +20,14 @@ import EmojiPicker, {
 } from "emoji-picker-react";
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
+import { v4 as uuidv4 } from 'uuid';
 
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 // const token = _token?.slice(1, _token.length - 1);
 const token = JSON.parse(_token || '{}')
 const userId = (jwtDecode(token) as any).user_id
 const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${token}`);
-console.log(socket);
+// console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
 };
@@ -96,6 +97,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         "action": "create_message",
         "target": "channel",
         "targetId": 4,
+        'uuid': uuidv4(),
         "data": {
           "content": inputValue,
           // "reply": null
@@ -110,6 +112,27 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       }
 
       socket.send(messageJSON);
+
+      let messageContainer = document.querySelector('.message-container')
+      let onBottom = false
+      if (messageContainer) {
+        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+          onBottom = true
+        }
+      }
+
+      let textMessage = {
+        text: inputValue,
+        sender: 'self',
+        type: 'text',
+        uuid: messageObject.uuid
+      }
+      setMessages([...messages, textMessage]);      
+
+      if (messageContainer && onBottom) {
+        messageContainer.scrollTop = messageContainer?.scrollHeight
+      }
+
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
@@ -140,23 +163,31 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         textMessage.type = 'image'
       }
 
-      let senderId = serverMessage.data.member.user.id      
+      let senderId = serverMessage.data.member.user.id
       if (senderId === userId) {
-        textMessage.sender = 'self'
-      }
-
-      let messageContainer = document.querySelector('.message-container')
-      let onBottom = false
-      if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          onBottom = true
+        let uuid = serverMessage.uuid
+        for (let i = messages.length - 1; i >= 0; i--) {
+          if (messages[i].uuid === uuid) {
+            // console.log("**Đã gửi**" + messages[i].text)
+            messages[i].text = "**ĐÃ GỬI**    " + messages[i].text
+            setMessages(messages)
+            break
+          }
         }
-      }
+      } else {
+        let messageContainer = document.querySelector('.message-container')
+        let onBottom = false
+        if (messageContainer) {
+          if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+            onBottom = true
+          }
+        }
 
-      setMessages([...messages, textMessage]);      
+        setMessages([...messages, textMessage]);      
 
-      if (messageContainer && onBottom) {
-        messageContainer.scrollTop = messageContainer?.scrollHeight
+        if (messageContainer && onBottom) {
+          messageContainer.scrollTop = messageContainer?.scrollHeight
+        }
       }
     }
   };
@@ -214,7 +245,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   }
 
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File}[]>([]);
+  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string}[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
