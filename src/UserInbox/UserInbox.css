@@ -440,6 +440,7 @@ h5, p {
   margin-left: 10px;
   max-width: 70%;
   padding: 8px;
+  width: fit-content;
 }
 
 .message.self.file {

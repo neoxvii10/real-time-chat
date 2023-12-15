@@ -13,6 +13,7 @@ import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
+import { jwtDecode } from "jwt-decode";
 import EmojiPicker, {
   EmojiStyle,
   EmojiClickData,
@@ -20,8 +21,9 @@ import EmojiPicker, {
 import "./UserInbox.css";
 
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-const token = _token?.slice(1, _token.length - 1);
-console.log(token);
+// const token = _token?.slice(1, _token.length - 1);
+const token = JSON.parse(_token || '{}')
+const userId = (jwtDecode(token) as any).user_id
 const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
@@ -92,13 +94,12 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       const messageObject = {
         "action": "create_message",
         "target": "channel",
-        "targetId": 29,
+        "targetId": 4,
         "data": {
           "content": inputValue,
           // "reply": null
         }
       };
-
 
       const messageJSON = JSON.stringify(messageObject);
 
@@ -131,12 +132,18 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
       console.log("Received message content:", messageContent);
       // Render the message received
-      const textMessage = {
+
+      let textMessage = {
         text: messageContent,
-        sender: "self",
-        type: "text",
-      };
-      setMessages([...messages, textMessage]);
+        sender: 'user',
+        type: 'text'
+      }
+
+      let senderId = serverMessage.data.member.user.id      
+      if (senderId === userId) {
+        textMessage.sender = 'self'
+      }
+      setMessages([...messages, textMessage]);      
     }
   };
 
