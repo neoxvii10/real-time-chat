@@ -212,7 +212,6 @@ const User= () => {
                     components={{Toolbar: GridToolbar}}
                 />
             </Box>
-            <ToastContainer/>
             <ConfirmDialog
               confirmDialog={confirmDialog}
               handleCancel={cancelDeleteUser}

@@ -2,6 +2,11 @@ import axiosClient from "./AxiosClient";
 
 class UserApi {
 
+    signup = async (data: object) => {
+        const url = "/api/user/signup/";
+        return await axiosClient.post(url, data);
+    }
+
     signin = async (data: object) => {
         const url = '/api/user/login/';
         return await axiosClient.post(url, data);
@@ -15,6 +20,11 @@ class UserApi {
     getUserList = async () => {
         const url = '/api/user/all/';
         return await axiosClient.get(url);
+    }
+
+    verifyUser = async (data: object) => {
+        const url = '/api/user/verify-user/';
+        return await axiosClient.post(url, data);
     }
 }
 

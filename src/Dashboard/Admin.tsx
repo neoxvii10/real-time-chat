@@ -16,11 +16,13 @@ import FAQ from './scenes/faq/FAQ';
 import Bar from './scenes/bar/Bar';
 import Pie from './scenes/pie/Pie';
 import Line from './scenes/line/Line';
+import Profile from './scenes/profile/Profile';
 import Geography from './scenes/geography/Geography';
 import AdminLogin from './authentications/AdminLogin';
 import Report from './scenes/report/Report';
 import 'react-toastify/dist/ReactToastify.css';
 import User from './scenes/user/User';
+import { ToastContainer } from 'react-toastify';
 const AdminManagement = () => {
     const navigate = useNavigate();
     const isAuthenticated = () => {
@@ -80,10 +82,13 @@ const Admin= () => {
                             <Route path="/geography" element={<Geography/>}/>
                             <Route path="/calendar" element={<Calendar/>}/>
                             <Route path="/report" element={<Report/>}/>
+                            <Route path="/profile" element={<Profile/>}/>
                         </Routes>
                     </main>
                 </div>
             </ThemeProvider>
+            <ToastContainer/>
+            
         </ColorModeContext.Provider>
     )
 };

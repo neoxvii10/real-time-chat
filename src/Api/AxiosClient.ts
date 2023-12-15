@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 // Please have a look at here `https://github.com/axios/axios#request` for the full list of configs
 
 const axiosClient = axios.create({
-    baseURL: 'http://16.162.46.190',
+    baseURL: 'http://localhost:8000',
 });
 axiosClient.interceptors.request.use(async (config) => {
     const token = await localStorage.getItem('accessToken');
@@ -24,6 +24,6 @@ axiosClient.interceptors.response.use((response) => {
     return response;
 }, (error) => {
     // Handle errors
-    throw error;
+    return error.response;
 });
 export default axiosClient;

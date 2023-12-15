@@ -23,6 +23,9 @@ import Collapse from "@mui/material/Collapse";
 import StarBorder from "@mui/icons-material/StarBorder";
 import UserProfileApi from "../../../Api/UserProfileApi";
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+
 const Item = ({ title, icon, handleClick }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -37,6 +40,7 @@ const Item = ({ title, icon, handleClick }) => {
             padding="5px 10px"
             borderRadius="15px"
             marginBottom="10px"
+            onClick={handleClick}
             sx={{
                 "&:hover": {
                     backgroundColor: colors.grey[500],
@@ -54,6 +58,7 @@ const Item = ({ title, icon, handleClick }) => {
 };
 
 const Topbar = () => {
+    const navigate = useNavigate();
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const colorMode = useContext(ColorModeContext);
@@ -63,6 +68,11 @@ const Topbar = () => {
         username: "admin",
         fullname: "I am an admin",
     });
+
+    const handleSignout = () => {
+        localStorage.removeItem("accessToken");
+        navigate('/admin/login');
+    }
 
     const getProfileInformation = async () => {
         const response = await UserProfileApi.getProfile();
@@ -161,12 +171,20 @@ const Topbar = () => {
                              marginTop="10px" display="flex"
                              flexDirection="column"
                             >
+                                <Item 
+                                    handleClick={() => navigate('/admin/profile')}
+                                    title="Thông tin tài khoản"
+                                    icon={<AccountCircleOutlinedIcon />}
+                                />
+
                                 <Item
+                                    handleClick={() => {}}
                                     title="Cài đặt"
                                     icon={<SettingsIcon />}
                                 />
 
                                 <Item
+                                    handleClick={handleSignout}
                                     title="Đăng xuất"
                                     icon={<LogoutIcon />}
                                 />
