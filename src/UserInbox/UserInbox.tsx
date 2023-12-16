@@ -2,6 +2,7 @@ import { ReactComponent as Logo } from "../pattern.svg";
 import { MdOutlineCall } from "react-icons/md";
 import { HiOutlineVideoCamera } from "react-icons/hi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
 import { IoNotificationsOffOutline } from "react-icons/io5";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
@@ -125,12 +126,14 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         text: inputValue,
         sender: 'self',
         type: 'text',
-        uuid: messageObject.uuid
+        uuid: messageObject.uuid,
+        sent: false
       }
       setMessages([...messages, textMessage]);      
 
       if (messageContainer && onBottom) {
         messageContainer.scrollTop = messageContainer?.scrollHeight
+        console.log(messageContainer.scrollTop, messageContainer?.scrollHeight)
       }
 
       setInputValue("");
@@ -150,13 +153,13 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
 
-      console.log("Received message content:", messageContent);
+      // console.log("Received message content:", messageContent);
       // Render the message received
 
       let textMessage = {
         text: messageContent,
         sender: 'user',
-        type: 'text',
+        type: 'text'
       }
 
       if (serverMessage.data.message_type === "IMAGE") {
@@ -165,13 +168,34 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
       let senderId = serverMessage.data.member.user.id
       if (senderId === userId) {
-        let uuid = serverMessage.uuid
-        for (let i = messages.length - 1; i >= 0; i--) {
-          if (messages[i].uuid === uuid) {
-            // console.log("**Đã gửi**" + messages[i].text)
-            messages[i].text = "**ĐÃ GỬI**    " + messages[i].text
-            setMessages(messages)
-            break
+        if (textMessage.type === 'image') {
+          let fileMessage = {
+            text: messageContent,
+            sender: 'self',
+            type: 'image',
+            sent: true
+          }
+          setMessages([...messages, fileMessage]);  
+        } else {
+          let uuid = serverMessage.uuid
+          let isSelfMessageCheck = true
+          for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].uuid === uuid) {
+              // console.log("**Đã gửi**" + messages[i].text)
+              messages[i].sent = true
+              setMessages([...messages])
+              isSelfMessageCheck = false
+              break
+            }
+          }
+          if (isSelfMessageCheck) {
+            let textMessage = {
+              text: messageContent,
+              sender: 'self',
+              type: 'text',
+              sent: true
+            }
+            setMessages([...messages, textMessage])
           }
         }
       } else {
@@ -245,7 +269,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
     }
   }
 
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string}[]>([]);
+  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; sent?: boolean}[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -339,23 +363,32 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         Test
       </div>
       <div className="message-container">
+
         {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}
-          >
-            {message.type === "image" ? (
-              <img src={message.text.split(' ')[0]} alt={message.type}></img>
-              // <a
-              //   href={URL.createObjectURL(message.file)}
-              //   download={message.file.name}
-              //   className="file-downloader"
-              // >
-              //   {message.text}
-              // </a>
-            ) : (
-              message.text
-            )}
+          <div className="message-block">
+            <div key={index}
+            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+              <div>
+                {message.type === "image" ? (
+                  <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                  // <a
+                  //   href={URL.createObjectURL(message.file)}
+                  //   download={message.file.name}
+                  //   className="file-downloader"
+                  // >
+                  //   {message.text}
+                  // </a>
+                ) : (
+                  message.text
+                )}
+              </div>
+              
+            </div>
+            <div className="sent-icon">
+              {
+                message.sent ? <FaCheckCircle size={12}/> : <FaRegCheckCircle size={12} />
+              }
+            </div>
           </div>
         ))}
       </div>
