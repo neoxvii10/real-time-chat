@@ -12,7 +12,7 @@ import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GoSearch, GoX } from 'react-icons/go'
-import { CSSProperties } from "react";
+import { CSSProperties, useCallback } from "react";
 import React, { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import EmojiPicker, {
@@ -22,16 +22,6 @@ import EmojiPicker, {
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
-
-const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-// const token = _token?.slice(1, _token.length - 1);
-const token = JSON.parse(_token || '{}')
-const userId = (jwtDecode(token) as any).user_id
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${token}`);
-// console.log(socket);
-socket.onopen = () => {
-  console.log('WebSocket connection established');
-};
 
 type UserProp = {
   name: string;
@@ -46,8 +36,49 @@ type UserInboxProps = {
   userProp: UserProp;
 };
 
+const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+if (_token) {
+  var token = JSON.parse(_token)
+  var userId = (jwtDecode(token) as any).user_id
+}
+
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+socket.onopen = () => {
+  console.log('WebSocket connection established');
+};
+
 const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
+  const messageContainer = document.querySelector('.message-container')
+  const [onBottom, setOnBottom] = useState(true)
+
   const [isSlided, setSlided] = useState<boolean>(true);
+  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean}[]>([]);
+
+  const [inputValue, setInputValue] = useState<string>("");
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      let res: any = await axiosClient.get('api/channel/4/messages/?page=1')
+      let messageList = []
+      for (let message of res.data) {
+        let messageElement = {
+          text: message.content,
+          sender: (userId === message.member.user.id) ? "self" : "user",
+          type: message.message_type.toLowerCase(),
+        }
+        messageList.push(messageElement)
+      }
+      setMessages(messageList.reverse())
+    }
+    fetchMessage()
+  }, [])
+
+  useEffect(() => {
+    // Scroll to bottom when receive message in case user is already bottom
+    if (messageContainer && onBottom) {
+      messageContainer.scrollTop = messageContainer?.scrollHeight
+    }
+  }, [messages])
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
@@ -91,6 +122,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
 
+
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
 
@@ -106,19 +138,17 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       };
 
       const messageJSON = JSON.stringify(messageObject);
-
       if (!isOpen(socket)) {
         console.log("Message can't be sent");
         return;
       }
-
       socket.send(messageJSON);
 
-      let messageContainer = document.querySelector('.message-container')
-      let onBottom = false
       if (messageContainer) {
         if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          onBottom = true
+          setOnBottom(true)
+        } else {
+          setOnBottom(false)
         }
       }
 
@@ -127,21 +157,17 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         sender: 'self',
         type: 'text',
         uuid: messageObject.uuid,
-        sent: false
+        isSent: false
       }
-      setMessages([...messages, textMessage]);      
-
-      if (messageContainer && onBottom) {
-        messageContainer.scrollTop = messageContainer?.scrollHeight
-        console.log(messageContainer.scrollTop, messageContainer?.scrollHeight)
-      }
-
+      setMessages([...messages, textMessage]) 
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
       setSelectedFile(null);
     }
   }
+
+
 
   // handle receive message
   socket.onmessage = (e) => {
@@ -150,11 +176,16 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
     // Check if the action is "create_message" and the message_type is "TEXT"
     if (serverMessage.action === "create_message") {
+
+      if (messageContainer) {
+        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+          setOnBottom(true)
+        } else {
+          setOnBottom(false)
+        }
+      }
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
-
-      // console.log("Received message content:", messageContent);
-      // Render the message received
 
       let textMessage = {
         text: messageContent,
@@ -173,45 +204,33 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             text: messageContent,
             sender: 'self',
             type: 'image',
-            sent: true
+            isSent: true
           }
-          setMessages([...messages, fileMessage]);  
+          setMessages([...messages, fileMessage]);
         } else {
           let uuid = serverMessage.uuid
-          let isSelfMessageCheck = true
+          let isSelfMessageCheck = false
           for (let i = messages.length - 1; i >= 0; i--) {
             if (messages[i].uuid === uuid) {
               // console.log("**Đã gửi**" + messages[i].text)
-              messages[i].sent = true
+              messages[i].isSent = true
               setMessages([...messages])
-              isSelfMessageCheck = false
+              isSelfMessageCheck = true
               break
             }
           }
-          if (isSelfMessageCheck) {
+          if (!isSelfMessageCheck) {
             let textMessage = {
               text: messageContent,
               sender: 'self',
               type: 'text',
-              sent: true
+              isSent: true
             }
             setMessages([...messages, textMessage])
           }
         }
       } else {
-        let messageContainer = document.querySelector('.message-container')
-        let onBottom = false
-        if (messageContainer) {
-          if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-            onBottom = true
-          }
-        }
-
         setMessages([...messages, textMessage]);      
-
-        if (messageContainer && onBottom) {
-          messageContainer.scrollTop = messageContainer?.scrollHeight
-        }
       }
     }
   };
@@ -251,7 +270,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       const formData = new FormData();
       formData.append('file', selectedFile)
       formData.append('channel', "4")
-      await axiosClient.post('http://127.0.0.1:8000/api/message/upload/image/', formData, {
+      await axiosClient.post('api/message/upload/image/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -268,10 +287,6 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       attachmentButtonRef.current.value = "";
     }
   }
-
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; sent?: boolean}[]>([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
 
 
   function onClick(emojiData: EmojiClickData, event: MouseEvent) {
@@ -386,7 +401,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             </div>
             <div className="sent-icon">
               {
-                message.sent ? <FaCheckCircle size={12}/> : <FaRegCheckCircle size={12} />
+                (Object.hasOwn(message, "sent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
               }
             </div>
           </div>
