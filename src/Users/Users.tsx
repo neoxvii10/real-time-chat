@@ -86,13 +86,14 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
     const fetchData = async () => {
       try {
         const response = await UserApi.getFriends();
-        setListFriends(response?.data)
+        setListFriends(response?.data);
+        console.log(response);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-    console.log(listFriends);
+    console.log("listFriend: ", listFriends);
   }, [])
 
   //hanlde new group slides
@@ -195,7 +196,7 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
       <NewGroup
       translateX={translateX}
       handleSlideAnimation={handleSlideAnimation}
-      users={users}
+      users={listFriends}
       />
       <div className="navigation-users-container">
         <span className="menu-icon-container">
@@ -279,7 +280,7 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {filteredUsers.map((user) => (
+          {listFriends.map((user) => (
             <li tabIndex={user?.id} key={user?.id} onClick={() => onUserClick(user)} 
             className={(selectedUser === user) ? 'user-selected' : ''}>
               <div className="user">
