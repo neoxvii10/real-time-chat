@@ -52,7 +52,7 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       last_name: selectedValue.last_name,
       fullname: selectedValue.fullname
     };
-    
+
     const isOptionSelected = selectedOptions.some(
       (selectedOption) => selectedOption.id === option.id
     );
@@ -63,9 +63,9 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
       setSelectedOptions([...selectedOptions, option]);
     }
   };
- 
+
   return (
-    <div className='select-container'>       
+    <div className='select-container'>
       <ul>
         {users.map((user) => (
           <li
@@ -85,7 +85,7 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
                 '&.Mui-checked': {
                   color: 'var(--checkbox-fill)',
                 },
-            }}
+              }}
             />
             <div className="user">
               <div className="user-avatar">
@@ -100,7 +100,7 @@ const Selects: React.FC<SelectsProps> = ({ selectedOptions, setSelectedOptions, 
         ))}
       </ul>
       <div className="create-gr-btn-container" onClick={handleNewGroupAnimation}>
-        <FaArrowRight className="create-gr-icon" size={22}/>
+        <FaArrowRight className="create-gr-icon" size={22} />
       </div>
     </div>
   );

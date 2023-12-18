@@ -34,7 +34,7 @@
   border-radius: 50%;
 }
 
-.new-gr-back-icon:hover { 
+.new-gr-back-icon:hover {
   background: var(--hover);
 }
 

@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   padding-top: 1.8rem;
-  font-family: "Roboto",-apple-system,apple color emoji,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+  font-family: "Roboto", -apple-system, apple color emoji, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 .signup-form-container h4 {
@@ -74,7 +74,8 @@
   transition: 0.2s ease;
 }
 
-.inputBox input:focus ~ span, .inputBox input:valid ~ span {
+.inputBox input:focus~span,
+.inputBox input:valid~span {
   color: var(--border-on-click);
   transform: translateX(10px) translateY(-10px);
   font-size: 0.8rem;
@@ -82,6 +83,7 @@
   background: var(--background-color);
 }
 
-.inputBox input:focus, .inputBox input:valid {
+.inputBox input:focus,
+.inputBox input:valid {
   border: 2px solid var(--border-on-click);
 }

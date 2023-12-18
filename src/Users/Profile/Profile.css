@@ -207,15 +207,14 @@
 
 ::-webkit-scrollbar {
     width: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 9999px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
+}
+
+::-webkit-scrollbar-thumb {
     background: #555;
     border-radius: 9999px;
-  }
-  
+}

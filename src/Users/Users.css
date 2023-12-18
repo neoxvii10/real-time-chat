@@ -43,6 +43,7 @@
   0% {
     transform: rotate(-180deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
@@ -52,6 +53,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(-180deg);
   }
@@ -166,7 +168,7 @@
   border-radius: 50%;
 }
 
-.menu-icon:hover { 
+.menu-icon:hover {
   background: var(--hover);
 }
 
@@ -310,7 +312,8 @@
 }
 
 
-h5, p {
+h5,
+p {
   margin: 0;
 }
 
@@ -327,7 +330,7 @@ h5, p {
 
 .latest-timestamps {
   font-size: 0.8rem;
-  color: #aaaaaa; 
+  color: #aaaaaa;
 }
 
 .chatlist-container ul li.user-selected .user-labels h5,

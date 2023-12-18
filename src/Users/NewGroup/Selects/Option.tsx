@@ -39,8 +39,8 @@ const Option = (props: UserType) => {
       {isHovered ? (
         <div className="delete-icon-container">
           <TfiClose onClick={handleDeleteOption}
-          size={20}
-          className='delete-icon'/>
+            size={20}
+            className='delete-icon' />
         </div>
       ) : (
         <div className="user-avatar">

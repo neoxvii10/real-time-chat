@@ -45,7 +45,7 @@ function HomePage() {
 
   return (
     <div className="HomePage">
-      <Users onUserClick={handleUserClick} selectedUser = {user}/>
+      <Users onUserClick={handleUserClick} selectedUser={user} />
       <UserInbox userProp={user} />
     </div>
   );

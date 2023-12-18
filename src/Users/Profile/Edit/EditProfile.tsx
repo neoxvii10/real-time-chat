@@ -87,7 +87,7 @@ const EditProfile: React.FC<Props> = ({ translateXForEdit, setTranslateXForEdit 
     const handleSubmitData = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
 
-        if(isCropped) {
+        if (isCropped) {
             await handleSubmitAvatar(event);
         }
 

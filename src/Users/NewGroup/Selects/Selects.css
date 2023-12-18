@@ -8,7 +8,7 @@
 .select-container ul {
   width: 100%;
   margin: 0;
-  
+
 }
 
 .select-container ul li {
@@ -63,7 +63,8 @@
   text-align: left;
 }
 
-h5, p {
+h5,
+p {
   margin: 0;
 }
 

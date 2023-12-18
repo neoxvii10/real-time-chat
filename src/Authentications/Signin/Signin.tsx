@@ -15,7 +15,7 @@ type SigninProp = {
 
 type ApiResponse = {
   message?: string;
-  data?:{
+  data?: {
     refresh?: string,
     access?: string
   }
@@ -127,7 +127,7 @@ export default function CountrySelect() {
     } finally {
       setLoading(false);
     }
-  
+
     setData({
       username: '',
       password: '',

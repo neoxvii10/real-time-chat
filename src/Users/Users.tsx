@@ -1,7 +1,7 @@
 import { useState, useRef, CSSProperties, useEffect } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
-import { GoSearch, GoX } from 'react-icons/go' 
+import { GoSearch, GoX } from 'react-icons/go'
 import { BsCloudCheck, BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
@@ -105,7 +105,7 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
     transform: 'translateX(-480px)',
   });
 
-  
+
   const handleSlideAnimation = () => {
     setSlided(!isSlided);
     setTranslateX((translateX) => ({
@@ -246,7 +246,7 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
                 <span className='dropdown-label'>Settings</span>
               </li>
               <li onClick={handleSlideAnimation}>
-                <span className='dropdown-icon'><BsPeople size={22}/></span>
+                <span className='dropdown-icon'><BsPeople size={22} /></span>
                 <span className='dropdown-label'>New Group</span>
               </li>
             </ul>
