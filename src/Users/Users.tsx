@@ -12,10 +12,12 @@ import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
 
 import UserApi from '../Api/UserApi';
+import ChannelApi from '../Api/ChannelApi';
+import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
 
 type UsersTypes = {
-  onUserClick: (selectedUsername: UserType) => void;
-  selectedUser: UserType;
+  onChannelClick: (selectedChannel: ChannelType) => void;
+  selectedChannel: ChannelType;
 };
 
 type UserType = {
@@ -27,73 +29,35 @@ type UserType = {
   fullname: string
 }
 
-const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
-  const users: UserType[] = [
-    {
-      id: 1,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Thuận"
-     },
-     {
-      id: 2,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Đạt"
-     },
-     {
-      id: 3,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Thủy"
-     },
-     {
-      id: 4,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Việt"
-     },
-     {
-      id: 5,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Tùng"
-     },
-     {
-      id: 6,
-      username: "#@thuanle409",
-      avatar_url: "LT",
-      first_name: "Thuận",
-      last_name: "Lê",
-      fullname: "Lê Minh Hiếu"
-     },
-  ];
+type ChannelType = {
+  id: number,
+  member_count: number,
+  last_message?: any,
+  title: string,
+  avatar_url?: string,
+  create_at: string
+}
 
+const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
   // handle list friends
-  const [listFriends, setListFriends] = useState<UserType[]>(users);
+  const [listFriends, setListFriends] = useState<UserType[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
+  const [channelList, setChannelList] = useState<ChannelType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await UserApi.getFriends();
-        setListFriends(response?.data);
-        console.log(response);
+        const listFriendRes = await UserApi.getFriends();
+        const channelListRes = await ChannelApi.getChannelList()
+        setListFriends(listFriendRes?.data)
+        setChannelList(channelListRes?.data);
+        // console.log(listFriendRes);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-    console.log("listFriend: ", listFriends);
+    // console.log("listFriend: ", listFriends);
   }, [])
 
   //hanlde new group slides
@@ -128,12 +92,12 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
       // Restore the default chatlist when the input is cleared
-      setFilteredUsers(users);
+      setFilteredUsers(listFriends);
     } else if (isClick && inputRef.current?.value === '') {
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
       // Restore the default chatlist when the input is cleared
-      setFilteredUsers(users);
+      setFilteredUsers(listFriends);
     } else if (!isClick) {
       setIsClick(true);
       setMenuRotated((prevState) => !prevState);
@@ -143,10 +107,9 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
   const handleClearInput = () => {
     setInputValue('');
     // Restore the default chatlist when the input is cleared
-    setFilteredUsers(users);
+    setFilteredUsers(listFriends);
   };
 
-  const [filteredUsers, setFilteredUsers] = useState<UserType[]>(listFriends);
 
   const filterUsers = (searchText: string) => {
     if (searchText.trim() === '') {
@@ -172,7 +135,6 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
-    
   };
 
   // handle visiable profile
@@ -280,19 +242,19 @@ const Users: React.FC<UsersTypes> = ({ onUserClick, selectedUser }) => {
       </div>
       <div className="chatlist-container">
         <ul>
-          {listFriends.map((user) => (
-            <li tabIndex={user?.id} key={user?.id} onClick={() => onUserClick(user)} 
-            className={(selectedUser === user) ? 'user-selected' : ''}>
+          {channelList.map((channel) => (
+            <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
+            className={(selectedChannel === channel) ? 'user-selected' : ''}>
               <div className="user">
                 <div className="user-avatar">
-                  <img src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+                  <img src={channel.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
                 </div>
                 <div className="user-label-timestamps">
                   <div className="user-labels">
-                    <h5>{user.fullname}</h5>
-                    <p>Unknown</p>
+                    <h5>{channel.title}</h5>
+                    <p>{channel.last_message.content}</p>
                   </div>
-                  <span className="latest-timestamps">Unknown</span>
+                  <span className="latest-timestamps">{channel.last_message.create_at}</span>
                 </div>
               </div>
             </li>

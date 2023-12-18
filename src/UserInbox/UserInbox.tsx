@@ -33,9 +33,18 @@ type UserType = {
   fullname: string
 }
 
-type UserInboxProps = {
-  userProp: UserType;
+type ChannelInboxProps = {
+  channel: ChannelType;
 };
+
+type ChannelType = {
+  id: number,
+  member_count: number,
+  last_message?: any,
+  title: string,
+  avatar_url?: string,
+  create_at: string
+}
 
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 if (_token) {
@@ -48,7 +57,7 @@ socket.onopen = () => {
   console.log('WebSocket connection established');
 };
 
-const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
+const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const messageContainer = document.querySelector('.message-container')
   const [onBottom, setOnBottom] = useState(true)
 
@@ -59,7 +68,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
 
   useEffect(() => {
     const fetchMessage = async () => {
-      let res: any = await axiosClient.get('api/channel/4/messages/?page=1')
+      let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
       let messageList = []
       for (let message of res.data) {
         let messageElement = {
@@ -72,7 +81,10 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       setMessages(messageList.reverse())
     }
     fetchMessage()
-  }, [])
+    if (messageContainer && onBottom) {
+      messageContainer.scrollTop = messageContainer?.scrollHeight
+    }
+  }, [channel])
 
   useEffect(() => {
     // Scroll to bottom when receive message in case user is already bottom
@@ -130,7 +142,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       const messageObject = {
         "action": "create_message",
         "target": "channel",
-        "targetId": 4,
+        "targetId": channel.id,
         'uuid': uuidv4(),
         "data": {
           "content": inputValue,
@@ -270,7 +282,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
       // setMessages([...messages, fileMessage]);
       const formData = new FormData();
       formData.append('file', selectedFile)
-      formData.append('channel', "4")
+      formData.append('channel', channel.id.toString())
       await axiosClient.post('api/message/upload/image/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -311,10 +323,10 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
         <div className="user">
           <div className="user-avatar">
             {/* <span>{userProp.avatar}</span> */}
-            <img src={userProp?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
           </div>
           <div className="user-labels">
-            <h5>{userProp?.fullname}</h5>
+            <h5>{channel?.title}</h5>
             <p>Last seen now</p>
           </div>
         </div>
@@ -403,7 +415,7 @@ const UserInbox: React.FC<UserInboxProps> = ({ userProp }) => {
             </div>
             <div className="sent-icon">
               {
-                (Object.hasOwn(message, "sent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
+                (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
               }
             </div>
           </div>

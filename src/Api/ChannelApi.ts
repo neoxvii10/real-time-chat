@@ -3,7 +3,7 @@ import axiosClient from "./AxiosClient";
 class ChannelApi {
 
     getChannelList = async () => {
-        const url = '/api/channel/all/';
+        const url = '/api/user/channels/';
         return await axiosClient.get(url);
     }
 }

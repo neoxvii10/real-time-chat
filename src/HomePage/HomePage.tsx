@@ -14,6 +14,15 @@ type UserType = {
   fullname: string
 }
 
+type ChannelType = {
+  id: number,
+  member_count: number,
+  last_message?: any,
+  title: string,
+  avatar_url?: string,
+  create_at: string
+}
+
 function HomePage() {
   const [user, setUser] = useState<UserType>(() => {
     const selectedUser = localStorage.getItem("user");
@@ -32,21 +41,30 @@ function HomePage() {
     }
   });
 
+
+  const [channel, setChannel] = useState<ChannelType>({
+    id: 4,
+    member_count: 2,
+    title: "none",
+    create_at: "1/1/2000"
+  })
+
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
   const navigate = useNavigate();
 
-  const handleUserClick = (selectedUser: UserType) => {
-    navigate(`/${selectedUser?.id}`);
-    setUser(selectedUser);
+  const handleChannelClick = (selectedChannel: ChannelType) => {
+    setChannel(selectedChannel)
+    navigate(`/${selectedChannel?.title}`);
+    // setUser(selectedChannel);
   };
 
   return (
     <div className="HomePage">
-      <Users onUserClick={handleUserClick} selectedUser={user} />
-      <UserInbox userProp={user} />
+      <Users onChannelClick={handleChannelClick} selectedChannel={channel} />
+      <UserInbox channel={channel} />
     </div>
   );
 }
