@@ -1,4 +1,4 @@
-import { Box, useTheme, Button} from "@mui/material";
+import { Box, useTheme, Button, Typography} from "@mui/material";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataContacts } from "../../data/mockData";
@@ -11,6 +11,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { ToastContainer, toast } from 'react-toastify';
 import ConfirmDialog from "../../components/ConfirmDialog";
+import BlockIcon from '@mui/icons-material/Block';
+import CheckIcon from '@mui/icons-material/Check';
 const User= () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -29,35 +31,29 @@ const User= () => {
         setUserData(userListResponse.data);
     }
 
-    const cancelDeleteUser = () => {
+    const cancelBlockUser = () => {
       setConfirmDialog({
         isOpen: false
       })
       
     }
 
-    const acceptDeleteUser = () => {
+    const acceptBlockUser = () => {
       setConfirmDialog({
         isOpen: false
       });
 
-      toast.success("Xóa người dùng thành công", {
+      toast.success("Block người dùng thành công", {
         theme: theme.palette.mode
       });
     }
-
-    const handleDeleteUser = () => {
+    const handleClickBlockUser = (id, is_active) => {
       setConfirmDialog({
-        title: "Delete User",
-        content: "Do you want to delete this user?",
+        title: "Block User",
+        content: "Do you want to block this user?",
         isOpen: true
       })
     }
-
-    const handleEditUser = (id) => {
-        navigate(`/admin/user/${id}/edit`)
-    }
-
     useEffect(() => {
         getUserData();
     }, []);
@@ -100,49 +96,33 @@ const User= () => {
             cellClassName: "name-column--cell"
         },
         {
-          headerName: "",
-          renderCell: ({id}) => {
+          field: "is_active",
+          headerName: "Status",
+          renderCell: ({id, row: is_active}) => {
             return (
-              <Box
-              display="flex"
-              justifyContent="space-between"
-              width="80%"
-              margin="auto"
-              >
-                <Box
-                  onClick={() => handleEditUser(id)}
-                  backgroundColor ={
-                    colors.greenAccent[700]
-                  }
-                  sx = {{
-                    p: 0.25,
-                    "&:hover": {
-                      backgroundColor: colors.greenAccent[600],
-                      cursor: "pointer"
-                    }
-                  }}
-                >
-                  <EditIcon />
-                </Box>
-                <Box
-                  onClick={handleDeleteUser}
-                  backgroundColor ={
-                    colors.redAccent[700]
-                  }
-                  sx = {{
-                    p: 0.25,
-                    "&:hover": {
-                      backgroundColor: colors.redAccent[600],
-                      cursor: "pointer"
-                    }
-                  }}
+                          <Box
+                          width="40%"
+                          m ="0 auto"
+                          p="5px"
+                          display="flex"
+                          justifyContent="center"
+                          backgroundColor={
+                            is_active
+                              ? colors.greenAccent[600]
+                              : colors.greenAccent[700]
+                          }
+                          borderRadius="4px"
+                          sx={{
+                            "&:hover": {
+                              cursor: "pointer"
+                            }
+                          }}
+                          onClick={() => handleClickBlockUser(id, is_active)}
+                          >
+                          {is_active ? <CheckIcon /> : <BlockIcon />}
 
-                >
-                <DeleteIcon/>
-                </Box>
-                  
-              </Box>
-            )
+                          </Box>
+                      )
           }
         }
     ]
@@ -214,8 +194,8 @@ const User= () => {
             </Box>
             <ConfirmDialog
               confirmDialog={confirmDialog}
-              handleCancel={cancelDeleteUser}
-              handleOk={acceptDeleteUser}
+              handleCancel={cancelBlockUser}
+              handleOk={acceptBlockUser}
             />
         </Box>
     )
