@@ -7,7 +7,7 @@ import UserApi from "../../../Api/UserApi";
 import { toast } from 'react-toastify';
 import {  useTheme} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
-
+import UserProfile from "../../components/UserProfile";
 const ManageUser = () => {
     const {userId} = useParams()
     const theme = useTheme();
@@ -34,13 +34,7 @@ const ManageUser = () => {
     return (
         <Routes>
             <Route path="/*" element={<User/>}/>
-            <Route path="/:userId/edit" element={<UserForm 
-                userId={userId}
-                handleSubmit = {handleUpdateUser}
-                title="UPDATE USER INFORMATION"
-                subtitle = "Update information of user"
-                textSubmit = "UPDATE INFORMATION"
-            />} />
+            <Route path="/:userId/detail" element={<UserProfile />} />
             <Route path="/create" 
             element={<UserForm
                 handleSubmit = {handleCreateUser}

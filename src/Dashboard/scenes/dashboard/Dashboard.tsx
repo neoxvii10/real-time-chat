@@ -18,6 +18,7 @@ import UserApi from "../../../Api/UserApi";
 import ReportApi from "../../../Api/ReportApi";
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import ChannelApi from "../../../Api/ChannelApi";
+import PieChart from "../../components/PieChart";
 
 interface ReportType {
     id: BigInteger;
@@ -220,7 +221,7 @@ const Dashboard = () => {
                                 fontWeight="bold"
                                 color={colors.greenAccent[500]}
                             >
-                                $59,342.32
+                                {/* $59,342.32 */}
                             </Typography>
                         </Box>
                         <Box>
@@ -307,9 +308,9 @@ const Dashboard = () => {
                     p="30px"
                 >
                     <Typography variant="h5" fontWeight="600">
-                        Campaign
+                        Total Reports
                     </Typography>
-                    <Box
+                    {/* <Box
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
@@ -326,6 +327,9 @@ const Dashboard = () => {
                         <Typography>
                             Includes extra misc expenditures and costs
                         </Typography>
+                    </Box> */}
+                    <Box height="200px">
+                        <PieChart isDashboard={true} />
                     </Box>
                 </Box>
                 <Box
@@ -340,7 +344,7 @@ const Dashboard = () => {
                         fontWeight="600"
                         sx={{ padding: "30px 30px 0 30px" }}
                     >
-                        Sales Quantity
+                        Stats
                     </Typography>
                     <Box height="250px" mt="-20px">
                         <BarChart isDashboard={true} />

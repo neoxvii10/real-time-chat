@@ -6,6 +6,11 @@ class UserProfileApi {
         return await axiosClient.get(url);
     }
 
+    getParticularProfile = async (id: any) => {
+        const url = `/api/user/${id}/profile`;
+        return await axiosClient.get(url);
+    }
+
     putProfile = async (data: object) => {
         const url = '/api/user/profile/';
         return await axiosClient.put(url, data);

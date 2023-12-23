@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import Topbar from './scenes/global/Topbar';
 import { ColorModeContext, useMode } from './theme';
@@ -23,7 +23,9 @@ import Report from './scenes/report/Report';
 import 'react-toastify/dist/ReactToastify.css';
 import User from './scenes/user/User';
 import { ToastContainer } from 'react-toastify';
+import ChannelMembers from './scenes/channel/ChannelMembers';
 const AdminManagement = () => {
+    const channelId = useParams();
     const navigate = useNavigate();
     const isAuthenticated = () => {
         const accessToken = localStorage.getItem('accessToken');
@@ -73,6 +75,7 @@ const Admin= () => {
                             <Route path="/user" element={<ManageUser />}>
                                 <Route path="*" />
                             </Route>
+                            <Route path="/channel/:channelId/members" element = {<ChannelMembers />} />
                             <Route path="/invoices" element={<Invoices/>}/>
                             <Route path="/form" element={<Form/>}/>
                             <Route path="/bar" element={<Bar/>}/>

@@ -8,9 +8,15 @@ import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 import { useState, useEffect } from "react";
 import ChannelApi from "../../../Api/ChannelApi";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useNavigate } from "react-router-dom";
+
 const Channel= () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const navigate = useNavigate();
     const [channelData, setChannelData] = useState([]);
 
     const getChannelData = async () => {
@@ -47,7 +53,26 @@ const Channel= () => {
             flex: 1,
             cellClassName: "name-column--cell"
 
-        }
+        },
+        {
+          headerName: "",
+          align: "center",
+          renderCell: ({ id }) => {
+              return (
+                  <Box
+                      onClick={() =>
+                          navigate(`/admin/channel/${id}/members`)
+                      }
+                  >
+                      <Tooltip title="View Detail">
+                          <IconButton>
+                              <VisibilityIcon />
+                          </IconButton>
+                      </Tooltip>
+                  </Box>
+              );
+          },
+      },
         // {
         //     field: "age",
         //     headerName: "Age",

@@ -1,14 +1,9 @@
 import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
-import { Formik } from "formik";
-import { useFormik } from "formik";
-import * as yup from "yup";
 import Header from "../../components/Header";
 import { useState, useRef, useEffect } from "react";
-import "./Profile.css";
 import { tokens } from "../../theme";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import UpdateIcon from "@mui/icons-material/Update";
-import React from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton } from "@mui/material";
 import UserApi from "../../../Api/UserApi";
@@ -174,177 +169,6 @@ const Profile = () => {
                 </Box>
             </Box>
 
-            {/* <Box textAlign="center">
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                >
-                    <Box
-                        size={100}
-                        color="white"
-                        style={{
-                            borderRadius: 50,
-                            textAlign: "center",
-                        }}
-                        position="relative"
-                        display="inline-block"
-                        margin="auto"
-                    >
-                        <Box
-                            component="img"
-                            src="/assets/flower.jpg"
-                            alt="Hình ảnh"
-                            width={100}
-                            height={100}
-                            objectFit="cover"
-                            borderRadius="999px"
-                        ></Box>
-                        <Box
-                            position="absolute"
-                            sx={{
-                                right: 2,
-                                bottom: 2,
-                                "&:hover": {
-                                    cursor: "pointer",
-                                },
-                            }}
-                            backgroundColor="black"
-                            padding="5px"
-                            style={{
-                                borderRadius: 50,
-                            }}
-                            display="flex"
-                        >
-                            <CameraAltIcon></CameraAltIcon>
-                        </Box>
-                    </Box>
-                    <Typography
-                        variant="h2"
-                        color={colors.grey[100]}
-                        fontWeight="bold"
-                        sx={{ mb: "5px" }}
-                    >
-                        Admin
-                    </Typography>
-                    <Typography variant="h5" color={colors.greenAccent[400]}>
-                        I am an admin
-                    </Typography>
-                </Box>
-            </Box>
-            <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="space-around"
-                mt="20px"
-            >
-                <Box>
-                    <Typography variant="h4">Basic Information</Typography>
-                    <Box
-                        marginTop="10px"
-                        display="flex"
-                        flexDirection="column"
-                        border="1px solid #ccc"
-                        width="100%"
-                    >
-                        <Box display="flex" flexDirection="row"
-                            justifyContent="space-between"
-                            gap="100px"
-                            padding="15px"
-                            borderBottom="1px solid #ccc"
-                        >
-                            <Typography 
-                                fontWeight="bold"
-                                variant="h6"
-                            >
-                                Username
-                            </Typography>
-                            <Typography 
-                            variant="p"
-                            sx={{
-                                textDecoration: "underline"
-                            }}
-                            display="inline"
-                            >
-                                Pham Tung Thuy
-                            </Typography>
-                        </Box>
-                        <Box display="flex" flexDirection="row"
-                            justifyContent="space-between"
-                            gap="50px"
-                            padding="15px"
-                            borderBottom="1px solid #ccc"
-
-                        >
-                            <Typography 
-                                fontWeight="bold"
-                                variant="h6"
-                            >
-                                Username
-                            </Typography>
-                            <Typography 
-                            variant="p"
-                            sx={{
-                                textDecoration: "underline"
-                            }}
-                            display="inline"
-                            >
-                                Pham Tung Thuy
-                            </Typography>
-                        </Box>
-                        <Box display="flex" flexDirection="row"
-                            justifyContent="space-between"
-                            gap="50px"
-                            padding="15px"
-                            borderBottom="1px solid #ccc"
-
-                        >
-                            <Typography 
-                                fontWeight="bold"
-                                variant="h6"
-                            >
-                                Username
-                            </Typography>
-                            <Typography 
-                            variant="p"
-                            sx={{
-                                textDecoration: "underline"
-                            }}
-                            display="inline"
-                            >
-                                Pham Tung Thuy
-                            </Typography>
-                        </Box>
-                        <Box display="flex" flexDirection="row"
-                            justifyContent="space-between"
-                            gap="50px"
-                            padding="15px"
-                            borderBottom="1px solid #ccc"
-
-                        >
-                            <Typography 
-                                fontWeight="bold"
-                                variant="h6"
-                            >
-                                Username
-                            </Typography>
-                            <Typography 
-                            variant="p"
-                            sx={{
-                                textDecoration: "underline"
-                            }}
-                            display="inline"
-                            >
-                                Pham Tung Thuy
-                            </Typography>
-                        </Box>
-                    </Box>
-                </Box>
-                <Box height="50vh" width="1px" backgroundColor="white" />
-                <Box>
-                    <Typography variant="h4">Basic Information</Typography>
-                </Box>
-            </Box> */}
             <Box display="flex" justifyContent="space-between">
                 <Box
                     border="1px solid #ccc"
@@ -575,7 +399,7 @@ const Profile = () => {
                     width="35%"
                     display="flex"
                     flexDirection="column"
-                    height="50vh"
+                    height="70vh"
                     justifyContent="space-between"
                     backgroundColor={colors.primary[400]}
                     borderRadius="10px"

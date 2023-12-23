@@ -9,6 +9,12 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  
+
+  useEffect(() => {
+
+  }, [])
+
   return (
     <ResponsiveLine
       data={data}

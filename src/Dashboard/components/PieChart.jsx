@@ -2,13 +2,28 @@ import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../data/mockData";
-
-const PieChart = () => {
+import { useEffect, useState } from "react";
+const PieChart = ({isDashboard = false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [reportData, setReportData] = useState([{
+    id: "User reports",
+    label: "User reports",
+    value: 10,
+    color: "hsl(104, 70%, 50%)",
+  },
+  {
+    id: "Channel reports",
+    label: "Channel reports",
+    value: 5,
+    color: "hsl(162, 70%, 50%)"
+  }]);
+  useEffect(() => {
+
+  }, [])
   return (
     <ResponsivePie
-      data={data}
+      data={reportData}
       theme={{
         axis: {
           domain: {
