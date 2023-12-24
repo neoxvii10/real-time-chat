@@ -10,10 +10,10 @@ import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
+import Friends from './Friends/Friends';
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
-import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: ChannelType) => void;
@@ -153,6 +153,22 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
     }));
   };
 
+  // visible list friends
+  const [translateXforFriends, setTranslateXforFriends] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-480px)',
+  });
+
+  const handleSlideAnimationForFriends = (event: React.MouseEvent<Element>) => {
+    setTranslateXforFriends((translateXforFriends) => ({
+      ...translateXforFriends,
+      visibility: 'visible',
+      opacity: 1,
+      transform: 'translateX(0px)',
+    }));
+  };
+
   return (
     <div className="users-container">
       <NewGroup
@@ -192,9 +208,9 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
                 <span className='dropdown-icon'><BsCloudCheck size={22} /></span>
                 <span className='dropdown-label'>My Cloud</span>
               </li>
-              <li>
+              <li onClick={e => handleSlideAnimationForFriends(e)}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
-                <span className='dropdown-label'>Contacts</span>
+                <span className='dropdown-label'>Friends</span>
               </li>
               <li>
                 <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22} /></span>
@@ -262,6 +278,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
         </ul>
       </div>
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
+      <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
      </div>
   );
 }

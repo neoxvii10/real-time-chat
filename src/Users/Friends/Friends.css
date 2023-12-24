@@ -1,0 +1,58 @@
+
+.friends-container:hover {
+    overflow-y: auto;
+  }
+  
+  .friends-container {
+    margin-top: 3.6rem;
+    padding: 0 0.6rem 0.6rem;
+    overflow-y: hidden;
+    max-height: calc(100vh - 4.2rem);
+    overflow-x: hidden;
+    margin-top: 0.5rem;
+  }
+  
+  .friends-container ul {
+    width: 100%;
+    margin: 0;
+  }
+  
+  .friends-container ul li {
+    padding: 0.6rem;
+    border-radius: 8px;
+    background: var(--background-color);
+  }
+  
+  .friends-container ul li:hover {
+    background: var(--hover);
+  }
+  
+  .friends-container ul li.user-selected {
+    background-color: var(--icon-color-active) !important;
+  }
+  
+  .friends-container ul li .user {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 17% 83%;
+    align-items: center;
+    text-decoration: none;
+  }
+
+.user-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 17% 83%;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+}
+
+.friend-context-menu-btn {
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.friend-context-menu-btn:hover {
+  cursor: pointer;
+}

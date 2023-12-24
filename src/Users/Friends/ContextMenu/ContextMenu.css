@@ -1,0 +1,36 @@
+.container {
+    background-color: aqua;
+    z-index: 20;
+}
+
+.friend-context-menu {
+    width: 160px;
+    background-color: var(--background-color);
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    padding: 5px 5px;
+    border-radius: 5px;
+    box-shadow: 0 0.1rem 0.1rem 0.1rem rgb(16,16,16,0.612);
+    /* display: none */
+  }
+
+  /* .friend-context-menu.visible {
+    display: block;
+  } */
+  
+  .friend-context-menu-item {
+    display: flex;
+    color:rgba(255, 17, 0, 0.781);
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  .friend-context-menu-item:hover {
+    background-color: var(--hover);
+    cursor: pointer;
+  }
+  
+  .friend-context-menu-item-icon {
+    margin-right: 10px;
+  }
