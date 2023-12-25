@@ -62,7 +62,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const [onBottom, setOnBottom] = useState(true)
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean}[]>([]);
+  const [messages, setMessages] = useState<{ text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean }[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -172,7 +172,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         uuid: messageObject.uuid,
         isSent: false
       }
-      setMessages([...messages, textMessage]) 
+      setMessages([...messages, textMessage])
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
@@ -243,7 +243,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           }
         }
       } else {
-        setMessages([...messages, textMessage]);      
+        setMessages([...messages, textMessage]);
       }
     }
   };
@@ -323,7 +323,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         <div className="user">
           <div className="user-avatar">
             {/* <span>{userProp.avatar}</span> */}
-            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img' />
           </div>
           <div className="user-labels">
             <h5>{channel?.title}</h5>
@@ -396,7 +396,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         {messages.map((message, index) => (
           <div className="message-block">
             <div key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+              className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
               <div>
                 {message.type === "image" ? (
                   <img src={message.text.split(' ')[0]} alt={message.type}></img>
@@ -411,7 +411,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   message.text
                 )}
               </div>
-              
+
             </div>
             <div className="sent-icon">
               {

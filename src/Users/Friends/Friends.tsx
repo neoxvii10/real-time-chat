@@ -51,7 +51,7 @@ const Friends: React.FC<Props> = ({ translateX, setTranslateX }) => {
             }
         }
         fetchData();
-    }, [contextMenu])
+    }, [contextMenu, translateX])
 
     // context menu to delete friends;
 
