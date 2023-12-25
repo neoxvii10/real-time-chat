@@ -1,6 +1,4 @@
 import { ReactComponent as Logo } from "../pattern.svg";
-import { MdOutlineCall } from "react-icons/md";
-import { HiOutlineVideoCamera } from "react-icons/hi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
 import { IoNotificationsOffOutline } from "react-icons/io5";
@@ -27,14 +25,16 @@ import { v4 as uuidv4 } from 'uuid';
 type UserType = {
   id: number,
   username: string,
-  avatar_url: string,
+  avatar_url: any,
   first_name: string,
   last_name: string,
   fullname: string
 }
 
+type UnifiedType = UserType | ChannelType;
+
 type ChannelInboxProps = {
-  channel: ChannelType;
+  channel: UnifiedType;
 };
 
 type ChannelType = {
@@ -58,6 +58,46 @@ socket.onopen = () => {
 };
 
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
+  const isUserType = (channel as UnifiedType).hasOwnProperty('username');
+
+  const renderHeader = () => {
+    if (isUserType) {
+      const user = channel as UserType;
+      return (
+        <div className="user">
+          <div className="user-avatar">
+            <img
+              src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              alt="avatar user"
+              className="user-avatar-img"
+            />
+          </div>
+          <div className="user-labels">
+            <h5>{user.fullname}</h5>
+            <p>Last seen now</p>
+          </div>
+        </div>
+      );
+    } else {
+      const channelInfo = channel as ChannelType;
+      return (
+        <div className="user">
+          <div className="user-avatar">
+            <img
+              src={channelInfo.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              alt="avatar user"
+              className="user-avatar-img"
+            />
+          </div>
+          <div className="user-labels">
+            <h5>{channelInfo.title}</h5>
+            <p>Last seen now</p>
+          </div>
+        </div>
+      );
+    }
+  };
+
   const messageContainer = document.querySelector('.message-container')
   const [onBottom, setOnBottom] = useState(true)
 
@@ -320,16 +360,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         className="user-header-container"
         onClick={(event) => handleSlideAnimation(event)}
       >
-        <div className="user">
-          <div className="user-avatar">
-            {/* <span>{userProp.avatar}</span> */}
-            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
-          </div>
-          <div className="user-labels">
-            <h5>{channel?.title}</h5>
-            <p>Last seen now</p>
-          </div>
-        </div>
+        {renderHeader()}
         <div className="chat-utils">
           <span className="util-icon-container">
             <GoSearch size={24} className="util-icon" />
@@ -411,8 +442,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   message.text
                 )}
               </div>
-              
             </div>
+
             <div className="sent-icon">
               {
                 (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
@@ -421,6 +452,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           </div>
         ))}
       </div>
+
       <div className="message-input-container">
         <div className="input-container">
           <MdOutlineEmojiEmotions

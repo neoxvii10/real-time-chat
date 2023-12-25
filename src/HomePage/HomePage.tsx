@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 type UserType = {
   id: number,
   username: string,
-  avatar_url: string,
+  avatar_url: any,
   first_name: string,
   last_name: string,
   fullname: string
@@ -23,24 +23,17 @@ type ChannelType = {
   create_at: string
 }
 
-function HomePage() {
-  const [user, setUser] = useState<UserType>(() => {
-    const selectedUser = localStorage.getItem("user");
-    if (selectedUser) {
-      return JSON.parse(selectedUser);
-      // otherwise
-    } else {
-      return {
-        id: 0,
-        username: '',
-        avatar_url: '',
-        first_name: '',
-        last_name: '',
-        fullname: ''
-      };
-    }
-  });
+type UnifiedType = UserType | ChannelType;
 
+function HomePage() {
+  const [user, setUser] = useState<UserType>({
+    first_name: "thuan",
+    last_name: "le",
+    username: "leminhthuan",
+    id: 1,
+    avatar_url: null,
+    fullname: "thuan le"
+  });
 
   const [channel, setChannel] = useState<ChannelType>({
     id: 4,
@@ -49,22 +42,33 @@ function HomePage() {
     create_at: "1/1/2000"
   })
 
-  useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
-  }, [user]);
+  const [medium, setMedium] = useState<UnifiedType>();
 
   const navigate = useNavigate();
 
-  const handleChannelClick = (selectedChannel: ChannelType) => {
-    setChannel(selectedChannel)
-    navigate(`/${selectedChannel?.title}`);
-    // setUser(selectedChannel);
+  const handleChannelClick = (selectedChannel: UnifiedType) => {
+    if ('title' in selectedChannel) {
+      // It's a ChannelType
+      setChannel(selectedChannel);
+      navigate(`/${selectedChannel.title}`);
+    } else {
+      // It's a UserType
+      // Handle the UserType logic if needed
+      setUser(selectedChannel);
+      navigate(`/${selectedChannel.fullname}`);
+    }
+    setMedium(selectedChannel);
   };
+
+  const isUserType = medium && medium.hasOwnProperty('username');
+  console.log(medium);
+  console.log(isUserType);
 
   return (
     <div className="HomePage">
-      <Users onChannelClick={handleChannelClick} selectedChannel={channel} />
-      <UserInbox channel={channel} />
+      <Users onChannelClick={handleChannelClick} selectedChannel={medium} />
+      { isUserType ? <UserInbox channel={user} /> : <UserInbox channel={channel} /> }
+      
     </div>
   );
 }
