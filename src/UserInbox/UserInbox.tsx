@@ -11,6 +11,7 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { FaReply } from "react-icons/fa";
 import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties, useCallback } from "react";
 import React, { useEffect, useState, useRef } from "react";
@@ -22,6 +23,7 @@ import EmojiPicker, {
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
+import { timeEnd } from "console";
 
 // use api
 type UserType = {
@@ -46,6 +48,7 @@ type ChannelType = {
   create_at: string
 }
 
+
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 if (_token) {
   var token = JSON.parse(_token)
@@ -62,7 +65,20 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const [onBottom, setOnBottom] = useState(true)
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean}[]>([]);
+  const [messages, setMessages] = useState<{
+    text: string;
+    sender: string;
+    type: string;
+    file?: File;
+    uuid?: string;
+    isSent?: boolean;
+    create_at?: string;
+  }[]>([]);
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return `${date.getHours()}:${date.getMinutes()}`;
+  };
 
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -75,6 +91,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           text: message.content,
           sender: (userId === message.member.user.id) ? "self" : "user",
           type: message.message_type.toLowerCase(),
+          create_at: message.create_at,
         }
         messageList.push(messageElement)
       }
@@ -170,9 +187,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         sender: 'self',
         type: 'text',
         uuid: messageObject.uuid,
-        isSent: false
+        isSent: false,
       }
-      setMessages([...messages, textMessage]) 
+      setMessages([...messages, textMessage])
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
@@ -199,11 +216,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       }
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
+      const timestamp = serverMessage.data.created_at;
 
       let textMessage = {
         text: messageContent,
         sender: 'user',
-        type: 'text'
+        type: 'text',
       }
 
       if (serverMessage.data.message_type === "IMAGE") {
@@ -217,7 +235,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
             text: messageContent,
             sender: 'self',
             type: 'image',
-            isSent: true
+            isSent: true,
           }
           setMessages([...messages, fileMessage]);
         } else {
@@ -243,7 +261,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           }
         }
       } else {
-        setMessages([...messages, textMessage]);      
+        setMessages([...messages, textMessage]);
       }
     }
   };
@@ -314,6 +332,29 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     setIsEmojiIconClicked(!isEmojiIconClicked);
   };
 
+
+  function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function handleReplyClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function handleDeleteClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
+    throw new Error("Function not implemented.");
+  }
+  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
+
+
+  const handleMouseEnter = (index: number) => {
+    setHoveredMessageIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredMessageIndex(null);
+  };
+
   return (
     <div className="user-box-chat">
       <div
@@ -323,7 +364,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         <div className="user">
           <div className="user-avatar">
             {/* <span>{userProp.avatar}</span> */}
-            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img' />
           </div>
           <div className="user-labels">
             <h5>{channel?.title}</h5>
@@ -392,12 +433,16 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         Test
       </div>
       <div className="message-container">
-
         {messages.map((message, index) => (
-          <div className="message-block">
+          <div
+            className={`message-block ${hoveredMessageIndex === index ? "hovered" : ""}`}
+            key={index}
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
+          >
             <div key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
-              <div>
+              className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+              <div className="message-content">
                 {message.type === "image" ? (
                   <img src={message.text.split(' ')[0]} alt={message.type}></img>
                   // <a
@@ -408,10 +453,47 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   //   {message.text}
                   // </a>
                 ) : (
-                  message.text
+                  <>
+                    <div>{message.text}</div>
+                    {message.create_at && (
+                      <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                    )}
+                  </>
                 )}
               </div>
-              
+              <div className={`icon-container ${message.sender === "user" ? "user" : "self"}`}>
+                <div className="message-icons"> {
+                  message.sender === "user" ? (
+                    hoveredMessageIndex === index && (
+                      <>
+                        <span className="icon" onClick={() => handleEmojiClick(message)}>
+                          <MdOutlineEmojiEmotions size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleReplyClick(message)}>
+                          <FaReply size={20} />
+                        </span>
+                        <span className="icon" onClick={()   => handleDeleteClick(message)}>
+                          <FiTrash size={20} />
+                        </span>
+                      </>
+                    )
+                  ) : (
+                    hoveredMessageIndex === index && (
+                      <>
+                        <span className="icon" onClick={() => handleEmojiClick(message)}>
+                          <FiTrash size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleReplyClick(message)}>
+                          <FaReply size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleDeleteClick(message)}>
+                          <MdOutlineEmojiEmotions size={20} />
+                        </span>
+                      </>
+                    )
+                  )}
+                </div>
+              </div>
             </div>
             <div className="sent-icon">
               {
