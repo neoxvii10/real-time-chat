@@ -1,6 +1,4 @@
 import { ReactComponent as Logo } from "../pattern.svg";
-import { MdOutlineCall } from "react-icons/md";
-import { HiOutlineVideoCamera } from "react-icons/hi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
 import { IoNotificationsOffOutline } from "react-icons/io5";
@@ -27,14 +25,16 @@ import { v4 as uuidv4 } from 'uuid';
 type UserType = {
   id: number,
   username: string,
-  avatar_url: string,
+  avatar_url: any,
   first_name: string,
   last_name: string,
   fullname: string
 }
 
+type UnifiedType = UserType | ChannelType;
+
 type ChannelInboxProps = {
-  channel: ChannelType;
+  channel: UnifiedType;
 };
 
 type ChannelType = {
@@ -53,11 +53,61 @@ if (_token) {
 }
 
 const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
-socket.onopen = () => {
-  console.log('WebSocket connection established');
-};
 
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
+  useEffect(() => {
+    // Establish WebSocket connection when the component mounts
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+  
+    // Close WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+      console.log('WebSocket connection closed');
+    };
+  }, []);
+  
+  const isUserType = (channel as UnifiedType).hasOwnProperty('username');
+
+  const renderHeader = () => {
+    if (isUserType) {
+      const user = channel as UserType;
+      return (
+        <div className="user">
+          <div className="user-avatar">
+            <img
+              src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              alt="avatar user"
+              className="user-avatar-img"
+            />
+          </div>
+          <div className="user-labels">
+            <h5>{user.fullname}</h5>
+            <p>Last seen now</p>
+          </div>
+        </div>
+      );
+    } else {
+      const channelInfo = channel as ChannelType;
+      return (
+        <div className="user">
+          <div className="user-avatar">
+            <img
+              src={channelInfo.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              alt="avatar user"
+              className="user-avatar-img"
+            />
+          </div>
+          <div className="user-labels">
+            <h5>{channelInfo.title}</h5>
+            <p>Last seen now</p>
+          </div>
+        </div>
+      );
+    }
+  };
+
   const messageContainer = document.querySelector('.message-container')
   const [onBottom, setOnBottom] = useState(true)
 
@@ -66,25 +116,38 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
   const [inputValue, setInputValue] = useState<string>("");
 
-  useEffect(() => {
-    const fetchMessage = async () => {
-      let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
-      let messageList = []
-      for (let message of res.data) {
-        let messageElement = {
-          text: message.content,
-          sender: (userId === message.member.user.id) ? "self" : "user",
-          type: message.message_type.toLowerCase(),
+  const fetchMessages = async (channelId: number) => {
+    try {
+      // Check if the current medium is a ChannelType
+      if (isUserType) {
+        // Handle UserType logic if needed
+        console.log(channelId)
+      } else if (channelId) {
+        // Make the API call only if channelId is defined
+        let res: any = await axiosClient.get(`api/channel/${channelId}/messages/?page=1`)
+        let messageList = []
+        for (let message of res.data) {
+          let messageElement = {
+            text: message.content,
+            sender: (userId === message.member.user.id) ? "self" : "user",
+            type: message.message_type.toLowerCase(),
+          }
+          messageList.push(messageElement)
         }
-        messageList.push(messageElement)
+        setMessages(messageList.reverse())
       }
-      setMessages(messageList.reverse())
+    } catch (error) {
+      console.error('Error fetching messages:', error);
     }
-    fetchMessage()
+  };
+  
+  useEffect(() => {
+    // Fetch messages when medium or channel.id changes
+    fetchMessages(channel.id);
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight
     }
-  }, [channel])
+  }, [channel.id, isUserType]);
 
   useEffect(() => {
     // Scroll to bottom when receive message in case user is already bottom
@@ -179,8 +242,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       setSelectedFile(null);
     }
   }
-
-
 
   // handle receive message
   socket.onmessage = (e) => {
@@ -315,180 +376,193 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   };
 
   return (
-    <div className="user-box-chat">
-      <div
-        className="user-header-container"
-        onClick={(event) => handleSlideAnimation(event)}
-      >
-        <div className="user">
-          <div className="user-avatar">
-            {/* <span>{userProp.avatar}</span> */}
-            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img' />
-          </div>
-          <div className="user-labels">
-            <h5>{channel?.title}</h5>
-            <p>Last seen now</p>
-          </div>
-        </div>
-        <div className="chat-utils">
-          <span className="util-icon-container">
-            <GoSearch size={24} className="util-icon" />
-          </span>
-          <span className="util-icon-container">
-            <BsThreeDotsVertical
-              size={22}
-              className="util-icon"
-              onClick={handleUtilsClick}
-            />
-            <div
-              className="util-container"
-              style={{
-                visibility: isUtilsVisible ? "visible" : "hidden",
-                opacity: isUtilsVisible ? 1 : 0,
-              }}
-              onMouseLeave={() => setUtilsVisible(false)}
-            >
-              <ul className="util-dropdown-item-container">
-                <li className="util-dropdown-item">
-                  <span className="dropdown-icon">
-                    <IoNotificationsOffOutline size={22} />
-                  </span>
-                  <span className="dropdown-label">Mute</span>
-                </li>
-                <li className="util-dropdown-item">
-                  <span className="dropdown-icon">
-                    <AiOutlineCheckCircle size={22} />
-                  </span>
-                  <span className="dropdown-label">Select Messages</span>
-                </li>
-                <li className="util-dropdown-item">
-                  <span className="dropdown-icon">
-                    <PiShareFat size={22} />
-                  </span>
-                  <span className="dropdown-label">Share Contact</span>
-                </li>
-                <li className="util-dropdown-item">
-                  <span className="dropdown-icon">
-                    <BiLockAlt size={22} />
-                  </span>
-                  <span className="dropdown-label">Block User</span>
-                </li>
-                <li className="util-dropdown-item">
-                  <span className="dropdown-icon alert">
-                    <FiTrash size={22} />
-                  </span>
-                  <span className="dropdown-label alert">Delete Chat</span>
-                </li>
-              </ul>
+    <>
+      {!isUserType ? 
+        <div className="user-box-chat">
+          <div
+            className="user-header-container"
+            onClick={(event) => handleSlideAnimation(event)}
+          >
+            {renderHeader()}
+            <div className="chat-utils">
+              <span className="util-icon-container">
+                <GoSearch size={24} className="util-icon" />
+              </span>
+              <span className="util-icon-container">
+                <BsThreeDotsVertical
+                  size={22}
+                  className="util-icon"
+                  onClick={handleUtilsClick}
+                />
+                <div
+                  className="util-container"
+                  style={{
+                    visibility: isUtilsVisible ? "visible" : "hidden",
+                    opacity: isUtilsVisible ? 1 : 0,
+                  }}
+                  onMouseLeave={() => setUtilsVisible(false)}
+                >
+                  <ul className="util-dropdown-item-container">
+                    <li className="util-dropdown-item">
+                      <span className="dropdown-icon">
+                        <IoNotificationsOffOutline size={22} />
+                      </span>
+                      <span className="dropdown-label">Mute</span>
+                    </li>
+                    <li className="util-dropdown-item">
+                      <span className="dropdown-icon">
+                        <AiOutlineCheckCircle size={22} />
+                      </span>
+                      <span className="dropdown-label">Select Messages</span>
+                    </li>
+                    <li className="util-dropdown-item">
+                      <span className="dropdown-icon">
+                        <PiShareFat size={22} />
+                      </span>
+                      <span className="dropdown-label">Share Contact</span>
+                    </li>
+                    <li className="util-dropdown-item">
+                      <span className="dropdown-icon">
+                        <BiLockAlt size={22} />
+                      </span>
+                      <span className="dropdown-label">Block User</span>
+                    </li>
+                    <li className="util-dropdown-item">
+                      <span className="dropdown-icon alert">
+                        <FiTrash size={22} />
+                      </span>
+                      <span className="dropdown-label alert">Delete Chat</span>
+                    </li>
+                  </ul>
+                </div>
+              </span>
             </div>
-          </span>
-        </div>
-      </div>
-      <Logo />
-      <div
-        className={`user-info ${isSlided ? "slided" : ""}`}
-        style={translateX}
-      >
-        Test
-      </div>
-      <div className="message-container">
+          </div>
+        
+          <Logo />
 
-        {messages.map((message, index) => (
-          <div className="message-block">
-            <div key={index}
-              className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
-              <div>
-                {message.type === "image" ? (
-                  <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                  // <a
-                  //   href={URL.createObjectURL(message.file)}
-                  //   download={message.file.name}
-                  //   className="file-downloader"
-                  // >
-                  //   {message.text}
-                  // </a>
-                ) : (
-                  message.text
-                )}
+          <div
+            className={`user-info ${isSlided ? "slided" : ""}`}
+            style={translateX}
+          >
+            Test
+          </div>
+
+          <div className="message-container">
+            {messages.map((message, index) => (
+              <div className="message-block">
+                <div key={index}
+                className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+                  <div>
+                    {message.type === "image" ? (
+                      <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                      // <a
+                      //   href={URL.createObjectURL(message.file)}
+                      //   download={message.file.name}
+                      //   className="file-downloader"
+                      // >
+                      //   {message.text}
+                      // </a>
+                    ) : (
+                      message.text
+                    )}
+                  </div>
+                </div>
+    
+                <div className="sent-icon">
+                  {
+                    (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
+                  }
+                </div>
               </div>
+            ))}
+          </div>
 
-            </div>
-            <div className="sent-icon">
-              {
-                (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
-              }
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="message-input-container">
-        <div className="input-container">
-          <MdOutlineEmojiEmotions
-            style={{
-              marginLeft: "0.2rem",
-              color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
-            }}
-            size={25}
-            onClick={toggleEmojiPicker}
-          />
-          {isEmojiPickerVisible && (
-            <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
-              <EmojiPicker
-                previewConfig={{
-                  defaultCaption: "Pick one!",
-                  defaultEmoji: "1f92a",
-                  showPreview: false,
+          <div className="message-input-container">
+            <div className="input-container">
+              <MdOutlineEmojiEmotions
+                style={{
+                  marginLeft: "0.2rem",
+                  color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
                 }}
-                lazyLoadEmojis={true}
-                searchDisabled
-                emojiStyle={EmojiStyle.NATIVE}
-                onEmojiClick={onClick}
+                size={25}
+                onClick={toggleEmojiPicker}
               />
+              {isEmojiPickerVisible && (
+                <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
+                  <EmojiPicker
+                    previewConfig={{
+                      defaultCaption: "Pick one!",
+                      defaultEmoji: "1f92a",
+                      showPreview: false,
+                    }}
+                    lazyLoadEmojis={true}
+                    searchDisabled
+                    emojiStyle={EmojiStyle.NATIVE}
+                    onEmojiClick={onClick}
+                  />
+                </div>
+              )}
+              <input
+                type="text"
+                className="input-area"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.currentTarget.value)}
+                onKeyDown={handleInputKeyDown}
+                placeholder="Message"
+              />
+              <div className="file-import-container" onClick={handleAttachmentButtonClick}>
+                <ImAttachment size={24} />
+                <input
+                  type="file"
+                  style={{ display: "none" }}
+                  ref={attachmentButtonRef}
+                  onChange={handleFileChange}
+                />
+              </div>
+            </div>
+            <div className="send-container" onClick={handleSendingInputs}>
+              <BiSend size={24} />
+            </div>
+          </div>
+          {popupVisible && selectedFile && (
+            <div className={`file-popup file-popup-${contentType}`}>
+              <div className="file-popup-header file">
+                <GoX size={24} onClick={handleClosePopup} />
+                <span>Send {contentType === "image" ? "Photo" : "File"}</span>
+              </div>
+              {contentType === "image" ? (
+                <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
+              ) : (
+                <div className="file-descriptions">
+                  <p>Name: {selectedFile.name}</p>
+                  <p>Type: {selectedFile.type}</p>
+                </div>
+              )}
+              <div className="file-popup-footer">
+                <input type="text" placeholder="Add a caption" />
+                <button onClick={handleSendingInputs}><span>SEND</span></button>
+              </div>
             </div>
           )}
-          <input
-            type="text"
-            className="input-area"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.currentTarget.value)}
-            onKeyDown={handleInputKeyDown}
-            placeholder="Message"
-          />
-          <div className="file-import-container" onClick={handleAttachmentButtonClick}>
-            <ImAttachment size={24} />
-            <input
-              type="file"
-              style={{ display: "none" }}
-              ref={attachmentButtonRef}
-              onChange={handleFileChange}
-            />
+        </div>
+      :
+      <div className="user-box-chat">
+        <div className="user-profile-container">
+          <div className="user-profile-ava-container">
+            <img src="https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/15_thanhtung/avatar/54a033bc-964a-49d0-a53f-dcb855e54568"
+            alt="" />
+          </div>
+          <div className="user-profile-labels-container">
+            <h4>Trieu Thanh Tung</h4>
+            <p>20 y.o developer from Viet Nam</p>
           </div>
         </div>
-        <div className="send-container" onClick={handleSendingInputs}>
-          <BiSend size={24} />
-        </div>
+        <Logo />
       </div>
-      {popupVisible && selectedFile && (
-        <div className={`file-popup file-popup-${contentType}`}>
-          <div className="file-popup-header file">
-            <GoX size={24} onClick={handleClosePopup} />
-            <span>Send {contentType === "image" ? "Photo" : "File"}</span>
-          </div>
-          {contentType === "image" ? (
-            <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
-          ) : (
-            <div className="file-descriptions">
-              <p>Name: {selectedFile.name}</p>
-              <p>Type: {selectedFile.type}</p>
-            </div>
-          )}
-          <div className="file-popup-footer">
-            <input type="text" placeholder="Add a caption" />
-            <button onClick={handleSendingInputs}><span>SEND</span></button>
-          </div>
-        </div>
-      )}
-    </div>
+    }
+    </>
+
   );
 };
 

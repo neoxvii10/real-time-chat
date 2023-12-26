@@ -16,6 +16,11 @@ import { jwtDecode } from "jwt-decode";
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
 
+import { IoPersonAddOutline } from "react-icons/io5";
+
+import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
+import SearchUserApi from '../Api/SearchUserApi'
+
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 if (_token) {
   var token = JSON.parse(_token)
@@ -27,18 +32,20 @@ socket.onopen = () => {
   console.log('User: WebSocket connection established');
 };
 
+
 type UsersTypes = {
-  onChannelClick: (selectedChannel: ChannelType) => void;
-  selectedChannel: ChannelType;
+  onChannelClick: (selectedChannel: UnifiedType) => void;
+  selectedChannel?: UnifiedType;
 };
 
 type UserType = {
   id: number,
   username: string,
-  avatar_url: string,
+  avatar_url: any,
   first_name: string,
   last_name: string,
-  fullname: string
+  fullname: string,
+  isFriend?: boolean
 }
 
 type ChannelType = {
@@ -50,7 +57,118 @@ type ChannelType = {
   create_at: string
 }
 
+type UnifiedType = UserType | ChannelType;
+
 const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
+  const users: UserType[] = [
+    {
+        first_name: "thuan",
+        last_name: "le",
+        username: "leminhthuan",
+        id: 1,
+        avatar_url: null,
+        fullname: "thuan le"
+    },
+    {
+        first_name: "ủa",
+        last_name: "alo",
+        username: "username3",
+        id: 3,
+        avatar_url: null,
+        fullname: "ủa alo"
+    },
+    {
+        first_name: "Thuận",
+        last_name: "Lê",
+        username: "thuanlee",
+        id: 5,
+        avatar_url: null,
+        fullname: "Thuận Lê"
+    },
+    {
+        first_name: "Schat",
+        last_name: "",
+        username: "schat0",
+        id: 7,
+        avatar_url: "https://lh3.googleusercontent.com/a/ACg8ocKKkadbcfcroZVRkvBtLY_lJIy8o0bv8f_3PyhtHOx-yw=s96-c",
+        fullname: "Schat "
+    },
+    {
+        first_name: "Thuận",
+        last_name: "Lê",
+        username: "lethuan",
+        id: 9,
+        avatar_url: "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=1725690177925763&width=640&ext=1700456098&hash=AeQS2DpJamIdVqwkDF",
+        fullname: "Thuận Lê"
+    },
+    {
+        first_name: "Trieu Thanh",
+        last_name: "Tung",
+        username: "thanhtung",
+        id: 15,
+        avatar_url: "https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/15_thanhtung/avatar/de35248e-bf53-49c8-948f-f81db4ab5cab",
+        fullname: "Trieu Thanh Tung"
+    },
+    {
+        first_name: "Hieu",
+        last_name: "Nguyen",
+        username: "nguyenhieu",
+        id: 22,
+        avatar_url: "https://www.google.com/search?q=anonymous+avatar&sca_esv=582289591&tbm=isch&source=lnms&sa=X&ved=2ahUKEwj62uWn6MOCAxWT1TQHHSlpAR4Q_AUoAXoECAEQAw&biw=2191&bih=1114&dpr=1.17#imgrc=34bQconw0W1WaM",
+        fullname: "Hieu Nguyen"
+    },
+    {
+        first_name: "Viet",
+        last_name: "Tran",
+        username: "cucululu",
+        id: 37,
+        avatar_url: "https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/37_cucululu/avatar/dc5f4128-e29e-4c57-a563-7ac0d5dab3fd",
+        fullname: "Viet Tran"
+    },
+    {
+        first_name: "",
+        last_name: "",
+        username: "admin",
+        id: 38,
+        avatar_url: "a",
+        fullname: " "
+    }
+];
+  // handle list friends
+
+  //api to get user list that would replace the users const rn
+  const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
+  const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
+
+  const [isSearchVisible, setSearchVisible] = useState<boolean>(false);
+
+  const handleSearchClick = () => {
+    setSearchVisible(true);
+  };
+
+  const handleSearchClose = () => {
+    setSearchVisible(false);
+    setInputValue('');
+    setFilteredUsers([]);
+    setSearchChannelList([]);
+  };
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listFriendRes = await UserApi.getFriends();
+        const channelListRes = await ChannelApi.getChannelList();
+        const searchUserListRes = await SearchUserApi.getSearchResults();
+        setListFriends(listFriendRes?.data || []);
+        setChannelList(channelListRes?.data);
+        setSearchUserList(searchUserListRes?.data.users);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, [])
+
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
 
@@ -113,40 +231,57 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleOnClick = (event: React.MouseEvent<Element, MouseEvent>) => {
+    if (!isSearchVisible) {
+      handleSearchClick();
+    } else {
+      handleSearchClose();
+    }
     const target = event.target as HTMLDivElement;
     if (target.classList.contains('back-icon')) {
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
+      setFilteredUsers([]);
+      setSearchChannelList([]);
       // Restore the default chatlist when the input is cleared
-      setFilteredUsers(listFriends);
     } else if (isClick && inputRef.current?.value === '') {
+      setFilteredUsers(users);
+      setSearchChannelList(channelList);
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
       // Restore the default chatlist when the input is cleared
-      setFilteredUsers(listFriends);
     } else if (!isClick) {
       setIsClick(true);
       setMenuRotated((prevState) => !prevState);
     }
   };
-
+  
   const handleClearInput = () => {
     setInputValue('');
-    // Restore the default chatlist when the input is cleared
-    setFilteredUsers(listFriends);
+    setIsClick(false);
   };
-
-
+  
   const filterUsers = (searchText: string) => {
     if (searchText.trim() === '') {
       // If the search input is empty, show all users
-      setFilteredUsers(listFriends);
+      setFilteredUsers([]);
+      setSearchChannelList([]);
     } else {
       // Filter the users whose name or chat contains the search text
-      const filtered = listFriends.filter((user) =>
+      const filtered = users.filter((user) =>
         user.fullname.toLowerCase().includes(searchText.toLowerCase())
       );
-      setFilteredUsers(filtered);
+
+      // Compare with friends list and add 'isFriend' property to each user
+      const filteredWithFriendStatus = filtered.map((user) => ({
+        ...user,
+        isFriend: listFriends.some((friend) => friend.id === user.id),
+      }));
+
+      setFilteredUsers(filteredWithFriendStatus);
+      const filteredChannels = channelList.filter((channel) =>
+      channel.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setSearchChannelList(filteredChannels);
     }
   };
 
@@ -155,7 +290,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
     setInputValue(searchText);
     filterUsers(searchText);
   };
-
 
   const [isMenuVisible, setMenuVisible] = useState(false);
 
@@ -230,11 +364,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
               </li>
-              <li>
-                <span className='dropdown-icon'><BsCloudCheck size={22} /></span>
-                <span className='dropdown-label'>My Cloud</span>
-              </li>
-              <li onClick={e => handleSlideAnimationForFriends(e)}>
+              <li onClick={handleSlideAnimationForFriends}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Friends</span>
               </li>
@@ -282,6 +412,58 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
           )}
         </div>
       </div>
+      {isSearchVisible ? 
+      <div className="search-results">
+        <div className="user-list-container">
+          <div className="user-list-header-container">
+            <h4>Users</h4>
+          </div>
+          <ul>
+            {filteredUsers?.map((user) => (
+              <li
+                key={user.id}
+                onClick={() => onChannelClick(user)} 
+                className={(selectedChannel === user) ? 'user-selected' : ''}
+              >
+                <div className="user">
+                  <div className="user-avatar">
+                    <img src={user.avatar_url} alt="avatar user" className="user-avatar-img" />
+                  </div>
+                  <div className="user-label-timestamps">
+                    <div className="user-labels">
+                      <h5>{user.fullname}</h5>
+                    </div>
+                    {!user.isFriend && <IoPersonAddOutline size={20} />}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="channel-list-container">
+          <div className="channel-list-header-container">
+            <h4>Channels</h4>
+          </div>
+          <ul>
+            {searchChannelList?.map((channel) => (
+              <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
+              className={(selectedChannel === channel) ? 'user-selected' : ''}>
+                <div className="user">
+                  <div className="user-avatar">
+                    <img src={channel.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+                  </div>
+                  <div className="user-label-timestamps">
+                    <div className="user-labels">
+                      <h5>{channel.title}</h5>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div> : 
       <div className="chatlist-container">
         <ul>
           {channelList.map((channel) => (
@@ -303,6 +485,8 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
           ))}
         </ul>
       </div>
+      }
+
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
       <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
      </div>
