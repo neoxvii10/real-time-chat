@@ -216,7 +216,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       }
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
-      const timestamp = serverMessage.data.created_at;
 
       let textMessage = {
         text: messageContent,
@@ -434,83 +433,58 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       </div>
       <div className="message-container">
         {messages.map((message, index) => (
-          <>
-            <div
-              className={`message-block 
-              ${message.sender === "self" ? "self" : "user"} 
-              ${hoveredMessageIndex === index ? "hovered" : ""}
-              `}
-              key={index}
-            >
-
-                <div key={index}
-                  className={`message ${message.type === "image" ? "image" : ""}`}
-                  onMouseEnter={() => handleMouseEnter(index)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <div className="message-content">
-                    {message.type === "image" ? (
-                      <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                      // <a
-                      //   href={URL.createObjectURL(message.file)}
-                      //   download={message.file.name}
-                      //   className="file-downloader"
-                      // >
-                      //   {message.text}
-                      // </a>
-                    ) : (
+          <div
+            className={`message-block ${hoveredMessageIndex === index ? "hovered" : ""}`}
+            key={index}
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div key={index}
+              className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+              <div className="message-content">
+                {message.type === "image" ? (
+                  <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                  // <a
+                  //   href={URL.createObjectURL(message.file)}
+                  //   download={message.file.name}
+                  //   className="file-downloader"
+                  // >
+                  //   {message.text}
+                  // </a>
+                ) : (
+                  <>
+                    <div>{message.text}</div>
+                    {message.create_at && (
+                      <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="icon-container">
+                <div className="message-icons"> 
+                    {/* hoveredMessageIndex === index && ( */}
                       <>
-                        <div>{message.text}</div>
-                        {message.create_at && (
-                          <div className="timestamp">{formatTimestamp(message.create_at)}</div>
-                        )}
+                        <span className="icon" onClick={() => handleEmojiClick(message)}>
+                          <MdOutlineEmojiEmotions size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleReplyClick(message)}>
+                          <FaReply size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleDeleteClick(message)}>
+                          <FiTrash size={20} />
+                        </span>
                       </>
-                    )}
-                  </div>
+                    
+                  {/* )  */}
                 </div>
-                
-                <div className="sent-icon">
-                  {
-                    (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
-                  }
-                </div>
-
-                <div className={`icon-container ${message.sender === "user" ? "user" : "self"}`}>
-                  <div className="message-icons"> 
-                    {message.sender === "user" ? (
-                      hoveredMessageIndex === index && (
-                        <>
-                          <span className="icon" onClick={() => handleEmojiClick(message)}>
-                            <MdOutlineEmojiEmotions size={20} />
-                          </span>
-                          <span className="icon" onClick={() => handleReplyClick(message)}>
-                            <FaReply size={20} />
-                          </span>
-                          <span className="icon" onClick={()   => handleDeleteClick(message)}>
-                            <FiTrash size={20} />
-                          </span>
-                        </>
-                      )
-                    ) : (
-                      hoveredMessageIndex === index && (
-                        <>
-                          <span className="icon" onClick={() => handleEmojiClick(message)}>
-                            <FiTrash size={20} />
-                          </span>
-                          <span className="icon" onClick={() => handleReplyClick(message)}>
-                            <FaReply size={20} />
-                          </span>
-                          <span className="icon" onClick={() => handleDeleteClick(message)}>
-                            <MdOutlineEmojiEmotions size={20} />
-                          </span>
-                        </>
-                      )
-                    )}
-                  </div>
-                </div>
-
+              </div>
             </div>
-          </>
+            <div className="sent-icon">
+              {
+                (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
+              }
+            </div>
+          </div>
         ))}
       </div>
       <div className="message-input-container">
