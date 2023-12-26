@@ -10,6 +10,7 @@ import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
+import { IoPersonAddOutline } from "react-icons/io5";
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
@@ -27,7 +28,8 @@ type UserType = {
   avatar_url: any,
   first_name: string,
   last_name: string,
-  fullname: string
+  fullname: string,
+  isFriend?: boolean
 }
 
 type ChannelType = {
@@ -121,7 +123,8 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
 
   //api to get user list that would replace the users const rn
-  const [searchList, setSearchList] = useState<ChannelType[]>([]);
+  const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
+  const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
   const [channelList, setChannelList] = useState<ChannelType[]>([]);
 
   const [isSearchVisible, setSearchVisible] = useState<boolean>(false);
@@ -134,7 +137,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
     setSearchVisible(false);
     setInputValue('');
     setFilteredUsers([]);
-    setSearchList([]);
+    setSearchChannelList([]);
   };
   
   useEffect(() => {
@@ -142,8 +145,10 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       try {
         const listFriendRes = await UserApi.getFriends();
         const channelListRes = await ChannelApi.getChannelList();
-        setListFriends(listFriendRes?.data);
+        const searchUserListRes = await SearchUserApi.getSearchResults();
+        setListFriends(listFriendRes?.data || []);
         setChannelList(channelListRes?.data);
+        setSearchUserList(searchUserListRes?.data.users);
       } catch (error) {
         console.log(error);
       }
@@ -188,11 +193,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
       setFilteredUsers([]);
-      setSearchList([]);
+      setSearchChannelList([]);
       // Restore the default chatlist when the input is cleared
     } else if (isClick && inputRef.current?.value === '') {
       setFilteredUsers(users);
-      setSearchList(channelList);
+      setSearchChannelList(channelList);
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
       // Restore the default chatlist when the input is cleared
@@ -211,17 +216,24 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
     if (searchText.trim() === '') {
       // If the search input is empty, show all users
       setFilteredUsers([]);
-      setSearchList([]);
+      setSearchChannelList([]);
     } else {
       // Filter the users whose name or chat contains the search text
       const filtered = users.filter((user) =>
         user.fullname.toLowerCase().includes(searchText.toLowerCase())
       );
-      setFilteredUsers(filtered);
+
+      // Compare with friends list and add 'isFriend' property to each user
+      const filteredWithFriendStatus = filtered.map((user) => ({
+        ...user,
+        isFriend: listFriends.some((friend) => friend.id === user.id),
+      }));
+
+      setFilteredUsers(filteredWithFriendStatus);
       const filteredChannels = channelList.filter((channel) =>
       channel.title.toLowerCase().includes(searchText.toLowerCase())
       );
-      setSearchList(filteredChannels);
+      setSearchChannelList(filteredChannels);
     }
   };
 
@@ -287,10 +299,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
               <li onClick={e => handleSlideAnimationForProfile(e)}>
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
-              </li>
-              <li>
-                <span className='dropdown-icon'><BsCloudCheck size={22} /></span>
-                <span className='dropdown-label'>My Cloud</span>
               </li>
               <li>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
@@ -361,6 +369,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
                     <div className="user-labels">
                       <h5>{user.fullname}</h5>
                     </div>
+                    {!user.isFriend && <IoPersonAddOutline size={20} />}
                   </div>
                 </div>
               </li>
@@ -373,7 +382,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
             <h4>Channels</h4>
           </div>
           <ul>
-            {searchList?.map((channel) => (
+            {searchChannelList?.map((channel) => (
               <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
               className={(selectedChannel === channel) ? 'user-selected' : ''}>
                 <div className="user">
@@ -413,8 +422,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
         </ul>
       </div>
       }
-      
-      
+
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
      </div>
   );

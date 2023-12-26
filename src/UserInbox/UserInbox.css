@@ -28,6 +28,46 @@
   stroke: var(--stroke-color);
 }
 
+.user-profile-container {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  left: calc(50% + 5.5rem);
+  top: 5rem;
+}
+
+.user-profile-ava-container {
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  max-width: 13rem;
+  max-height: 13rem;
+  overflow: hidden;
+}
+
+.user-profile-ava-container img {
+  border-radius: 50%;
+  max-width: 13rem;
+  max-height: 13rem;
+}
+
+.user-profile-labels-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-profile-labels-container h4 {
+  font-size: 1.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.user-profile-labels-container p {
+  filter: brightness(85%);
+}
+
 /*styling for UserInbox*/
 .user-header-container {
   width: 64%;
@@ -56,11 +96,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.6rem;
+  padding: 0.5rem;
   background: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
   border-radius: 50%;
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .user-header-container .user-avatar span {
@@ -119,7 +159,7 @@ h5, p {
 }
 
 .util-container {
-  z-index: 4;
+  z-index: 6;
   width: 12rem;
   position: absolute;
   cursor: pointer;
@@ -134,7 +174,7 @@ h5, p {
 .util-container ul {
   padding: 0.4rem 0.2rem;
   width: 12rem;
-  z-index: 3;
+  z-index: 6;
   position: absolute;
   top: 60%;
   display: flex;
@@ -171,7 +211,7 @@ h5, p {
 
 .message-input-container {
   display: flex;
-  width: 60%;
+  width: 58%;
   align-items: center;
   position: fixed;
   z-index: 6;
@@ -180,7 +220,10 @@ h5, p {
   margin-left: 2rem;
   padding: 1rem;
   gap: 0.8rem;
-  
+}
+
+.alert {
+  color: rgb(205, 83, 83);
 }
 
 .input-container {
@@ -405,14 +448,14 @@ h5, p {
 
 .message-container {
   position: absolute;
-  z-index: 5;
-  width: 63%;
+  z-index: 2;
+  width: 58.5%;
   display: grid;
   top: 4rem;
-  gap: 0.3rem;
+  gap: 0.2rem;
   overflow-y: auto;
-  max-height: 80vh;
-  margin-left: 0.8rem;
+  max-height: 74vh;
+  margin-left: 2.5rem;
 }
 
 .message-block {
