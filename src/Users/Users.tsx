@@ -11,9 +11,21 @@ import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
 import Friends from './Friends/Friends';
+import { jwtDecode } from "jwt-decode";
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
+
+const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+if (_token) {
+  var token = JSON.parse(_token)
+  var userId = (jwtDecode(token) as any).user_id
+}
+
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+socket.onopen = () => {
+  console.log('User: WebSocket connection established');
+};
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: ChannelType) => void;
@@ -39,27 +51,6 @@ type ChannelType = {
 }
 
 const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
-  // handle list friends
-  const [listFriends, setListFriends] = useState<UserType[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
-  const [channelList, setChannelList] = useState<ChannelType[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const listFriendRes = await UserApi.getFriends();
-        const channelListRes = await ChannelApi.getChannelList()
-        setListFriends(listFriendRes?.data)
-        setChannelList(channelListRes?.data);
-        // console.log(listFriendRes);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchData();
-    // console.log("listFriend: ", listFriends);
-  }, [])
-
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
 
@@ -79,6 +70,41 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
     }));
   };
+
+
+  // handle list friends
+  const [listFriends, setListFriends] = useState<UserType[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
+  const [channelList, setChannelList] = useState<ChannelType[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listFriendRes = await UserApi.getFriends();
+        setListFriends(listFriendRes?.data)
+        const channelListRes = await ChannelApi.getChannelList()
+        setChannelList(channelListRes?.data);
+        // console.log(listFriendRes);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+    // console.log("listFriend: ", listFriends);
+  }, [translateX])
+
+  // hanle socket get new channel
+  socket.onmessage = (e) => {
+    const serverMessage = JSON.parse(e.data);
+
+    if (serverMessage.action === "create_channel") {
+      setTimeout( async () => {
+        const channelListRes = await ChannelApi.getChannelList()
+        setChannelList(channelListRes?.data);
+      }, 1000)
+    }
+  }
+
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
