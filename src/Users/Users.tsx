@@ -16,7 +16,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
-import SearchUserApi from '../Api/SearchUserApi'
+import SearchUserApi from '../Api/SearchUserApi';
+import UserNotiApi from '../Api/UserNotiApi';
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: UnifiedType) => void;
@@ -45,7 +46,19 @@ type ChannelType = {
   create_at: string
 }
 
+type NotiType = {
+  sender: UserType;
+  notification_type: string;
+  create_at: string;
+}
+
 type UnifiedType = UserType | ChannelType;
+
+export enum ScreenTypes {
+  HomeScreen = 'homeScreen',
+  SearchScreen = 'searchScreen',
+  RequestScreen = 'requestScreen'
+}
 
 const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket }) => {
   useEffect(() => {
@@ -72,17 +85,12 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
   const [channelList, setChannelList] = useState<ChannelType[]>([]);
 
-  const [isSearchVisible, setSearchVisible] = useState<boolean>(false);
+  const [currentScreen, setCurrentScreen] = useState(ScreenTypes.HomeScreen);
+
+  const [userNoti, setUserNoti] = useState<NotiType[]>([]);
 
   const handleSearchClick = () => {
-    setSearchVisible(true);
-  };
-
-  const handleSearchClose = () => {
-    setSearchVisible(false);
-    setInputValue('');
-    setFilteredUsers([]);
-    setSearchChannelList([]);
+    setCurrentScreen(ScreenTypes.SearchScreen);
   };
   
   useEffect(() => {
@@ -91,9 +99,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         const listFriendRes = await UserApi.getFriends();
         const channelListRes = await ChannelApi.getChannelList();
         const searchUserListRes = await SearchUserApi.getSearchResults();
+        const userNotiRes = await UserNotiApi.getUserNotis();
         setListFriends(listFriendRes?.data || []);
         setChannelList(channelListRes?.data);
         setSearchUserList(searchUserListRes?.data.users);
+        setUserNoti(userNotiRes?.data);
       } catch (error) {
         console.log(error);
       }
@@ -109,7 +119,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     opacity: 0,
     transform: 'translateX(-480px)',
   });
-
 
   const handleSlideAnimation = () => {
     setSlided(!isSlided);
@@ -128,10 +137,17 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleOnClick = (event: React.MouseEvent<Element, MouseEvent>) => {
-    if (!isSearchVisible) {
-      handleSearchClick();
+    if (currentScreen === ScreenTypes.SearchScreen || currentScreen === ScreenTypes.RequestScreen) {
+      // Handle back functionality for SearchScreen and RequestScreen
+      setIsClick(false);
+      setMenuRotated((prevState) => !prevState);
+      setInputValue('');
+      setFilteredUsers([]);
+      setSearchChannelList([]);
+      setCurrentScreen(ScreenTypes.HomeScreen);
     } else {
-      handleSearchClose();
+      // Handle other cases, such as opening the SearchScreen
+      handleSearchClick();
     }
     const target = event.target as HTMLDivElement;
     if (target.classList.contains('back-icon')) {
@@ -155,6 +171,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   const handleClearInput = () => {
     setInputValue('');
     setIsClick(false);
+    setCurrentScreen(ScreenTypes.HomeScreen);
   };
   
   const filterUsers = (searchText: string) => {
@@ -221,8 +238,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }
   });
 
-  
-
   const handleSendingRequest = async (user: UserType) => {
     try {
       let friendRq = {
@@ -274,6 +289,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       console.error("Error sending/canceling friend request:", error);
     }
   };
+
+  const handleAccessRqPage = () => {
+    setCurrentScreen(ScreenTypes.RequestScreen);
+    setIsClick(true);
+  }
   
   return (
     <div className="users-container">
@@ -315,7 +335,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Contacts</span>
               </li> */}
-              <li>
+              <li onClick={() => handleAccessRqPage()}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Requests</span>
               </li>
@@ -363,7 +383,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
           )}
         </div>
       </div>
-      {isSearchVisible ? 
+      {currentScreen === ScreenTypes.SearchScreen &&
       <div className="search-results">
         <div className="user-list-container">
           <div className="user-list-header-container">
@@ -427,7 +447,10 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
             ))}
           </ul>
         </div>
-      </div> : 
+      </div> 
+      }
+
+      {currentScreen === ScreenTypes.HomeScreen &&
       <div className="chatlist-container">
         <ul>
           {channelList.map((channel) => (
@@ -451,6 +474,12 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       </div>
       }
 
+      {currentScreen === ScreenTypes.RequestScreen &&
+      <div className='request-list-container'>
+      
+      </div>
+      }
+    
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
      </div>
   );

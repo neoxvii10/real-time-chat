@@ -411,3 +411,15 @@ p {
   justify-content: left;
   padding: 0.6rem 0 0.6rem 0.8rem;
 }
+
+.request-list-container:hover {
+  overflow-y: auto;
+}
+
+.request-list-container {
+  margin-top: 3.6rem;
+  padding: 0 0.6rem 0.6rem;
+  overflow-y: hidden;
+  height: calc(100vh - 4.2rem);
+  overflow-x: hidden;
+}
