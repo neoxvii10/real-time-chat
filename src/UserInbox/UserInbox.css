@@ -519,14 +519,11 @@ p {
   }
 }
 
-.icon-container {
+.message-container .icon-container {
   position: relative;
   left: 85px;
   top: -30px;
 }
-
-
-
 
 .timestamp {
   position: relative;
