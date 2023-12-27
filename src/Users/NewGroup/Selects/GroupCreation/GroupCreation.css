@@ -32,6 +32,11 @@
   overflow-y: auto;
 }
 
+.gr-creation-bot ul {
+  width: 100%;
+}
+
+
 .gr-number {
   padding: 1.2rem 1.2rem 0.8rem;
   text-align: left;
@@ -55,7 +60,7 @@
 }
 
 .gr-creation-bot ul li {
-  width: 100%;
+  /* width: 100%; */
   padding: 0.3rem 0.6rem;
   border-radius: 8px;
   background: var(--background-color);
@@ -225,4 +230,12 @@
   right: -100vw;
   top: -100vh;
   bottom: -100vh;
+}
+
+.new-group-info {
+  margin: 0 20px;
+}
+
+.input-group {
+
 }

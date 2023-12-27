@@ -41,6 +41,11 @@ class UserApi {
         const url = '/api/user/all/';
         return await axiosClient.get(url);
     }
+
+    deleteFriend = async (userId: number) => {
+        const url = `/api/user/friend/${userId}/`
+        return await axiosClient.delete(url);
+    }
 }
 
 export default new UserApi();

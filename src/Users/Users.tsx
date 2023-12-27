@@ -18,6 +18,21 @@ import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
 import SearchUserApi from '../Api/SearchUserApi';
 import UserNotiApi from '../Api/UserNotiApi';
+import Friends from './Friends/Friends';
+import { jwtDecode } from "jwt-decode";
+import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
+
+const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+if (_token) {
+  var token = JSON.parse(_token)
+  var userId = (jwtDecode(token) as any).user_id
+}
+
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+socket.onopen = () => {
+  console.log('User: WebSocket connection established');
+};
+
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: UnifiedType) => void;
@@ -77,13 +92,10 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
 
   // handle list friends
-  const [listFriends, setListFriends] = useState<UserType[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
 
   //api to get user list that would replace the users const rn
   const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
   const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
-  const [channelList, setChannelList] = useState<ChannelType[]>([]);
 
   const [currentScreen, setCurrentScreen] = useState(ScreenTypes.HomeScreen);
 
@@ -129,6 +141,41 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
     }));
   };
+
+
+  // handle list friends
+  const [listFriends, setListFriends] = useState<UserType[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
+  const [channelList, setChannelList] = useState<ChannelType[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listFriendRes = await UserApi.getFriends();
+        setListFriends(listFriendRes?.data)
+        const channelListRes = await ChannelApi.getChannelList()
+        setChannelList(channelListRes?.data);
+        // console.log(listFriendRes);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+    // console.log("listFriend: ", listFriends);
+  }, [translateX])
+
+  // hanle socket get new channel
+  socket.onmessage = (e) => {
+    const serverMessage = JSON.parse(e.data);
+
+    if (serverMessage.action === "create_channel") {
+      setTimeout( async () => {
+        const channelListRes = await ChannelApi.getChannelList()
+        setChannelList(channelListRes?.data);
+      }, 1000)
+    }
+  }
+
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
@@ -295,6 +342,22 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     setIsClick(true);
   }
   
+  // visible list friends
+  const [translateXforFriends, setTranslateXforFriends] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-480px)',
+  });
+
+  const handleSlideAnimationForFriends = (event: React.MouseEvent<Element>) => {
+    setTranslateXforFriends((translateXforFriends) => ({
+      ...translateXforFriends,
+      visibility: 'visible',
+      opacity: 1,
+      transform: 'translateX(0px)',
+    }));
+  };
+
   return (
     <div className="users-container">
       <ToastContainer />
@@ -331,13 +394,13 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
               </li>
-              {/* <li>
-                <span className='dropdown-icon'><BsPerson size={22} /></span>
-                <span className='dropdown-label'>Contacts</span>
-              </li> */}
               <li onClick={() => handleAccessRqPage()}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Requests</span>
+              </li>
+              <li onClick={handleSlideAnimationForFriends}>
+                <span className='dropdown-icon'><BsPerson size={22} /></span>
+                <span className='dropdown-label'>Friends</span>
               </li>
               <li>
                 <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22} /></span>
@@ -481,6 +544,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       }
     
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
+      <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
      </div>
   );
 }

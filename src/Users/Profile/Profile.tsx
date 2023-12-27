@@ -17,6 +17,7 @@ import EditProfile from './Edit/EditProfile';
 import ChangePassword from './ChangePassword/ChangePassword';
 import ChangeEmail from './ChangeEmail/ChangeEmail';
 import UserProfileApi from '../../Api/UserProfileApi';
+import { useAuth } from '../../Hooks/AuthContext';
 
 type ProfileProps = {
     translateX: CSSProperties;
@@ -39,6 +40,7 @@ type TypeUserProfile = {
 }
 
 const Profile: React.FC<ProfileProps> = ({ translateX, setTranslateX }) => {
+   
 
     // handle slide for profile
     const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
@@ -135,12 +137,13 @@ const Profile: React.FC<ProfileProps> = ({ translateX, setTranslateX }) => {
     }, [translateXForEdit])
 
     // logout
+    const {handleLogout} = useAuth();
+
     const navigate = useNavigate();
 
-    const handleLogout = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleSubmitLogout = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.preventDefault();
-        await localStorage.removeItem('accessToken');
-        await localStorage.removeItem('user');
+        handleLogout();
         navigate('/signin');
     }
 
@@ -167,7 +170,7 @@ const Profile: React.FC<ProfileProps> = ({ translateX, setTranslateX }) => {
                                 onMouseLeave={() => setvisibleLogout(false)}
                             >
 
-                                <div className='wrapper' onClick={handleLogout}>
+                                <div className='wrapper' onClick={handleSubmitLogout}>
                                     <span className='logout-icon'><TbLogout size={22} /></span>
                                     <span className='logout-lable'>Log out</span>
                                 </div>

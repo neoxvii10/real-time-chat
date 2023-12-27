@@ -107,7 +107,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
   const [onBottom, setOnBottom] = useState(true)
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean}[]>([]);
+  const [messages, setMessages] = useState<{ text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean }[]>([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -232,7 +232,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         uuid: messageObject.uuid,
         isSent: false
       }
-      setMessages([...messages, textMessage]) 
+      setMessages([...messages, textMessage])
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
@@ -301,7 +301,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
           }
         }
       } else {
-        setMessages([...messages, textMessage]);      
+        setMessages([...messages, textMessage]);
       }
     }
   });
