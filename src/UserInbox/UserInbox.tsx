@@ -55,7 +55,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id
 }
 
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
