@@ -3,6 +3,9 @@ import Users from '../Users/Users';
 import UserInbox from '../UserInbox/UserInbox';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
+import axiosClient from "../Api/AxiosClient";
+import { v4 as uuidv4 } from 'uuid';
 
 // use api
 type UserType = {
@@ -24,6 +27,14 @@ type ChannelType = {
 }
 
 type UnifiedType = UserType | ChannelType;
+
+const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+if (_token) {
+  var token = JSON.parse(_token)
+  var userId = (jwtDecode(token) as any).user_id
+}
+
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
 
 function HomePage() {
   const [user, setUser] = useState<UserType>({
@@ -61,13 +72,12 @@ function HomePage() {
   };
 
   const isUserType = medium && medium.hasOwnProperty('username');
-  console.log(medium);
-  console.log(isUserType);
 
   return (
     <div className="HomePage">
-      <Users onChannelClick={handleChannelClick} selectedChannel={medium} />
-      { isUserType ? <UserInbox channel={user} /> : <UserInbox channel={channel} /> }
+      <Users onChannelClick={handleChannelClick} selectedChannel={medium} userId={userId} socket={socket}/>
+      { isUserType ? <UserInbox channel={user} userId={userId} socket={socket}/>
+      : <UserInbox channel={channel} userId={userId} socket={socket}/> }
       
     </div>
   );

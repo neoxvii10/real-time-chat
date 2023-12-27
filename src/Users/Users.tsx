@@ -2,7 +2,7 @@ import { useState, useRef, CSSProperties, useEffect } from 'react';
 import './Users.css';
 import { FiMenu } from 'react-icons/fi'
 import { GoSearch, GoX } from 'react-icons/go'
-import { BsCloudCheck, BsPerson, BsPeople } from 'react-icons/bs'
+import { BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
 import { FaArrowLeft } from 'react-icons/fa6'
@@ -10,16 +10,19 @@ import { ImProfile } from 'react-icons/im'
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
 import Profile from './Profile/Profile';
-import { IoPersonAddOutline } from "react-icons/io5";
+import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
-import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
 import SearchUserApi from '../Api/SearchUserApi'
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: UnifiedType) => void;
   selectedChannel?: UnifiedType;
+  userId: number;
+  socket: WebSocket;
 };
 
 type UserType = {
@@ -29,7 +32,8 @@ type UserType = {
   first_name: string,
   last_name: string,
   fullname: string,
-  isFriend?: boolean
+  isFriend?: boolean,
+  hasSentFriendRq?: boolean;
 }
 
 type ChannelType = {
@@ -43,81 +47,22 @@ type ChannelType = {
 
 type UnifiedType = UserType | ChannelType;
 
-const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
-  const users: UserType[] = [
-    {
-        first_name: "thuan",
-        last_name: "le",
-        username: "leminhthuan",
-        id: 1,
-        avatar_url: null,
-        fullname: "thuan le"
-    },
-    {
-        first_name: "ủa",
-        last_name: "alo",
-        username: "username3",
-        id: 3,
-        avatar_url: null,
-        fullname: "ủa alo"
-    },
-    {
-        first_name: "Thuận",
-        last_name: "Lê",
-        username: "thuanlee",
-        id: 5,
-        avatar_url: null,
-        fullname: "Thuận Lê"
-    },
-    {
-        first_name: "Schat",
-        last_name: "",
-        username: "schat0",
-        id: 7,
-        avatar_url: "https://lh3.googleusercontent.com/a/ACg8ocKKkadbcfcroZVRkvBtLY_lJIy8o0bv8f_3PyhtHOx-yw=s96-c",
-        fullname: "Schat "
-    },
-    {
-        first_name: "Thuận",
-        last_name: "Lê",
-        username: "lethuan",
-        id: 9,
-        avatar_url: "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=1725690177925763&width=640&ext=1700456098&hash=AeQS2DpJamIdVqwkDF",
-        fullname: "Thuận Lê"
-    },
-    {
-        first_name: "Trieu Thanh",
-        last_name: "Tung",
-        username: "thanhtung",
-        id: 15,
-        avatar_url: "https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/15_thanhtung/avatar/de35248e-bf53-49c8-948f-f81db4ab5cab",
-        fullname: "Trieu Thanh Tung"
-    },
-    {
-        first_name: "Hieu",
-        last_name: "Nguyen",
-        username: "nguyenhieu",
-        id: 22,
-        avatar_url: "https://www.google.com/search?q=anonymous+avatar&sca_esv=582289591&tbm=isch&source=lnms&sa=X&ved=2ahUKEwj62uWn6MOCAxWT1TQHHSlpAR4Q_AUoAXoECAEQAw&biw=2191&bih=1114&dpr=1.17#imgrc=34bQconw0W1WaM",
-        fullname: "Hieu Nguyen"
-    },
-    {
-        first_name: "Viet",
-        last_name: "Tran",
-        username: "cucululu",
-        id: 37,
-        avatar_url: "https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/37_cucululu/avatar/dc5f4128-e29e-4c57-a563-7ac0d5dab3fd",
-        fullname: "Viet Tran"
-    },
-    {
-        first_name: "",
-        last_name: "",
-        username: "admin",
-        id: 38,
-        avatar_url: "a",
-        fullname: " "
-    }
-];
+const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket }) => {
+  useEffect(() => {
+    // Establish WebSocket connection when the component mounts
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+  
+    // Close WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+      console.log('WebSocket connection closed');
+    };
+  }, []);
+
+  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+
   // handle list friends
   const [listFriends, setListFriends] = useState<UserType[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
@@ -196,7 +141,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       setSearchChannelList([]);
       // Restore the default chatlist when the input is cleared
     } else if (isClick && inputRef.current?.value === '') {
-      setFilteredUsers(users);
+      setFilteredUsers(searchUserList);
       setSearchChannelList(channelList);
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
@@ -219,7 +164,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       setSearchChannelList([]);
     } else {
       // Filter the users whose name or chat contains the search text
-      const filtered = users.filter((user) =>
+      const filtered = searchUserList.filter((user) =>
         user.fullname.toLowerCase().includes(searchText.toLowerCase())
       );
 
@@ -227,6 +172,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
       const filteredWithFriendStatus = filtered.map((user) => ({
         ...user,
         isFriend: listFriends.some((friend) => friend.id === user.id),
+        hasSentFriendRq: false
       }));
 
       setFilteredUsers(filteredWithFriendStatus);
@@ -265,8 +211,73 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
     }));
   };
 
+  // handle receive message
+  socket.addEventListener("message", function(e) {
+    // Parse the JSON data from the server
+    const serverMessage = JSON.parse(e.data);
+
+    if (serverMessage.action === "friend_request") {
+      console.log("A friend sended you a request.");
+    }
+  });
+
+  
+
+  const handleSendingRequest = async (user: UserType) => {
+    try {
+      let friendRq = {
+        action: "friend_request",
+        target: "user",
+        targetId: user.id
+      };
+  
+      const friendRqJSON = JSON.stringify(friendRq);
+  
+      if (!isOpen(socket)) {
+        console.log("WebSocket connection is not open");
+        return;
+      }
+
+      if (!user.hasSentFriendRq) {
+        toast.success('Request sent successfully!', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeOnClick: false
+        });
+      } else {
+        toast.success('Request unsent successfully!', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeOnClick: false
+        });
+      }
+  
+      // Send friend request or cancel friend request
+      socket.send(friendRqJSON);
+      // Update the state based on the action
+      const updatedFriends = filteredUsers.map((friend) => {
+        if (friend.id === user.id) {
+          // Toggle hasSentFriendRq for the specific user
+          return { ...friend, hasSentFriendRq: !friend.hasSentFriendRq };
+        }
+        return friend;
+      });
+  
+      setFilteredUsers(updatedFriends);
+
+      console.log("Request has been sent!");
+    } catch (error) {
+      console.error("Error sending/canceling friend request:", error);
+    }
+  };
+  
   return (
     <div className="users-container">
+      <ToastContainer />
       <NewGroup
       translateX={translateX}
       handleSlideAnimation={handleSlideAnimation}
@@ -300,9 +311,13 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
               </li>
-              <li>
+              {/* <li>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Contacts</span>
+              </li> */}
+              <li>
+                <span className='dropdown-icon'><BsPerson size={22} /></span>
+                <span className='dropdown-label'>Requests</span>
               </li>
               <li>
                 <span className='dropdown-icon'><WiMoonAltThirdQuarter size={22} /></span>
@@ -369,7 +384,20 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel }) => {
                     <div className="user-labels">
                       <h5>{user.fullname}</h5>
                     </div>
-                    {!user.isFriend && <IoPersonAddOutline size={20} />}
+                    {!user.isFriend ? 
+                      (!user.hasSentFriendRq 
+                      ? 
+                      <IoPersonAddOutline size={22} 
+                      onClick={() => handleSendingRequest(user)}
+                      />
+                      :
+                      <IoPersonRemoveOutline size={22} 
+                      onClick={() => handleSendingRequest(user)} 
+                      />
+                      )
+                      : 
+                      <></>      
+                    }
                   </div>
                 </div>
               </li>

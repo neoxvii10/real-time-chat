@@ -10,9 +10,8 @@ import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GoSearch, GoX } from 'react-icons/go'
-import { CSSProperties, useCallback } from "react";
+import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
-import { jwtDecode } from "jwt-decode";
 import EmojiPicker, {
   EmojiStyle,
   EmojiClickData,
@@ -20,6 +19,7 @@ import EmojiPicker, {
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
+import UserProfileApi from '../Api/UserProfileApi';
 
 // use api
 type UserType = {
@@ -35,6 +35,8 @@ type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
   channel: UnifiedType;
+  userId: number;
+  socket: WebSocket;
 };
 
 type ChannelType = {
@@ -46,15 +48,8 @@ type ChannelType = {
   create_at: string
 }
 
-const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-if (_token) {
-  var token = JSON.parse(_token)
-  var userId = (jwtDecode(token) as any).user_id
-}
 
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
-
-const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
+const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
@@ -116,12 +111,15 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
   const [inputValue, setInputValue] = useState<string>("");
 
+  const [userProfile, setUserProfile] = useState<any>();
+
   const fetchMessages = async (channelId: number) => {
     try {
       // Check if the current medium is a ChannelType
       if (isUserType) {
         // Handle UserType logic if needed
-        console.log(channelId)
+        let profileRes: any = await UserProfileApi.getChatProfile(channelId);
+        setUserProfile(profileRes?.data);
       } else if (channelId) {
         // Make the API call only if channelId is defined
         let res: any = await axiosClient.get(`api/channel/${channelId}/messages/?page=1`)
@@ -198,7 +196,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
 
-
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
 
@@ -244,7 +241,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   }
 
   // handle receive message
-  socket.onmessage = (e) => {
+  socket.addEventListener("message", function(e) {
     // Parse the JSON data from the server
     const serverMessage = JSON.parse(e.data);
 
@@ -307,7 +304,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         setMessages([...messages, textMessage]);      
       }
     }
-  };
+  });
 
 
   const [popupVisible, setPopupVisible] = useState(false);
@@ -548,16 +545,18 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         </div>
       :
       <div className="user-box-chat">
+        {userProfile && (
         <div className="user-profile-container">
           <div className="user-profile-ava-container">
-            <img src="https://s3.ap-east-1.amazonaws.com/bucket.thuanlee215/upload/user/15_thanhtung/avatar/54a033bc-964a-49d0-a53f-dcb855e54568"
-            alt="" />
+            <img src={userProfile.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+            alt="profile-img" />
           </div>
           <div className="user-profile-labels-container">
-            <h4>Trieu Thanh Tung</h4>
-            <p>20 y.o developer from Viet Nam</p>
+            <h4>{userProfile.user.fullname}</h4>
+            <p>{userProfile.bio}</p>
           </div>
         </div>
+        )}
         <Logo />
       </div>
     }
