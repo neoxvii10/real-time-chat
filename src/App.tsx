@@ -1,28 +1,41 @@
-import HomePage from './HomePage/HomePage';
-import Signup from './Authentications/Signup/Signup'
-import Signin from './Authentications/Signin/Signin'
-import Redirect from './Authentications/Redirect/Redirect'
-import ResetPassword from './Authentications/ResetPassword/ResetPassword';
-import InputEmail from './Authentications/ResetPassword/InputEmail/InputEmail';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AdminManagement from './Dashboard/Admin';
+import { BrowserRouter as Router, Routes, Route , Navigate} from 'react-router-dom';
+import { publicRoutes, privateRoutes } from './Routes/Routes';
+import { useAuth } from './Hooks/AuthContext';
 
 function App() {
+  const {isLoggedIn} = useAuth();
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:username" element={<HomePage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
-        <Route path="/redirect/:username" element={<Redirect />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/reset-password/email" element={<InputEmail />} />
-        <Route path="/admin" element = {<AdminManagement/>}>
-          <Route path="*"/> 
-        </Route>
+        {publicRoutes.map((router, index) => {
+          const Page = router.component;
+          return (
+            <Route 
+              key={index}
+              path={router.path}
+              element={<Page/>}
+            />
+          )
+        })}
+        {privateRoutes.map((router, index) => {
+          const Page = router.component;
+          return (
+            <Route 
+              key={index}
+              path={router.path}
+              element={isLoggedIn ? (
+                <Page/>
+              ) : (
+                <Navigate to='/signin' />
+              )}
+            />
+          )
+        })}
+
       </Routes>
     </Router>
+
   );
 }
 

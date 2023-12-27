@@ -110,7 +110,9 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
 
     try {
       const response = await ChannelApi.createChannel(formData);
-      await handleSubmitAvatar(event, response.data?.id);
+      if(isCropped) {
+        await handleSubmitAvatar(event, response.data?.id);
+      }
       setSelectedOptions([]);
       handleClose()
       handleCloseAddmember();
