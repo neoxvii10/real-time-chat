@@ -56,6 +56,7 @@ if (_token) {
 }
 
 const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
 };
@@ -66,7 +67,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
   const [isSlided, setSlided] = useState<boolean>(true);
   const [messages, setMessages] = useState<{
+    // id?: number;
     text: string;
+    fullname?: string;
     sender: string;
     type: string;
     file?: File;
@@ -88,7 +91,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       let messageList = []
       for (let message of res.data) {
         let messageElement = {
+          id: message.id,
           text: message.content,
+          fullname: message.member.user.fullname,
           sender: (userId === message.member.user.id) ? "self" : "user",
           type: message.message_type.toLowerCase(),
           create_at: message.create_at,
@@ -340,8 +345,43 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     throw new Error("Function not implemented.");
   }
 
-  function handleDeleteClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
-    throw new Error("Function not implemented.");
+  function handleDeleteClick(
+  //   message: {
+  //   id?: number; 
+  //   text: string;
+  //   sender: string;
+  //   type: string;
+  //   file?: File | undefined;
+  //   uuid?: string | undefined;
+  //   isSent?: boolean | undefined;
+  //   create_at?: string | undefined;
+  // }
+  ): void {
+    // if (message.id) {
+      // const messageId = message.id;
+      const deleteMessageObject = {
+        action: "remove_message",
+        target: "channel",
+        targetId: 4,
+        data: {
+          messageId: 869,
+        },
+      };
+  
+      const deleteMessageJSON = JSON.stringify(deleteMessageObject);
+      
+      if (isOpen(socket)) {
+        socket.send(deleteMessageJSON);
+      } else {
+        console.log("WebSocket is not open. Message deletion failed.");
+      }
+  
+      // You may also want to update the local state to reflect the deletion
+      // const updatedMessages = messages.filter((msg) => msg.data?.id !== messageId);
+      // setMessages(updatedMessages);
+    // } else {
+    //   console.error("Invalid message format. Unable to delete message.");
+    // }
   }
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
 
@@ -443,16 +483,15 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
               className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
               <div className="message-content">
                 {message.type === "image" ? (
+               <div>
                   <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                  // <a
-                  //   href={URL.createObjectURL(message.file)}
-                  //   download={message.file.name}
-                  //   className="file-downloader"
-                  // >
-                  //   {message.text}
-                  // </a>
+                  {message.create_at && (
+                      <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                    )}
+                  </div>
                 ) : (
                   <>
+                   <div className="message-fullname">{message.fullname}</div>
                     <div>{message.text}</div>
                     {message.create_at && (
                       <div className="timestamp">{formatTimestamp(message.create_at)}</div>
@@ -470,7 +509,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                         <span className="icon" onClick={() => handleReplyClick(message)}>
                           <FaReply size={20} />
                         </span>
-                        <span className="icon" onClick={() => handleDeleteClick(message)}>
+                        <span className="icon" onClick={() => handleDeleteClick()}>
                           <FiTrash size={20} />
                         </span>
                       </>

@@ -522,3 +522,8 @@ p {
   color: var(--font-color);
   font-weight: bold;
 }
+
+.message-fullname {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
