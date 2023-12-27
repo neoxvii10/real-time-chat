@@ -1,0 +1,141 @@
+.rq-list-container {
+  width: 100%;
+  height: 100vh;
+  background: var(--background-color);
+  position: absolute;
+  z-index: 3;
+  transition: 200ms;
+  box-shadow: 0 0 3px black;
+  overflow-y: auto;
+}
+
+.rq-list-container:hover {
+  overflow-y: auto;
+}
+
+.rq-list-header {
+  height: 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  height: 3.5rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: default;
+  gap: 1rem;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--header-border);
+}
+
+.rq-list-content {
+  background: var(--background-color);
+  height: 100%;
+  margin: 0;
+  padding-bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.rq-counts-container {
+  padding: 1rem 1.2rem 0.8rem;
+  text-align: left;
+}
+
+.rq-counts-container h5 {
+  font-size: 1rem;
+}
+
+.rq-list-content ul {
+  margin: 0 auto;
+  /* Add margin to center the ul horizontally */
+  width: 96%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+.rq-list-content ul li {
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: var(--background-color);
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.rq-list-content ul li:hover {
+  background: var(--hover);
+}
+
+.rq-list-content ul li .user {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 14% 86%;
+  align-items: center;
+  text-decoration: none;
+  gap: 1rem;
+}
+
+.rq-list-content ul li .user .user-label-timestamps {
+  width: 95.6%;
+}
+
+.rq-list-content ul li .user-avatar span {
+  margin: auto;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.rq-list-content ul li .user-labels {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  row-gap: 0.4rem;
+}
+
+.rq-list-content ul li .user-labels h5 {
+  color: var(--font-color);
+  font-size: 1.1rem;
+}
+
+.rq-list-content ul li .user-labels p {
+  color: #aaaaaa;
+  font-size: 0.9rem;
+}
+
+.friend-rq-handle-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.handle-container {
+  border-radius: 50%;
+  color: white;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 100ms ease;
+}
+
+.acp {
+  background: var(--color-primary);
+}
+
+.rm {
+  background: var(--color-default-shadow);
+}
+
+.acp:hover {
+  filter: brightness(65%);
+}
+
+.rm:hover {
+  background: var(--color-text-secondary);
+}

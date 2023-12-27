@@ -10,13 +10,13 @@ const publicRoutes = [
     {path: '/signin', component: Signin},
     {path: '/signup', component: Signup},
     {path: '/reset-password', component: ResetPassword},
-    {path: '/reset-password/email', component: InputEmail}
+    {path: '/reset-password/email', component: InputEmail},
+    {path: '/redirect/:username', component: Redirect}
 ]
 
 const privateRoutes = [
     {path: '/', component: HomePage},
     {path: '/:username', component: HomePage},
-    {path: '/redirect/:username', component: Redirect},
     {path: '/admin', component: AdminManagement}
 ]
 

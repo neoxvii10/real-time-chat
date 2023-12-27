@@ -1,38 +1,28 @@
 import { useState, useRef, CSSProperties, useEffect } from 'react';
 import './Users.css';
+
 import { FiMenu } from 'react-icons/fi'
-import { GoSearch, GoX } from 'react-icons/go'
+import { GoSearch, GoX, GoPeople } from 'react-icons/go'
 import { BsPerson, BsPeople } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { ImProfile } from 'react-icons/im'
-import DarkMode from './DarkMode/DarkMode';
-import NewGroup from './NewGroup/NewGroup';
-import Profile from './Profile/Profile';
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
 import SearchUserApi from '../Api/SearchUserApi';
-import UserNotiApi from '../Api/UserNotiApi';
+
+import DarkMode from './DarkMode/DarkMode';
+import NewGroup from './NewGroup/NewGroup';
+import Profile from './Profile/Profile';
 import Friends from './Friends/Friends';
-import { jwtDecode } from "jwt-decode";
-import ChangeEmail from './Profile/ChangeEmail/ChangeEmail';
-
-const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
-if (_token) {
-  var token = JSON.parse(_token)
-  var userId = (jwtDecode(token) as any).user_id
-}
-
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
-socket.onopen = () => {
-  console.log('User: WebSocket connection established');
-};
-
+import Requests from './Requests/Requests';
 
 type UsersTypes = {
   onChannelClick: (selectedChannel: UnifiedType) => void;
@@ -61,18 +51,11 @@ type ChannelType = {
   create_at: string
 }
 
-type NotiType = {
-  sender: UserType;
-  notification_type: string;
-  create_at: string;
-}
-
 type UnifiedType = UserType | ChannelType;
 
 export enum ScreenTypes {
   HomeScreen = 'homeScreen',
   SearchScreen = 'searchScreen',
-  RequestScreen = 'requestScreen'
 }
 
 const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket }) => {
@@ -91,15 +74,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
 
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
 
-  // handle list friends
-
   //api to get user list that would replace the users const rn
   const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
   const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
 
   const [currentScreen, setCurrentScreen] = useState(ScreenTypes.HomeScreen);
-
-  const [userNoti, setUserNoti] = useState<NotiType[]>([]);
 
   const handleSearchClick = () => {
     setCurrentScreen(ScreenTypes.SearchScreen);
@@ -111,11 +90,9 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         const listFriendRes = await UserApi.getFriends();
         const channelListRes = await ChannelApi.getChannelList();
         const searchUserListRes = await SearchUserApi.getSearchResults();
-        const userNotiRes = await UserNotiApi.getUserNotis();
         setListFriends(listFriendRes?.data || []);
         setChannelList(channelListRes?.data);
         setSearchUserList(searchUserListRes?.data.users);
-        setUserNoti(userNotiRes?.data);
       } catch (error) {
         console.log(error);
       }
@@ -141,7 +118,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       transform: isSlided ? 'translateX(-480px)' : 'translateX(0px)',
     }));
   };
-
 
   // handle list friends
   const [listFriends, setListFriends] = useState<UserType[]>([]);
@@ -176,7 +152,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }
   }
 
-
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
@@ -184,7 +159,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleOnClick = (event: React.MouseEvent<Element, MouseEvent>) => {
-    if (currentScreen === ScreenTypes.SearchScreen || currentScreen === ScreenTypes.RequestScreen) {
+    if (currentScreen === ScreenTypes.SearchScreen) {
       // Handle back functionality for SearchScreen and RequestScreen
       setIsClick(false);
       setMenuRotated((prevState) => !prevState);
@@ -281,7 +256,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     const serverMessage = JSON.parse(e.data);
 
     if (serverMessage.action === "friend_request") {
-      console.log("A friend sended you a request.");
+      console.log("A friend sent you a request.");
     }
   });
 
@@ -337,11 +312,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }
   };
 
-  const handleAccessRqPage = () => {
-    setCurrentScreen(ScreenTypes.RequestScreen);
-    setIsClick(true);
-  }
-  
   // visible list friends
   const [translateXforFriends, setTranslateXforFriends] = useState<CSSProperties>({
     visibility: 'hidden',
@@ -358,6 +328,55 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }));
   };
 
+  // visible list requests
+  const [translateXforRequests, setTranslateXforRequests] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-960px)',
+  });
+
+  const handleSlideAnimationForRequests = (event: React.MouseEvent<Element>) => {
+    setTranslateXforRequests((translateXforRequests) => ({
+      ...translateXforRequests,
+      visibility: 'visible',
+      opacity: 1,
+      transform: 'translateX(0px)',
+    }));
+  };
+
+  const calculateTimeDifference = (createAt: string): string => {
+    if (!createAt) {
+      return 'Unknown time ago';
+    }
+  
+    const currentTime = new Date();
+    const requestTime = new Date(createAt);
+    
+    // Check if the requestTime is a valid date
+    if (isNaN(requestTime.getTime())) {
+      return 'Unknown time ago';
+    }
+  
+    const timeDifferenceInSeconds = Math.floor((currentTime.getTime() - requestTime.getTime()) / 1000);
+  
+    const minute = 60;
+    const hour = 3600;
+    const day = 86400;
+  
+    if (timeDifferenceInSeconds < minute) {
+      return '1 minute ago';
+    } else if (timeDifferenceInSeconds < hour) {
+      const minutes = Math.floor(timeDifferenceInSeconds / minute);
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    } else if (timeDifferenceInSeconds < day) {
+      const hours = Math.floor(timeDifferenceInSeconds / hour);
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    } else {
+      const days = Math.floor(timeDifferenceInSeconds / day);
+      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    }
+  };
+  
   return (
     <div className="users-container">
       <ToastContainer />
@@ -394,12 +413,12 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
                 <span className='dropdown-icon'><ImProfile size={22} /></span>
                 <span className='dropdown-label'>Profile</span>
               </li>
-              <li onClick={() => handleAccessRqPage()}>
+              <li onClick={handleSlideAnimationForRequests}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>Requests</span>
               </li>
               <li onClick={handleSlideAnimationForFriends}>
-                <span className='dropdown-icon'><BsPerson size={22} /></span>
+                <span className='dropdown-icon'><GoPeople size={22} /></span>
                 <span className='dropdown-label'>Friends</span>
               </li>
               <li>
@@ -528,7 +547,9 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
                     <h5>{channel.title}</h5>
                     <p>{channel.last_message.content}</p>
                   </div>
-                  <span className="latest-timestamps">{channel.last_message.create_at}</span>
+                  <span className="latest-timestamps">
+                    {calculateTimeDifference(channel.last_message.create_at)}
+                  </span>
                 </div>
               </div>
             </li>
@@ -536,15 +557,10 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         </ul>
       </div>
       }
-
-      {currentScreen === ScreenTypes.RequestScreen &&
-      <div className='request-list-container'>
-      
-      </div>
-      }
     
-      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile} />
+      <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile}/>
       <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
+      <Requests translateX={translateXforRequests} setTranslateX={setTranslateXforRequests}/>
      </div>
   );
 }

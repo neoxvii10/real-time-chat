@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction, CSSProperties } from "react";
 import { TbCameraPlus } from 'react-icons/tb';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
 import { AiOutlineClose } from 'react-icons/ai'
-import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
 import ImageCrop from './ImageCrop/ImageCrop';
 import './GroupCreation.css';
 import ChannelApi from "../../../../Api/ChannelApi";
