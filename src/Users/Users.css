@@ -185,6 +185,10 @@
   background: var(--background-color);
 }
 
+.noti-amount {
+  color: rgb(205, 83, 83);
+}
+
 .menu-container ul {
   padding: 0.4rem 0;
   width: 15rem;
@@ -226,6 +230,9 @@
   display: inline-flex;
   font-size: 0.87rem;
   width: 5rem;
+  display: flex;
+  gap: 0.2rem;
+  align-items: center;
 }
 
 .dropdown-label-container {

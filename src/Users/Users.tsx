@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
 import SearchUserApi from '../Api/SearchUserApi';
+import UserNotiApi from '../Api/UserNotiApi';
 
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
@@ -51,6 +52,12 @@ type ChannelType = {
   create_at: string
 }
 
+type NotiType = {
+  sender: UserType;
+  notification_type: string;
+  create_at: string;
+}
+
 type UnifiedType = UserType | ChannelType;
 
 export enum ScreenTypes {
@@ -77,6 +84,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   //api to get user list that would replace the users const rn
   const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
   const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
+  const [userNoti, setUserNoti] = useState<NotiType[]>([]);
 
   const [currentScreen, setCurrentScreen] = useState(ScreenTypes.HomeScreen);
 
@@ -90,6 +98,8 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         const listFriendRes = await UserApi.getFriends();
         const channelListRes = await ChannelApi.getChannelList();
         const searchUserListRes = await SearchUserApi.getSearchResults();
+        const userNotiRes = await UserNotiApi.getUserNotis();
+        setUserNoti(userNotiRes?.data);
         setListFriends(listFriendRes?.data || []);
         setChannelList(channelListRes?.data);
         setSearchUserList(searchUserListRes?.data.users);
@@ -415,7 +425,9 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
               </li>
               <li onClick={handleSlideAnimationForRequests}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
-                <span className='dropdown-label'>Requests</span>
+                <span className='dropdown-label'>
+                  Requests <span className='noti-amount'>({userNoti.length})</span>
+                </span>
               </li>
               <li onClick={handleSlideAnimationForFriends}>
                 <span className='dropdown-icon'><GoPeople size={22} /></span>
@@ -560,7 +572,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile}/>
       <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
-      <Requests translateX={translateXforRequests} setTranslateX={setTranslateXforRequests}/>
+      <Requests
+        translateX={translateXforRequests}
+        setTranslateX={setTranslateXforRequests}
+        userNoti={userNoti}
+      />
      </div>
   );
 }

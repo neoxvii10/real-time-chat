@@ -8,6 +8,7 @@ import UserNotiApi from '../../Api/UserNotiApi';
 type Props = {
     translateX: CSSProperties;
     setTranslateX: React.Dispatch<React.SetStateAction<CSSProperties>>;
+    userNoti: NotiType[];
 };
 
 type UserType = {
@@ -27,7 +28,7 @@ type NotiType = {
   create_at: string;
 }
 
-const Requests: React.FC<Props> = ({ translateX, setTranslateX }) => {
+const Requests: React.FC<Props> = ({ translateX, setTranslateX, userNoti }) => {
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
       setTranslateX((translateX) => ({
           ...translateX,
@@ -36,20 +37,6 @@ const Requests: React.FC<Props> = ({ translateX, setTranslateX }) => {
           transform: 'translateX(-960px)',
       }));
   };
-
-  const [userNoti, setUserNoti] = useState<NotiType[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userNotiRes = await UserNotiApi.getUserNotis();
-        setUserNoti(userNotiRes?.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchData();
-  }, [])
 
   const calculateTimeDifference = (createAt: string): string => {
     const currentTime = new Date();
