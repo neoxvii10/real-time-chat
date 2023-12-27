@@ -11,87 +11,96 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import { GoSearch, GoX } from 'react-icons/go'
+import { GoSearch, GoX } from "react-icons/go";
 import { CSSProperties, useCallback } from "react";
 import React, { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
-import EmojiPicker, {
-  EmojiStyle,
-  EmojiClickData,
-} from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle, EmojiClickData } from "emoji-picker-react";
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import UserInformation from "../RightColumn/RightColumn";
 
 // use api
 type UserType = {
-  id: number,
-  username: string,
-  avatar_url: string,
-  first_name: string,
-  last_name: string,
-  fullname: string
-}
+  id: number;
+  username: string;
+  avatar_url: string;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type ChannelInboxProps = {
   channel: ChannelType;
 };
 
 type ChannelType = {
-  id: number,
-  member_count: number,
-  last_message?: any,
-  title: string,
-  avatar_url?: string,
-  create_at: string
-}
+  id: number;
+  member_count: number;
+  last_message?: any;
+  title: string;
+  avatar_url?: string;
+  create_at: string;
+};
 
-const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
+const _token = localStorage.getItem("accessToken"); // Token will be received when sign in successfully
 if (_token) {
-  var token = JSON.parse(_token)
-  var userId = (jwtDecode(token) as any).user_id
+  var token = JSON.parse(_token);
+  var userId = (jwtDecode(token) as any).user_id;
 }
 
 const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
 socket.onopen = () => {
-  console.log('WebSocket connection established');
+  console.log("WebSocket connection established");
 };
 
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
-  const messageContainer = document.querySelector('.message-container')
-  const [onBottom, setOnBottom] = useState(true)
+  const messageContainer = document.querySelector(".message-container");
+  const [onBottom, setOnBottom] = useState(true);
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean}[]>([]);
+  const [messages, setMessages] = useState<
+    {
+      text: string;
+      sender: string;
+      type: string;
+      file?: File;
+      uuid?: string;
+      isSent?: boolean;
+    }[]
+  >([]);
 
   const [inputValue, setInputValue] = useState<string>("");
 
   useEffect(() => {
     const fetchMessage = async () => {
-      let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
-      let messageList = []
+      let res: any = await axiosClient.get(
+        `api/channel/${channel.id}/messages/?page=1`
+      );
+      let messageList = [];
       for (let message of res.data) {
         let messageElement = {
           text: message.content,
-          sender: (userId === message.member.user.id) ? "self" : "user",
+          sender: userId === message.member.user.id ? "self" : "user",
           type: message.message_type.toLowerCase(),
-        }
-        messageList.push(messageElement)
+        };
+        messageList.push(messageElement);
       }
-      setMessages(messageList.reverse())
-    }
-    fetchMessage()
+      setMessages(messageList.reverse());
+    };
+    fetchMessage();
     if (messageContainer && onBottom) {
-      messageContainer.scrollTop = messageContainer?.scrollHeight
+      messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-  }, [channel])
+  }, [channel]);
 
   useEffect(() => {
     // Scroll to bottom when receive message in case user is already bottom
     if (messageContainer && onBottom) {
-      messageContainer.scrollTop = messageContainer?.scrollHeight
+      messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
@@ -133,21 +142,21 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     }
   };
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
-
+  function isOpen(WebSocket: { readyState: any; OPEN: any }) {
+    return WebSocket.readyState === WebSocket.OPEN;
+  }
 
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
-
       const messageObject = {
-        "action": "create_message",
-        "target": "channel",
-        "targetId": channel.id,
-        'uuid': uuidv4(),
-        "data": {
-          "content": inputValue,
+        action: "create_message",
+        target: "channel",
+        targetId: channel.id,
+        uuid: uuidv4(),
+        data: {
+          content: inputValue,
           // "reply": null
-        }
+        },
       };
 
       const messageJSON = JSON.stringify(messageObject);
@@ -158,29 +167,33 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       socket.send(messageJSON);
 
       if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          setOnBottom(true)
+        if (
+          Math.abs(
+            messageContainer.scrollTop +
+              messageContainer.clientHeight -
+              messageContainer?.scrollHeight
+          ) < 1
+        ) {
+          setOnBottom(true);
         } else {
-          setOnBottom(false)
+          setOnBottom(false);
         }
       }
 
       let textMessage = {
         text: inputValue,
-        sender: 'self',
-        type: 'text',
+        sender: "self",
+        type: "text",
         uuid: messageObject.uuid,
-        isSent: false
-      }
-      setMessages([...messages, textMessage]) 
+        isSent: false,
+      };
+      setMessages([...messages, textMessage]);
       setInputValue("");
     } else if (selectedFile) {
       handleFileMessage();
       setSelectedFile(null);
     }
-  }
-
-
+  };
 
   // handle receive message
   socket.onmessage = (e) => {
@@ -189,12 +202,17 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
     // Check if the action is "create_message" and the message_type is "TEXT"
     if (serverMessage.action === "create_message") {
-
       if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          setOnBottom(true)
+        if (
+          Math.abs(
+            messageContainer.scrollTop +
+              messageContainer.clientHeight -
+              messageContainer?.scrollHeight
+          ) < 1
+        ) {
+          setOnBottom(true);
         } else {
-          setOnBottom(false)
+          setOnBottom(false);
         }
       }
       // Extract the content of the message
@@ -202,59 +220,59 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
       let textMessage = {
         text: messageContent,
-        sender: 'user',
-        type: 'text'
-      }
+        sender: "user",
+        type: "text",
+      };
 
       if (serverMessage.data.message_type === "IMAGE") {
-        textMessage.type = 'image'
+        textMessage.type = "image";
       }
 
-      let senderId = serverMessage.data.member.user.id
+      let senderId = serverMessage.data.member.user.id;
       if (senderId === userId) {
-        if (textMessage.type === 'image') {
+        if (textMessage.type === "image") {
           let fileMessage = {
             text: messageContent,
-            sender: 'self',
-            type: 'image',
-            isSent: true
-          }
+            sender: "self",
+            type: "image",
+            isSent: true,
+          };
           setMessages([...messages, fileMessage]);
         } else {
-          let uuid = serverMessage.uuid
-          let isSelfMessageCheck = false
+          let uuid = serverMessage.uuid;
+          let isSelfMessageCheck = false;
           for (let i = messages.length - 1; i >= 0; i--) {
             if (messages[i].uuid === uuid) {
               // console.log("**Đã gửi**" + messages[i].text)
-              messages[i].isSent = true
-              setMessages([...messages])
-              isSelfMessageCheck = true
-              break
+              messages[i].isSent = true;
+              setMessages([...messages]);
+              isSelfMessageCheck = true;
+              break;
             }
           }
           if (!isSelfMessageCheck) {
             let textMessage = {
               text: messageContent,
-              sender: 'self',
-              type: 'text',
-              isSent: true
-            }
-            setMessages([...messages, textMessage])
+              sender: "self",
+              type: "text",
+              isSent: true,
+            };
+            setMessages([...messages, textMessage]);
           }
         }
       } else {
-        setMessages([...messages, textMessage]);      
+        setMessages([...messages, textMessage]);
       }
     }
   };
-
 
   const [popupVisible, setPopupVisible] = useState(false);
 
   const attachmentButtonRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const contentType = selectedFile && selectedFile.type.startsWith("image/") ? "image" : "normal";
+  const contentType =
+    selectedFile && selectedFile.type.startsWith("image/") ? "image" : "normal";
 
   const handleAttachmentButtonClick = (event: React.MouseEvent<Element>) => {
     if (attachmentButtonRef.current) {
@@ -281,13 +299,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       // };
       // setMessages([...messages, fileMessage]);
       const formData = new FormData();
-      formData.append('file', selectedFile)
-      formData.append('channel', channel.id.toString())
-      await axiosClient.post('api/message/upload/image/', formData, {
+      formData.append("file", selectedFile);
+      formData.append("channel", channel.id.toString());
+      await axiosClient.post("api/message/upload/image/", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
+      });
       setInputValue("");
       setPopupVisible(false);
     }
@@ -299,8 +317,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     if (attachmentButtonRef.current) {
       attachmentButtonRef.current.value = "";
     }
-  }
-
+  };
 
   function onClick(emojiData: EmojiClickData, event: MouseEvent) {
     const unicodeEmoji = emojiData.emoji;
@@ -323,7 +340,14 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         <div className="user">
           <div className="user-avatar">
             {/* <span>{userProp.avatar}</span> */}
-            <img src={channel?.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+            <img
+              src={
+                channel?.avatar_url ||
+                "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              }
+              alt="avatar user"
+              className="user-avatar-img"
+            />
           </div>
           <div className="user-labels">
             <h5>{channel?.title}</h5>
@@ -389,17 +413,24 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         className={`user-info ${isSlided ? "slided" : ""}`}
         style={translateX}
       >
-        Test
+        <UserInformation channel={channel} handleClose={handleSlideAnimation} />
       </div>
       <div className="message-container">
-
         {messages.map((message, index) => (
           <div className="message-block">
-            <div key={index}
-            className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+            <div
+              key={index}
+              className={`message ${
+                message.sender === "self" ? "self" : "user"
+              } ${message.type === "image" ? "image" : ""}`}
+            >
               <div>
                 {message.type === "image" ? (
-                  <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                  <img
+                    src={message.text.split(" ")[0]}
+                    alt={message.type}
+                  ></img>
+                ) : (
                   // <a
                   //   href={URL.createObjectURL(message.file)}
                   //   download={message.file.name}
@@ -407,16 +438,14 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   // >
                   //   {message.text}
                   // </a>
-                ) : (
                   message.text
                 )}
               </div>
-              
             </div>
             <div className="sent-icon">
-              {
-                (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
-              }
+              {Object.hasOwn(message, "isSent") && !message.isSent && (
+                <FaRegCheckCircle size={12} />
+              )}
             </div>
           </div>
         ))}
@@ -426,13 +455,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           <MdOutlineEmojiEmotions
             style={{
               marginLeft: "0.2rem",
-              color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
+              color: isEmojiIconClicked
+                ? "var(--border-on-click)"
+                : "currentColor",
             }}
             size={25}
             onClick={toggleEmojiPicker}
           />
           {isEmojiPickerVisible && (
-            <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
+            <div
+              className={`emoji-picker-container ${
+                isEmojiPickerVisible ? "visible" : ""
+              }`}
+            >
               <EmojiPicker
                 previewConfig={{
                   defaultCaption: "Pick one!",
@@ -454,7 +489,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
             onKeyDown={handleInputKeyDown}
             placeholder="Message"
           />
-          <div className="file-import-container" onClick={handleAttachmentButtonClick}>
+          <div
+            className="file-import-container"
+            onClick={handleAttachmentButtonClick}
+          >
             <ImAttachment size={24} />
             <input
               type="file"
@@ -484,7 +522,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           )}
           <div className="file-popup-footer">
             <input type="text" placeholder="Add a caption" />
-            <button onClick={handleSendingInputs}><span>SEND</span></button>
+            <button onClick={handleSendingInputs}>
+              <span>SEND</span>
+            </button>
           </div>
         </div>
       )}
