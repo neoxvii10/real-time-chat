@@ -349,24 +349,92 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     setInputValue((inputValue) => inputValue + unicodeEmoji);
   }
 
+  //emoji picker của phần nhập tin nhắn
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
-
   const toggleEmojiPicker = () => {
     setEmojiPickerVisible(!isEmojiPickerVisible);
-    setIsEmojiIconClicked(!isEmojiIconClicked);
   };
 
 
-  function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
-    throw new Error("Function not implemented.");
-  }
 
-  function handleReplyClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
-    throw new Error("Function not implemented.");
-  }
+  // THẢ EMOJI
 
- 
 
+  const [isMessageEmojiPickerVisible, setMessageEmojiPickerVisible] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState("");
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
+  const emojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
+
+  // ...
+
+  // Toggle emoji picker visibility
+  const toggleMessageEmojiPicker = () => {
+    setMessageEmojiPickerVisible(!isMessageEmojiPickerVisible);
+  };
+
+  // Handle emoji selection
+  const handleEmojiClick = (emoji: string) => {
+    setSelectedEmoji(emoji);
+    setMessageEmojiPickerVisible(false);
+    // Now you can send the reaction through WebSocket
+    sendReactionToWebSocket(emoji);
+  };
+
+  // Function to send the reaction through WebSocket
+  const sendReactionToWebSocket = (emoji: string) => {
+    const reactionObject = {
+      action: "create_reaction",
+      target: "channel",
+      targetId: channel.id,
+      data: {
+        message: selectedMessageId,
+        emoji: emoji,
+      },
+    };
+
+    const reactionJSON = JSON.stringify(reactionObject);
+    if (isOpen(socket)) {
+      socket.send(reactionJSON);
+    } else {
+      console.log("WebSocket is not open. Reaction failed.");
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+  // TRẢ LỜI TIN NHẮN
+
+  const [isReplying, setReplying] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState<any>(null);
+
+  const handleReplyClick = (message: any) => {
+    setReplying(true);
+    setReplyToMessage(message);
+  };
+
+  const ReplyPopup = () => {
+    return (
+      <div className="reply-popup">
+        <div className="close-button" onClick={() => setReplying(false)}>
+          x
+        </div>
+        <p>Replying to: {replyToMessage && replyToMessage.text}</p>
+      </div>
+    );
+  };
+
+
+
+
+  // XOÁ TIN NHẮN
   // state to manage delete confirmation modal visibility
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<any>(null);
@@ -395,7 +463,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
       if (isOpen(socket)) {
         socket.send(deleteMessageJSON);
-        
+
       } else {
         console.log("WebSocket is not open. Message deletion failed.");
       }
@@ -416,6 +484,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     setMessageToDelete(null);
   };
 
+
+
+
+
+  // 
 
 
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
@@ -535,11 +608,31 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
               </div>
               <div className="icon-container">
                 <div className="message-icons">
-                  {/* hoveredMessageIndex === index && ( */}
+                  {/* {hoveredMessageIndex === index && ( */}
                   <>
-                    <span className="icon" onClick={() => handleEmojiClick(message)}>
+                    <span
+                      className="icon"
+                      onClick={() => {
+                        if (message.id) setSelectedMessageId(message.id);
+                        toggleMessageEmojiPicker();
+                      }}
+                    >
                       <MdOutlineEmojiEmotions size={20} />
                     </span>
+                    {isMessageEmojiPickerVisible && (
+                      <div className="emoji-popup">
+                        {emojis.map((emoji) => (
+                          <span
+                            key={emoji}
+                            onClick={() => handleEmojiClick(emoji)}
+                            className="emoji"
+                          >
+                            {emoji}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     <span className="icon" onClick={() => handleReplyClick(message)}>
                       <FaReply size={20} />
                     </span>
@@ -548,7 +641,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                     </span>
 
                   </>
-                  {/* )  */}
+                  {/* ) } */}
                 </div>
               </div>
             </div>
@@ -567,6 +660,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           <button onClick={handleCancelDelete}>No</button>
         </div>
       )}
+      {isReplying && <ReplyPopup />}
+
       <div className="message-input-container">
         <div className="input-container">
           <MdOutlineEmojiEmotions

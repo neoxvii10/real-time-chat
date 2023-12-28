@@ -482,6 +482,9 @@ p {
   top: -30px;
 }
 
+.icon:hover {
+  transform: scale(1.1);
+}
 
 
 
@@ -563,4 +566,44 @@ p {
 .delete-confirmation-modal button:last-child {
   background-color: #6c757d; /* Gray color for "No" button */
   color: #fff;
+}
+
+.reply-popup {
+  position: absolute;
+  top: 43rem; /* Adjust this value to position it correctly */
+  left: 34.1rem;
+  right: 6.88rem;
+  bottom: 3rem;
+  border-radius:10px;
+  background-color:grey;
+  padding: 10px;
+}
+
+.close-button {
+  position: absolute;
+  font-size: 1.5rem;
+  top: 0.2rem;
+  right: 1.5rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.emoji-popup {
+  position: absolute;
+  font-size: 1.5rem;
+  bottom: 30px;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 7px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.emoji-popup span {
+  cursor: pointer;
+}
+
+.emoji:hover {
+  transform: scale(1.1);
 }
