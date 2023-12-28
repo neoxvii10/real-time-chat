@@ -8,7 +8,6 @@ import { LuSettings } from 'react-icons/lu'
 import { WiMoonAltThirdQuarter } from 'react-icons/wi'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { ImProfile } from 'react-icons/im'
-import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,7 +16,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import UserApi from '../Api/UserApi';
 import ChannelApi from '../Api/ChannelApi';
 import SearchUserApi from '../Api/SearchUserApi';
-import UserNotiApi from '../Api/UserNotiApi';
 
 import DarkMode from './DarkMode/DarkMode';
 import NewGroup from './NewGroup/NewGroup';
@@ -52,12 +50,6 @@ type ChannelType = {
   create_at: string
 }
 
-type NotiType = {
-  sender: UserType;
-  notification_type: string;
-  create_at: string;
-}
-
 type UnifiedType = UserType | ChannelType;
 
 export enum ScreenTypes {
@@ -84,7 +76,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   //api to get user list that would replace the users const rn
   const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
   const [searchChannelList, setSearchChannelList] = useState<ChannelType[]>([]);
-  const [userNoti, setUserNoti] = useState<NotiType[]>([]);
+  const [userNotiAmount, setUserNotiAmount] = useState<number>(0);
 
   const [currentScreen, setCurrentScreen] = useState(ScreenTypes.HomeScreen);
 
@@ -98,8 +90,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         const listFriendRes = await UserApi.getFriends();
         const channelListRes = await ChannelApi.getChannelList();
         const searchUserListRes = await SearchUserApi.getSearchResults();
-        const userNotiRes = await UserNotiApi.getUserNotis();
-        setUserNoti(userNotiRes?.data);
         setListFriends(listFriendRes?.data || []);
         setChannelList(channelListRes?.data);
         setSearchUserList(searchUserListRes?.data.users);
@@ -134,12 +124,19 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
   const [channelList, setChannelList] = useState<ChannelType[]>([]);
 
+  // visible list requests
+  const [translateXforRequests, setTranslateXforRequests] = useState<CSSProperties>({
+    visibility: 'hidden',
+    opacity: 0,
+    transform: 'translateX(-960px)',
+  });
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         const listFriendRes = await UserApi.getFriends();
         setListFriends(listFriendRes?.data)
-        const channelListRes = await ChannelApi.getChannelList()
+        const channelListRes = await ChannelApi.getChannelList();
         setChannelList(channelListRes?.data);
         // console.log(listFriendRes);
       } catch (error) {
@@ -260,16 +257,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }));
   };
 
-  // handle receive message
-  socket.addEventListener("message", function(e) {
-    // Parse the JSON data from the server
-    const serverMessage = JSON.parse(e.data);
-
-    if (serverMessage.action === "friend_request") {
-      console.log("A friend sent you a request.");
-    }
-  });
-
   const handleSendingRequest = async (user: UserType) => {
     try {
       let friendRq = {
@@ -337,13 +324,6 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       transform: 'translateX(0px)',
     }));
   };
-
-  // visible list requests
-  const [translateXforRequests, setTranslateXforRequests] = useState<CSSProperties>({
-    visibility: 'hidden',
-    opacity: 0,
-    transform: 'translateX(-960px)',
-  });
 
   const handleSlideAnimationForRequests = (event: React.MouseEvent<Element>) => {
     setTranslateXforRequests((translateXforRequests) => ({
@@ -426,7 +406,8 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
               <li onClick={handleSlideAnimationForRequests}>
                 <span className='dropdown-icon'><BsPerson size={22} /></span>
                 <span className='dropdown-label'>
-                  Requests <span className='noti-amount'>({userNoti.length})</span>
+                  Requests
+                  <span className='noti-amount'>({userNotiAmount})</span>
                 </span>
               </li>
               <li onClick={handleSlideAnimationForFriends}>
@@ -575,7 +556,9 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       <Requests
         translateX={translateXforRequests}
         setTranslateX={setTranslateXforRequests}
-        userNoti={userNoti}
+        userId={userId}
+        setUserNotiAmount={setUserNotiAmount}
+        socket={socket}
       />
      </div>
   );
