@@ -684,7 +684,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
           <Logo />
         </div>
       }
-      {isReport && <Report setIsReport={setIsReport}/>}
+      {isReport && <Report setIsReport={setIsReport} channel={channel} isUserType={isUserType}/>}
     </>
 
   );
