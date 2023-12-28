@@ -1,14 +1,7 @@
 import React, { CSSProperties } from "react";
-import { useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import { RiPencilLine } from "react-icons/ri";
 import "./RightColumn.css";
-import MediaState from "./Common/RenderMedia/MediaState";
-import { MdOutlineCall } from "react-icons/md";
 import ChatWithOne from "./ChatWithOne/ChatWithOne";
 import ChatWithGroup from "./ChatWithGroup/ChatWithGroup";
-import EditInforGroup from "./ChatWithGroup/EditGroup";
-import EditInforOne from "./ChatWithOne/EditOne";
 
 type UserType = {
   id: number;
@@ -41,19 +34,17 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
   handleClose,
   userId,
 }) => {
-  const [isSlided, setSlided] = useState<boolean>(true); //slide edit status
-  const [translateX, setTranslateX] = useState<CSSProperties>({
-    visibility: "hidden",
-    transform: "translateX(480px)",
-  });
-
   const isUserType = false;
 
   return (
     <div className="RightColumn-container">
       <div>
         {isUserType ? (
-          <ChatWithOne channel={channel} userId={userId} />
+          <ChatWithOne
+            channel={channel}
+            userId={userId}
+            handleClose={handleClose}
+          />
         ) : (
           <ChatWithGroup
             channel={channel}

@@ -5,7 +5,8 @@ import "./ChatWithGroup.css";
 import "../RightColumn.css";
 import MediaState from "../Common/RenderMedia/MediaState";
 import { RiPencilLine } from "react-icons/ri";
-import EditInforGroup from "./EditGroup";
+import EditInforGroup from "./Edit/EditGroup";
+import MemberList from "./Member/MemberList";
 
 type UserType = {
   id: number;
@@ -28,9 +29,9 @@ type ChannelType = {
 type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
-  handleClose: (event: React.MouseEvent<Element>) => void;
   channel: UnifiedType;
   userId: number;
+  handleClose: (event: React.MouseEvent<Element>) => void;
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
@@ -40,11 +41,10 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 }) => {
   const [isSlidedEdit, setSlidedEdit] = useState<boolean>(true); //slide edit status
   const [isSlidedMember, setSlidedMember] = useState<boolean>(true); //slide member status
-  const [translateX, setTranslateX] = useState<CSSProperties>({
+  const [EditTranslateX, EditSetTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
     transform: "translateX(480px)",
   });
-
   const [pageStatus, setPageStatus] = useState<string>("info");
   const handleClickOnEditButton = (
     event: React.MouseEvent<HTMLSpanElement>
@@ -52,19 +52,24 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     event.preventDefault();
     setPageStatus(pageStatus === "info" ? "edit" : "info");
     setSlidedEdit(!isSlidedEdit);
-    setTranslateX((translateX) => ({
-      ...translateX,
+    EditSetTranslateX((EditTranslateX) => ({
+      ...EditTranslateX,
       visibility: isSlidedEdit ? "visible" : "hidden",
       transform: isSlidedEdit ? "translateX(0px)" : "translateX(600px)",
     }));
   };
 
+  const [MemberTranslateX, MemberSetTranslateX] = useState<CSSProperties>({
+    visibility: "hidden",
+    transform: "translateX(480px)",
+  });
+
   const handleShowAllMembers = (event: React.MouseEvent<HTMLSpanElement>) => {
     event.preventDefault();
-    // setMemberList(!MemberList);
+    setPageStatus(pageStatus === "info" ? "member" : "info");
     setSlidedMember(!isSlidedMember);
-    setTranslateX((translateX) => ({
-      ...translateX,
+    MemberSetTranslateX((MemberTranslateX) => ({
+      ...MemberTranslateX,
       visibility: isSlidedMember ? "visible" : "hidden",
       transform: isSlidedMember ? "translateX(0px)" : "translateX(600px)",
     }));
@@ -72,21 +77,25 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 
   const channelInfo = channel as ChannelType;
 
-  const [mediaClicked, setMediaClick] = useState<string>("");
-
-  const [isAdminRoll, setAdminRoll] = useState<boolean>(true);
-
   const handleOnWheel = () => {};
 
   return (
     <div className="RightColumn-container">
-      <div className={`user-info`} style={translateX}>
+      <div className={`user-info`} style={EditTranslateX}>
         <EditInforGroup
           channel={channel}
           userId={userId}
           handleEdit={handleClickOnEditButton}
         />
       </div>
+      <div className={`user-info`} style={MemberTranslateX}>
+        <MemberList
+          channel={channel}
+          handMemberBack={handleShowAllMembers}
+          userId={userId}
+        />
+      </div>
+
       <div className="rightcolumn-header">
         <span className="btn-close" onClick={(event) => handleClose(event)}>
           <IoMdClose size={24} className="util-icon" />
