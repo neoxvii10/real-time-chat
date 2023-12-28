@@ -121,7 +121,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 100ms ease;
+  transition: all 150ms ease;
 }
 
 .acp {
@@ -133,7 +133,7 @@
 }
 
 .acp:hover {
-  filter: brightness(65%);
+  filter: brightness(60%);
 }
 
 .rm:hover {
