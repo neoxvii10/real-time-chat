@@ -69,7 +69,7 @@ const Report: React.FC<ReportType> = ({channel, setIsReport, isUserType }) => {
   return (
     <div className="overlay" >
       <div className="backdrop" onClick={e => { setIsReport(false) }}></div>
-      <div className="wrapper">
+      <div className="wrapper-report">
         <div className="header-report">
           <span className='button-close' onClick={e => { setIsReport(false) }}>
             <AiOutlineClose size={22} />
