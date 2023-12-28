@@ -60,6 +60,7 @@ const Report: React.FC<ReportType> = ({channel, setIsReport, isUserType }) => {
       alert("The report was sent successfully.");
       setIsReport(false)
     } catch (error) {
+      console.log(error)
       alert("Report FAIL !!!")
     }
     
