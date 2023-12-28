@@ -49,6 +49,7 @@ type ChannelType = {
 }
 
 
+
 const _token = localStorage.getItem('accessToken'); // Token will be received when sign in successfully
 if (_token) {
   var token = JSON.parse(_token)
@@ -67,7 +68,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
   const [isSlided, setSlided] = useState<boolean>(true);
   const [messages, setMessages] = useState<{
-    // id?: number;
+    id?: number;
+    channel?: number;
     text: string;
     fullname?: string;
     sender: string;
@@ -75,7 +77,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     file?: File;
     uuid?: string;
     isSent?: boolean;
-    create_at?: string;
+    create_at: string;
   }[]>([]);
 
   const formatTimestamp = (timestamp: string) => {
@@ -83,25 +85,33 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     return `${date.getHours()}:${date.getMinutes()}`;
   };
 
-  const [inputValue, setInputValue] = useState<string>("");
+  function getCurrentTime() {
+    let currentTime_ = new Date();
+    const currentTime = `${currentTime_.getHours()}:${currentTime_.getMinutes()}`;
+    console.log(currentTime);
+    return currentTime;
+  }
 
-  useEffect(() => {
-    const fetchMessage = async () => {
-      let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
-      let messageList = []
-      for (let message of res.data) {
-        let messageElement = {
-          id: message.id,
-          text: message.content,
-          fullname: message.member.user.fullname,
-          sender: (userId === message.member.user.id) ? "self" : "user",
-          type: message.message_type.toLowerCase(),
-          create_at: message.create_at,
-        }
-        messageList.push(messageElement)
+
+  const [inputValue, setInputValue] = useState<string>("");
+  const fetchMessage = async () => {
+    let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
+    let messageList = []
+    for (let message of res.data) {
+      let messageElement = {
+        id: message.id,
+        channel: message.channel,
+        text: message.content,
+        fullname: message.member.user.fullname,
+        sender: (userId === message.member.user.id) ? "self" : "user",
+        type: message.message_type.toLowerCase(),
+        create_at: message.create_at,
       }
-      setMessages(messageList.reverse())
+      messageList.push(messageElement)
     }
+    setMessages(messageList.reverse())
+  }
+  useEffect(() => {
     fetchMessage()
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight
@@ -193,6 +203,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         type: 'text',
         uuid: messageObject.uuid,
         isSent: false,
+        create_at: getCurrentTime(),
       }
       setMessages([...messages, textMessage])
       setInputValue("");
@@ -221,11 +232,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       }
       // Extract the content of the message
       const messageContent = serverMessage.data.content;
-
       let textMessage = {
         text: messageContent,
+        user: serverMessage.data.member.user.fullname,
         sender: 'user',
         type: 'text',
+        create_at: formatTimestamp(serverMessage.data.create_at),
       }
 
       if (serverMessage.data.message_type === "IMAGE") {
@@ -237,9 +249,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         if (textMessage.type === 'image') {
           let fileMessage = {
             text: messageContent,
+            user: serverMessage.data.member.user.fullname,
             sender: 'self',
             type: 'image',
             isSent: true,
+            create_at: formatTimestamp(serverMessage.data.create_at),
           }
           setMessages([...messages, fileMessage]);
         } else {
@@ -257,9 +271,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           if (!isSelfMessageCheck) {
             let textMessage = {
               text: messageContent,
+              user: serverMessage.data.member.user.fullname,
               sender: 'self',
               type: 'text',
-              isSent: true
+              isSent: true,
+              create_at: formatTimestamp(serverMessage.data.create_at),
             }
             setMessages([...messages, textMessage])
           }
@@ -267,6 +283,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       } else {
         setMessages([...messages, textMessage]);
       }
+    } else if (serverMessage.action === "remove_message") {
+      const messageId = serverMessage.data.messageId;
+      const updatedMessages = messages.filter((msg) => msg.id !== messageId);
+      setMessages(updatedMessages);
     }
   };
 
@@ -345,46 +365,60 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     throw new Error("Function not implemented.");
   }
 
-  function handleDeleteClick(
-  //   message: {
-  //   id?: number; 
-  //   text: string;
-  //   sender: string;
-  //   type: string;
-  //   file?: File | undefined;
-  //   uuid?: string | undefined;
-  //   isSent?: boolean | undefined;
-  //   create_at?: string | undefined;
-  // }
-  ): void {
-    // if (message.id) {
-      // const messageId = message.id;
+ 
+
+  // state to manage delete confirmation modal visibility
+  const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<any>(null);
+
+  // Function to handle delete button click
+  const handleDeleteButtonClick = (message: any) => {
+    setMessageToDelete(message);
+    setDeleteConfirmationVisible(true);
+  };
+
+  // Function to handle delete confirmation
+  const handleDeleteConfirmation = () => {
+    if (messageToDelete.id) {
+      const messageIdtoDelete = messageToDelete.id;
+      const channelId = messageToDelete.channel;
       const deleteMessageObject = {
         action: "remove_message",
         target: "channel",
-        targetId: 4,
+        targetId: channelId,
         data: {
-          messageId: 869,
+          messageId: messageIdtoDelete,
         },
       };
-  
+
       const deleteMessageJSON = JSON.stringify(deleteMessageObject);
-      
+
       if (isOpen(socket)) {
         socket.send(deleteMessageJSON);
+        
       } else {
         console.log("WebSocket is not open. Message deletion failed.");
       }
-  
-      // You may also want to update the local state to reflect the deletion
-      // const updatedMessages = messages.filter((msg) => msg.data?.id !== messageId);
-      // setMessages(updatedMessages);
-    // } else {
-    //   console.error("Invalid message format. Unable to delete message.");
-    // }
-  }
-  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
 
+      const updatedMessages = messages.filter((msg) => msg.id !== messageIdtoDelete);
+      setMessages(updatedMessages);
+    } else {
+      console.error("Invalid message format. Unable to delete message.");
+    }
+    setDeleteConfirmationVisible(false);
+    setMessageToDelete(null);
+  };
+
+  // Function to handle cancel button click
+  const handleCancelDelete = () => {
+    // Close the confirmation modal
+    setDeleteConfirmationVisible(false);
+    setMessageToDelete(null);
+  };
+
+
+
+  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
 
   const handleMouseEnter = (index: number) => {
     setHoveredMessageIndex(index);
@@ -483,15 +517,15 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
               className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
               <div className="message-content">
                 {message.type === "image" ? (
-               <div>
-                  <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                  {message.create_at && (
+                  <div>
+                    <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                    {message.create_at && (
                       <div className="timestamp">{formatTimestamp(message.create_at)}</div>
                     )}
                   </div>
                 ) : (
                   <>
-                   <div className="message-fullname">{message.fullname}</div>
+                    <div className="message-fullname">{message.fullname}</div>
                     <div>{message.text}</div>
                     {message.create_at && (
                       <div className="timestamp">{formatTimestamp(message.create_at)}</div>
@@ -500,20 +534,20 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                 )}
               </div>
               <div className="icon-container">
-                <div className="message-icons"> 
-                    {/* hoveredMessageIndex === index && ( */}
-                      <>
-                        <span className="icon" onClick={() => handleEmojiClick(message)}>
-                          <MdOutlineEmojiEmotions size={20} />
-                        </span>
-                        <span className="icon" onClick={() => handleReplyClick(message)}>
-                          <FaReply size={20} />
-                        </span>
-                        <span className="icon" onClick={() => handleDeleteClick()}>
-                          <FiTrash size={20} />
-                        </span>
-                      </>
-                    
+                <div className="message-icons">
+                  {/* hoveredMessageIndex === index && ( */}
+                  <>
+                    <span className="icon" onClick={() => handleEmojiClick(message)}>
+                      <MdOutlineEmojiEmotions size={20} />
+                    </span>
+                    <span className="icon" onClick={() => handleReplyClick(message)}>
+                      <FaReply size={20} />
+                    </span>
+                    <span className="icon" onClick={() => handleDeleteButtonClick(message)}>
+                      <FiTrash size={20} />
+                    </span>
+
+                  </>
                   {/* )  */}
                 </div>
               </div>
@@ -526,6 +560,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           </div>
         ))}
       </div>
+      {isDeleteConfirmationVisible && (
+        <div className="delete-confirmation-modal">
+          <p>Are you sure you want to delete this message?</p>
+          <button onClick={handleDeleteConfirmation}>Yes</button>
+          <button onClick={handleCancelDelete}>No</button>
+        </div>
+      )}
       <div className="message-input-container">
         <div className="input-container">
           <MdOutlineEmojiEmotions
