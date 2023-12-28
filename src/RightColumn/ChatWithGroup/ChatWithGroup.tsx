@@ -1,9 +1,11 @@
 import React, { CSSProperties, useState } from "react";
 import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
-import { IoIosInformationCircle } from "react-icons/io";
+import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
 import "../RightColumn.css";
 import MediaState from "../Common/RenderMedia/MediaState";
+import { RiPencilLine } from "react-icons/ri";
+import EditInforGroup from "./EditGroup";
 
 type UserType = {
   id: number;
@@ -26,37 +28,51 @@ type ChannelType = {
 type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
+  handleClose: (event: React.MouseEvent<Element>) => void;
   channel: UnifiedType;
   userId: number;
 };
 
-const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
-  const [MemberList, setMemberList] = useState<boolean>(true);
-  const [isSlided, setSlided] = useState<boolean>(true); //slide edit status
+const ChatWithGroup: React.FC<ChannelInboxProps> = ({
+  channel,
+  userId,
+  handleClose,
+}) => {
+  const [isSlidedEdit, setSlidedEdit] = useState<boolean>(true); //slide edit status
+  const [isSlidedMember, setSlidedMember] = useState<boolean>(true); //slide member status
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
     transform: "translateX(480px)",
   });
 
-  const handleShowAllMembers = (event: React.MouseEvent<HTMLSpanElement>) => {
+  const [pageStatus, setPageStatus] = useState<string>("info");
+  const handleClickOnEditButton = (
+    event: React.MouseEvent<HTMLSpanElement>
+  ) => {
     event.preventDefault();
-    setMemberList(!MemberList);
-    setSlided(!isSlided);
+    setPageStatus(pageStatus === "info" ? "edit" : "info");
+    setSlidedEdit(!isSlidedEdit);
     setTranslateX((translateX) => ({
       ...translateX,
-      visibility: isSlided ? "visible" : "hidden",
-      transform: isSlided ? "translateX(0px)" : "translateX(600px)",
+      visibility: isSlidedEdit ? "visible" : "hidden",
+      transform: isSlidedEdit ? "translateX(0px)" : "translateX(600px)",
+    }));
+  };
+
+  const handleShowAllMembers = (event: React.MouseEvent<HTMLSpanElement>) => {
+    event.preventDefault();
+    // setMemberList(!MemberList);
+    setSlidedMember(!isSlidedMember);
+    setTranslateX((translateX) => ({
+      ...translateX,
+      visibility: isSlidedMember ? "visible" : "hidden",
+      transform: isSlidedMember ? "translateX(0px)" : "translateX(600px)",
     }));
   };
 
   const channelInfo = channel as ChannelType;
 
   const [mediaClicked, setMediaClick] = useState<string>("");
-  const handleClickOnMedia = (
-    event: React.MouseEvent<HTMLParagraphElement>
-  ) => {
-    setMediaClick(event.currentTarget.innerHTML);
-  };
 
   const [isAdminRoll, setAdminRoll] = useState<boolean>(true);
 
@@ -64,6 +80,22 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
 
   return (
     <div className="RightColumn-container">
+      <div className={`user-info`} style={translateX}>
+        <EditInforGroup
+          channel={channel}
+          userId={userId}
+          handleEdit={handleClickOnEditButton}
+        />
+      </div>
+      <div className="rightcolumn-header">
+        <span className="btn-close" onClick={(event) => handleClose(event)}>
+          <IoMdClose size={24} className="util-icon" />
+        </span>
+        <h3>Profile</h3>
+        <span className="btn-edit" onClick={handleClickOnEditButton}>
+          <RiPencilLine size={24} className={`util-icon`} />
+        </span>
+      </div>
       <div>
         <div className="wrapper" onWheel={handleOnWheel}>
           <div className="rightcolumn-body">
@@ -74,7 +106,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
               <p className="group-name">{channelInfo.title}</p>
             </div>
             <div className="rectangle-container">
-              <div className="layout-btn" onClick={handleShowAllMembers}>
+              <div className="layout-btn">
                 <IoIosInformationCircle size={24} className="util-icon" />
                 <p>Info</p>
               </div>

@@ -9,6 +9,7 @@ import ChatWithOne from "./ChatWithOne/ChatWithOne";
 import ChatWithGroup from "./ChatWithGroup/ChatWithGroup";
 import EditInforGroup from "./ChatWithGroup/EditGroup";
 import EditInforOne from "./ChatWithOne/EditOne";
+
 type UserType = {
   id: number;
   username: string;
@@ -40,71 +41,26 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
   handleClose,
   userId,
 }) => {
-  const [pageStatus, setPageStatus] = useState<string>("info");
   const [isSlided, setSlided] = useState<boolean>(true); //slide edit status
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
     transform: "translateX(480px)",
   });
 
-  const handleClickOnEditButton = (
-    event: React.MouseEvent<HTMLSpanElement>
-  ) => {
-    event.preventDefault();
-    setPageStatus(pageStatus === "info" ? "edit" : "info");
-    setSlided(!isSlided);
-    setTranslateX((translateX) => ({
-      ...translateX,
-      visibility: isSlided ? "visible" : "hidden",
-      transform: isSlided ? "translateX(0px)" : "translateX(600px)",
-    }));
-  };
-
   const isUserType = false;
-
-  const [mediaClicked, setMediaClick] = useState<string>("");
-  const handleClickOnMedia = (
-    event: React.MouseEvent<HTMLParagraphElement>
-  ) => {
-    setMediaClick(event.currentTarget.innerHTML);
-    setPageStatus(event.currentTarget.innerHTML);
-  };
 
   return (
     <div className="RightColumn-container">
-      <div className={`user-info`} style={translateX}>
+      <div>
         {isUserType ? (
-          <EditInforOne
-            channel={channel}
-            userId={userId}
-            handleEdit={handleClickOnEditButton}
-          />
+          <ChatWithOne channel={channel} userId={userId} />
         ) : (
-          <EditInforGroup
+          <ChatWithGroup
             channel={channel}
-            handleEdit={handleClickOnEditButton}
             userId={userId}
+            handleClose={handleClose}
           />
         )}
-      </div>
-
-      <div>
-        <div className="rightcolumn-header">
-          <span className="btn-close" onClick={(event) => handleClose(event)}>
-            <IoMdClose size={24} className="util-icon" />
-          </span>
-          <h3>Profile</h3>
-          <span className="btn-edit" onClick={handleClickOnEditButton}>
-            <RiPencilLine size={24} className={`util-icon`} />
-          </span>
-        </div>
-        <div className="rightcolumn-body">
-          {isUserType ? (
-            <ChatWithOne channel={channel} userId={userId} />
-          ) : (
-            <ChatWithGroup channel={channel} userId={userId} />
-          )}
-        </div>
       </div>
     </div>
   );
