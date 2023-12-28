@@ -4,8 +4,6 @@ import UserInbox from '../UserInbox/UserInbox';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import axiosClient from "../Api/AxiosClient";
-import { v4 as uuidv4 } from 'uuid';
 
 // use api
 type UserType = {
@@ -34,7 +32,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id
 }
 
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 
 function HomePage() {
   const [user, setUser] = useState<UserType>({

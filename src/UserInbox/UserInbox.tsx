@@ -10,6 +10,7 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { FaReply } from "react-icons/fa";
 import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
@@ -22,6 +23,7 @@ import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
 import UserProfileApi from '../Api/UserProfileApi';
 import Report from "../Users/Report/Report";
+import { timeEnd } from "console";
 
 // use api
 type UserType = {
@@ -109,7 +111,22 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
   const [onBottom, setOnBottom] = useState(true)
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{ text: string; sender: string; type: string; file?: File; uuid?: string; isSent?: boolean }[]>([]);
+  const [messages, setMessages] = useState<{
+    // id?: number;
+    text: string;
+    fullname?: string;
+    sender: string;
+    type: string;
+    file?: File;
+    uuid?: string;
+    isSent?: boolean;
+    create_at?: string;
+  }[]>([]);
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return `${date.getHours()}:${date.getMinutes()}`;
+  };
 
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -128,9 +145,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         let messageList = []
         for (let message of res.data) {
           let messageElement = {
+            id: message.id,
             text: message.content,
+            fullname: message.member.user.fullname,
             sender: (userId === message.member.user.id) ? "self" : "user",
             type: message.message_type.toLowerCase(),
+            create_at: message.create_at,
           }
           messageList.push(messageElement)
         }
@@ -237,7 +257,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         sender: "self",
         type: "text",
         uuid: messageObject.uuid,
-        isSent: false
+        isSent: false,
       }
       setMessages([...messages, textMessage])
       setInputValue("");
@@ -272,9 +292,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
 
       let textMessage = {
         text: messageContent,
-        sender: "user",
-        type: "text",
-      };
+        sender: 'user',
+        type: 'text',
+      }
 
       if (serverMessage.data.message_type === "IMAGE") {
         textMessage.type = "image";
@@ -285,10 +305,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         if (textMessage.type === "image") {
           let fileMessage = {
             text: messageContent,
-            sender: "self",
-            type: "image",
+            sender: 'self',
+            type: 'image',
             isSent: true,
-          };
+          }
           setMessages([...messages, fileMessage]);
         } else {
           let uuid = serverMessage.uuid;
@@ -392,6 +412,64 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
     setIsReport(!isReport);
   }
 
+
+  function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function handleReplyClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function handleDeleteClick(
+  //   message: {
+  //   id?: number; 
+  //   text: string;
+  //   sender: string;
+  //   type: string;
+  //   file?: File | undefined;
+  //   uuid?: string | undefined;
+  //   isSent?: boolean | undefined;
+  //   create_at?: string | undefined;
+  // }
+  ): void {
+    // if (message.id) {
+      // const messageId = message.id;
+      const deleteMessageObject = {
+        action: "remove_message",
+        target: "channel",
+        targetId: 4,
+        data: {
+          messageId: 869,
+        },
+      };
+  
+      const deleteMessageJSON = JSON.stringify(deleteMessageObject);
+      
+      if (isOpen(socket)) {
+        socket.send(deleteMessageJSON);
+      } else {
+        console.log("WebSocket is not open. Message deletion failed.");
+      }
+  
+      // You may also want to update the local state to reflect the deletion
+      // const updatedMessages = messages.filter((msg) => msg.data?.id !== messageId);
+      // setMessages(updatedMessages);
+    // } else {
+    //   console.error("Invalid message format. Unable to delete message.");
+    // }
+  }
+  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
+
+
+  const handleMouseEnter = (index: number) => {
+    setHoveredMessageIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredMessageIndex(null);
+  };
+
   return (
     <>
       {!isUserType ?
@@ -467,25 +545,51 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
 
           <div className="message-container">
             {messages.map((message, index) => (
-              <div className="message-block">
+              <div
+                className={`message-block ${hoveredMessageIndex === index ? "hovered" : ""}`}
+                key={index}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+              >
                 <div key={index}
-                  className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
-                  <div>
-                    {message.type === "image" ? (
+                className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
+                  <div className="message-content">
+                    {message.type === "image" ? 
+                    (<div>
                       <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                      // <a
-                      //   href={URL.createObjectURL(message.file)}
-                      //   download={message.file.name}
-                      //   className="file-downloader"
-                      // >
-                      //   {message.text}
-                      // </a>
-                    ) : (
-                      message.text
+                      {message.create_at && (
+                          <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                        )}
+                    </div>
+                    ) 
+                    : 
+                    (<>
+                      <div className="message-fullname">{message.fullname}</div>
+                        <div>{message.text}</div>
+                        {message.create_at && (
+                          <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                        )}
+                      </>
                     )}
                   </div>
-                </div>
 
+                  <div className="icon-container">
+                    <div className="message-icons"> 
+                      <>
+                        <span className="icon" onClick={() => handleEmojiClick(message)}>
+                          <MdOutlineEmojiEmotions size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleReplyClick(message)}>
+                          <FaReply size={20} />
+                        </span>
+                        <span className="icon" onClick={() => handleDeleteClick()}>
+                          <FiTrash size={20} />
+                        </span>
+                      </>
+                    </div>
+                  </div>
+                </div>
+        
                 <div className="sent-icon">
                   {
                     (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)

@@ -188,7 +188,7 @@ const Profile: React.FC<ProfileProps> = ({ translateX, setTranslateX }) => {
                                 <h3>{dataUser.user?.fullname}</h3>
                             </div>
                             <div className='status'>
-                                <span>online</span>
+                                <span>Online</span>
                             </div>
                         </div>
                     </div>

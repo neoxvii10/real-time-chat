@@ -9,9 +9,9 @@ const Report: React.FC<ReportType> = ({setIsReport}) => {
   return (
     <div className="overlay" >
       <div className="backdrop" onClick={e => {setIsReport(false)}}></div>
-      {/* <div className="wrap-edit">
+      <div className="wrap-edit">
         REPORT
-      </div> */}
+      </div>
     </div>
   )
 }
