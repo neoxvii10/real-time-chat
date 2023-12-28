@@ -29,12 +29,34 @@ const BarChart = ({ isDashboard = false }) => {
 
 ]);
 
-  const handleGetData = () => {
-
+  const handleGetData = async () => {
+    const userReportResponse = await ReportApi.getUserReports();
+    const channelReportResponse = await ReportApi.getChannelReports();
+    const userListResponse = await UserApi.getUserList();
+    const channelListResponse = await ChannelApi.getChannelList();
+    setData([
+      {
+        field: "User",
+        "total users": userListResponse.data.length,
+        "total usersColor": "hsl(275, 70%, 50%)"
+      },
+      {
+        field: "Channel",
+        "total channels": channelListResponse.data.length,
+        "total channelsColor": "hsl(307, 70%, 50%)"
+      },
+      {
+        field: "Report",
+        "total reports": userReportResponse.data.length + channelReportResponse.data.length,
+        "total reportsColor": "hsl(97, 70%, 50%)"
+      }
+    
+    
+    ])
   }
 
   useEffect(() => {
-
+    handleGetData()
   }, []);
 
   return (
