@@ -1,8 +1,18 @@
 import React, { CSSProperties, useState } from "react";
 import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
-
+import { IoIosInformationCircle } from "react-icons/io";
+import "./ChatWithGroup.css";
 import "../RightColumn.css";
 import MediaState from "../Common/RenderMedia/MediaState";
+
+type UserType = {
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type ChannelType = {
   id: number;
@@ -13,11 +23,14 @@ type ChannelType = {
   create_at: string;
 };
 
+type UnifiedType = UserType | ChannelType;
+
 type ChannelInboxProps = {
-  channel: ChannelType;
+  channel: UnifiedType;
+  userId: number;
 };
 
-const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel }) => {
+const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
   const [MemberList, setMemberList] = useState<boolean>(true);
   const [isSlided, setSlided] = useState<boolean>(true); //slide edit status
   const [translateX, setTranslateX] = useState<CSSProperties>({
@@ -35,6 +48,9 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel }) => {
       transform: isSlided ? "translateX(0px)" : "translateX(600px)",
     }));
   };
+
+  const channelInfo = channel as ChannelType;
+
   const [mediaClicked, setMediaClick] = useState<string>("");
   const handleClickOnMedia = (
     event: React.MouseEvent<HTMLParagraphElement>
@@ -51,23 +67,27 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({ channel }) => {
       <div>
         <div className="wrapper" onWheel={handleOnWheel}>
           <div className="rightcolumn-body">
-            <div className="status1-container">
-              <div className="avatar-wrapper">
-                <p className="name">Name</p>
-                <div className="avatar-container">
-                  <p className="avatar">Avatar</p>
-                </div>
+            <div className="group-avatar-wrapper">
+              <div className="group-avatar-container">
+                <img src={channelInfo.avatar_url}></img>
               </div>
-              <div className="phone-container">
-                <div className="layout-btn" onClick={handleShowAllMembers}>
-                  <MdPeopleAlt size={24} className="util-icon" />
-                  <p>Member</p>
-                </div>
+              <p className="group-name">{channelInfo.title}</p>
+            </div>
+            <div className="rectangle-container">
+              <div className="layout-btn" onClick={handleShowAllMembers}>
+                <IoIosInformationCircle size={24} className="util-icon" />
+                <p>Info</p>
+              </div>
+            </div>
+            <div className="rectangle-container">
+              <div className="layout-btn" onClick={handleShowAllMembers}>
+                <MdPeopleAlt size={24} className="util-icon" />
+                <p>Member</p>
               </div>
             </div>
           </div>
 
-          <MediaState />
+          <MediaState channel={channel as ChannelType} />
         </div>
       </div>
     </div>

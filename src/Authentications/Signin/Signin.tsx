@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { BsTelegram } from 'react-icons/bs'
 import Checkbox from '@mui/material/Checkbox'
 import { Link } from "react-router-dom";
@@ -7,6 +7,8 @@ import './Signin.css';
 import UserApi from '../../Api/UserApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import { useAuth } from '../../Hooks/AuthContext';
 
 type SigninProp = {
   username: string;
@@ -22,6 +24,8 @@ type ApiResponse = {
 };
 
 export default function CountrySelect() {
+  const {handleLogin} = useAuth();
+
   const navigate = useNavigate();
 
   const [data, setData] = useState<SigninProp>({
@@ -52,7 +56,7 @@ export default function CountrySelect() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     setLoading(true);
 
     const formDataUser = {
@@ -87,8 +91,10 @@ export default function CountrySelect() {
       }
       
       if (response.message === 'Login successfully') {
-        localStorage.setItem('user', JSON.stringify(data));
-        localStorage.setItem('accessToken', JSON.stringify(response?.data?.access));
+        // sessionStorage.setItem('user', JSON.stringify(data));
+        // localStorage.setItem('accessToken', JSON.stringify(response?.data?.access));
+        handleLogin(response?.data?.access);
+
         toast.dismiss();
         setTimeout(() => {
           toast.success('Signin successful. Redirecting...', {

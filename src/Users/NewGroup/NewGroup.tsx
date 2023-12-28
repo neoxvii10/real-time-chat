@@ -95,7 +95,9 @@ const NewGroup: React.FC<NewGroupProp> = ({ translateX, handleSlideAnimation, us
       <GroupCreation
       slideRight={slideRight}
       handleNewGroupAnimation={handleNewGroupAnimation}
+      handleCloseAddmember={handleClose}
       selectedOptions={selectedOptions}
+      setSelectedOptions = {setSelectedOptions}
       />
     </>
   );

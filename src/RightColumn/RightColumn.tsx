@@ -3,16 +3,16 @@ import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { RiPencilLine } from "react-icons/ri";
 import "./RightColumn.css";
-import EditInfor from "./Common/RenderEditStatus/Edit";
 import MediaState from "./Common/RenderMedia/MediaState";
 import { MdOutlineCall } from "react-icons/md";
 import ChatWithOne from "./ChatWithOne/ChatWithOne";
 import ChatWithGroup from "./ChatWithGroup/ChatWithGroup";
-
+import EditInforGroup from "./ChatWithGroup/EditGroup";
+import EditInforOne from "./ChatWithOne/EditOne";
 type UserType = {
   id: number;
   username: string;
-  avatar_url: string;
+  avatar_url: any;
   first_name: string;
   last_name: string;
   fullname: string;
@@ -27,12 +27,19 @@ type ChannelType = {
   create_at: string;
 };
 
+type UnifiedType = UserType | ChannelType;
+
 type ChannelInboxProps = {
-  channel: ChannelType;
+  channel: UnifiedType;
+  userId: number;
   handleClose: (event: React.MouseEvent<Element>) => void;
 };
 
-const UserInfor: React.FC<ChannelInboxProps> = ({ channel, handleClose }) => {
+const UserInfor: React.FC<ChannelInboxProps> = ({
+  channel,
+  handleClose,
+  userId,
+}) => {
   const [pageStatus, setPageStatus] = useState<string>("info");
   const [isSlided, setSlided] = useState<boolean>(true); //slide edit status
   const [translateX, setTranslateX] = useState<CSSProperties>({
@@ -53,7 +60,7 @@ const UserInfor: React.FC<ChannelInboxProps> = ({ channel, handleClose }) => {
     }));
   };
 
-  const [isGroupMode, setGroupMode] = useState<boolean>(true);
+  const isUserType = false;
 
   const [mediaClicked, setMediaClick] = useState<string>("");
   const handleClickOnMedia = (
@@ -66,7 +73,19 @@ const UserInfor: React.FC<ChannelInboxProps> = ({ channel, handleClose }) => {
   return (
     <div className="RightColumn-container">
       <div className={`user-info`} style={translateX}>
-        <EditInfor channel={channel} handleEdit={handleClickOnEditButton} />
+        {isUserType ? (
+          <EditInforOne
+            channel={channel}
+            userId={userId}
+            handleEdit={handleClickOnEditButton}
+          />
+        ) : (
+          <EditInforGroup
+            channel={channel}
+            handleEdit={handleClickOnEditButton}
+            userId={userId}
+          />
+        )}
       </div>
 
       <div>
@@ -79,11 +98,13 @@ const UserInfor: React.FC<ChannelInboxProps> = ({ channel, handleClose }) => {
             <RiPencilLine size={24} className={`util-icon`} />
           </span>
         </div>
-        {isGroupMode ? (
-          <ChatWithGroup channel={channel} />
-        ) : (
-          <ChatWithOne channel={channel} />
-        )}
+        <div className="rightcolumn-body">
+          {isUserType ? (
+            <ChatWithOne channel={channel} userId={userId} />
+          ) : (
+            <ChatWithGroup channel={channel} userId={userId} />
+          )}
+        </div>
       </div>
     </div>
   );

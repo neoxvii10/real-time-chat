@@ -6,6 +6,11 @@ class UserProfileApi {
         return await axiosClient.get(url);
     }
 
+    getChatProfile = async (channelId: number) => {
+        const url = `/api/user/${channelId}/profile`;
+        return await axiosClient.get(url);
+    }
+
     putProfile = async (data: object) => {
         const url = '/api/user/profile/';
         return await axiosClient.put(url, data);

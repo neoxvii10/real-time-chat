@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dispatch, SetStateAction, CSSProperties } from "react";
 import { TbCameraPlus } from 'react-icons/tb';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import ImageCrop from './ImageCrop/ImageCrop';
 import './GroupCreation.css';
+import ChannelApi from "../../../../Api/ChannelApi";
 
 type UserType = {
   id: number,
@@ -20,40 +21,11 @@ type UserType = {
 type GroupCreationProps = {
   slideRight: CSSProperties;
   handleNewGroupAnimation: Dispatch<SetStateAction<CSSProperties>>;
+  handleCloseAddmember: () => void
   selectedOptions: UserType[];
+  setSelectedOptions: React.Dispatch<React.SetStateAction<UserType[]>>;
 }
-const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGroupAnimation, selectedOptions }) => {
-  const CssTextField = styled(TextField)({
-    '& label.Mui-focused': {
-      color: 'var(--border-on-click)',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#2f2f2f',
-      },
-      '&:hover fieldset': {
-        borderColor: 'var(--border-on-click)',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'var(--border-on-click)',
-      },
-      borderRadius: '10px',
-    },
-    '& .MuiInputLabel-root': {
-      color: '#9e9e9e',
-    },
-    '&:hover .MuiInputLabel-root': {
-      color: 'var(--border-on-click)',
-    },
-    '&.Mui-focused .MuiInputLabel-root': {
-      color: 'var(--border-on-click)',
-    },
-    '& .MuiOutlinedInput-input': {
-      color: 'var(--font-color)',
-    },
-    width: '90%',
-    marginTop: '2rem',
-  });
+const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGroupAnimation, handleCloseAddmember, selectedOptions, setSelectedOptions }) => {
 
   const handleClose = () => {
     handleNewGroupAnimation(prevSlideRight => ({
@@ -76,9 +48,7 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
     setIsCropped(!isCropped);
   };
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
@@ -97,8 +67,61 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
     setDisEditAvatar(false);
     setSelectedImage("");
   }
+  // handle submit create group
 
-  const defaultGrName = selectedOptions.map(option => option.fullname).join(', ');
+  const [groupName, setGroupName] = useState('');
+  useEffect(() => {
+    setGroupName(selectedOptions.map(option => option.fullname).join(', '));
+  }, [slideRight])
+
+  const handleInputGroupName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    event.preventDefault();
+    setGroupName(event.target.value);
+  }
+
+  const handleSubmitAvatar = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number) => {
+    event.preventDefault();
+    const stringId = id.toString();
+    if (croppedBlob) {
+      const fileAvatar = new File([croppedBlob], "group_avatar.jpg", { type: "image/jpeg", lastModified: new Date().getTime() })
+      const formData = new FormData();
+      formData.append('file', fileAvatar);
+      formData.append('channel', stringId);
+      try {
+        const response = await ChannelApi.uploadAvatar(formData);
+        console.log("update avatar group", response);
+        // 
+        setIsCropped(false);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+  }
+
+  const handleSubmitCreateGroup = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    const members = selectedOptions.map(option => option.id);
+
+    const formData = {
+      title: groupName,
+      members: members
+    }
+
+    try {
+      const response = await ChannelApi.createChannel(formData);
+      if(isCropped) {
+        await handleSubmitAvatar(event, response.data?.id);
+      }
+      setSelectedOptions([]);
+      handleClose()
+      handleCloseAddmember();
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
   return (
     <>
       <div className='gr-creation-container' style={slideRight}>
@@ -129,11 +152,10 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
                 title=""
               />
             </div>
-            <CssTextField
-              label="Group Name"
-              id="gr-name"
-              defaultValue={defaultGrName}
-            />
+            <div className="input-group">
+              <input onChange={handleInputGroupName} className='form-control' dir='auto' type="text" name='groupName' value={groupName} placeholder='Group name' />
+              <label>Group name</label>
+            </div>
           </form>
         </div>
         <div className="gr-creation-bot">
@@ -149,14 +171,13 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
                   </div>
                   <div className="user-labels">
                     <h5>{selectedOption.fullname}</h5>
-                    <p>Last seen now</p>
                   </div>
                 </div>
               </li>
             ))}
           </ul>
         </div>
-        <div className="create-gr-btn-container">
+        <div className="create-gr-btn-container" onClick={handleSubmitCreateGroup}>
           <FaArrowRight className="create-gr-icon" size={22} />
         </div>
       </div>

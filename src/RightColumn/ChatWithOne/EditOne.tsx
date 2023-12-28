@@ -1,10 +1,19 @@
-import "./Edit.css";
+import "./EditOne.css";
 import { useState } from "react";
 import { TiTick } from "react-icons/ti";
 import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
+
+type UserType = {
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type ChannelType = {
   id: number;
@@ -15,18 +24,26 @@ type ChannelType = {
   create_at: string;
 };
 
-type UserInfoProps = {
-  channel: ChannelType;
+type UnifiedType = UserType | ChannelType;
+
+type ChannelInboxProps = {
+  channel: UnifiedType;
+  userId: number;
   handleEdit: (event: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
-const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
+const EditInforOne: React.FC<ChannelInboxProps> = ({
+  channel,
+  handleEdit,
+  userId,
+}) => {
+  const user = channel as UserType;
   const [existAvt, setExitAvt] = useState<boolean>(true);
   const [ChangingForm, setChangingForm] = useState<boolean>(false);
 
   const [inputValues, setInputValues] = useState<{ [x: string]: string }>({
-    fname: channel.title,
-    lname: "",
+    fname: user.first_name,
+    lname: user.last_name,
   });
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +79,7 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
               )}
             </div>
           </div>
-          <div className="name">{channel.title}</div>
+          <div className="name">"Name One User"</div>
           <div className="form-name">
             <Box
               component="form"
@@ -174,4 +191,4 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
   );
 };
 
-export default EditInfor;
+export default EditInforOne;

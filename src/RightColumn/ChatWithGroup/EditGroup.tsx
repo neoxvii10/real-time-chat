@@ -1,10 +1,20 @@
-import "./Edit.css";
-import { useState } from "react";
+import "./EditGroup.css";
+import { useEffect, useState } from "react";
 import { TiTick } from "react-icons/ti";
 import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
+import { MdPeopleAlt } from "react-icons/md";
+
+type UserType = {
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type ChannelType = {
   id: number;
@@ -15,18 +25,26 @@ type ChannelType = {
   create_at: string;
 };
 
-type UserInfoProps = {
-  channel: ChannelType;
+type UnifiedType = UserType | ChannelType;
+
+type ChannelInboxProps = {
+  channel: UnifiedType;
+  userId: number;
   handleEdit: (event: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
-const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
+const EditInforGroup: React.FC<ChannelInboxProps> = ({
+  channel,
+  handleEdit,
+  userId,
+}) => {
+  const channelInfo = channel as ChannelType;
   const [existAvt, setExitAvt] = useState<boolean>(true);
   const [ChangingForm, setChangingForm] = useState<boolean>(false);
 
   const [inputValues, setInputValues] = useState<{ [x: string]: string }>({
-    fname: channel.title,
-    lname: "",
+    groupName: channelInfo.title,
+    description: "",
   });
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +53,7 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
     setChangingForm(true);
   };
   return (
-    <div className="status2-container">
+    <div className="group-edit-slide">
       <div className="rightcolumn-header">
         <span className="btn-edit" onClick={handleEdit}>
           <IoMdArrowBack size={24} className="util-icon" />
@@ -44,16 +62,14 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
       </div>
 
       <div className="edit-body-right">
-        <div className="part1">
+        <div className="group-avatar-name">
           <div className="edit-avatar-container">
             <div className="avatar">
               {existAvt ? (
-                <div>
-                  <img
-                    src={channel.avatar_url}
-                    className="imgAvt"
-                    alt="avatar"
-                  />
+                <div className="group-avatar-wrapper">
+                  <div className="group-avatar-container">
+                    <img src={channelInfo.avatar_url}></img>
+                  </div>
                 </div>
               ) : (
                 <div className="textAvt">
@@ -62,7 +78,7 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
               )}
             </div>
           </div>
-          <div className="name">{channel.title}</div>
+          <div className="name">{channelInfo.title}</div>
           <div className="form-name">
             <Box
               component="form"
@@ -108,9 +124,9 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
                 InputProps={{ sx: { color: "white" } }}
                 color="primary"
                 id="outlined-basic"
-                label="First Name (required)"
+                label="Group Name (required)"
                 required
-                defaultValue={inputValues?.fname || ""}
+                defaultValue={inputValues?.groupName || ""}
                 onChange={handleChangeInput}
               />
               <TextField
@@ -144,14 +160,34 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
                 InputProps={{ sx: { color: "white" } }}
                 color="primary"
                 id="outlined-basic"
-                label="Last Name (optional)"
+                label="Description (optional)"
                 variant="outlined"
-                defaultValue={inputValues?.lname || ""}
+                defaultValue={inputValues?.description || ""}
                 onChange={handleChangeInput}
               />
             </Box>
           </div>
         </div>
+
+        <div className="rectangle-container">
+          <div className="layout-btn">
+            <MdPeopleAlt size={24} className="util-icon" />
+            <p>Member</p>
+          </div>
+        </div>
+        <div className="rectangle-container">
+          <div className="layout-btn">
+            <MdPeopleAlt size={24} className="util-icon" />
+            <p>Member</p>
+          </div>
+        </div>
+        <div className="rectangle-container">
+          <div className="layout-btn">
+            <MdPeopleAlt size={24} className="util-icon" />
+            <p>Member</p>
+          </div>
+        </div>
+
         <div className="delete-contact">
           <div className="layout-btn">
             <IoMdTrash
@@ -174,4 +210,4 @@ const EditInfor: React.FC<UserInfoProps> = ({ channel, handleEdit }) => {
   );
 };
 
-export default EditInfor;
+export default EditInforGroup;

@@ -4,6 +4,15 @@ import "../RightColumn.css";
 
 import MediaState from "../Common/RenderMedia/MediaState";
 
+type UserType = {
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
+
 type ChannelType = {
   id: number;
   member_count: number;
@@ -13,11 +22,14 @@ type ChannelType = {
   create_at: string;
 };
 
+type UnifiedType = UserType | ChannelType;
+
 type ChannelInboxProps = {
-  channel: ChannelType;
+  channel: UnifiedType;
+  userId: number;
 };
 
-const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel }) => {
+const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
   const [mediaClicked, setMediaClick] = useState<string>("");
   const handleClickOnMedia = (
     event: React.MouseEvent<HTMLParagraphElement>
@@ -48,7 +60,7 @@ const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel }) => {
             </div>
           </div>
 
-          <MediaState />
+          {/* <MediaState /> */}
         </div>
       </div>
 
