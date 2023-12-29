@@ -66,7 +66,7 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
           >
             Media
           </p>
-          <p
+          {/* <p
             className={`media-topic ${
               mediaClicked === "Files" ? "media-clicked" : ""
             }`}
@@ -105,7 +105,7 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
             }}
           >
             Group
-          </p>
+          </p> */}
         </div>
         <div className="media-body">
           <div>

@@ -7,6 +7,7 @@ import MediaState from "../Common/RenderMedia/MediaState";
 import { RiPencilLine } from "react-icons/ri";
 import EditInforGroup from "./Edit/EditGroup";
 import MemberList from "./Member/MemberList";
+import { MdOutlineArrowForwardIos } from "react-icons/md";
 
 type UserType = {
   id: number;
@@ -109,7 +110,14 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
         <div className="wrapper" onWheel={handleOnWheel}>
           <div className="rightcolumn-body">
             <div className="group-avatar-wrapper">
-              <div className="group-avatar-container">
+              <div
+                className="group-avatar-container"
+                style={{
+                  width: "10rem",
+                  height: "10rem",
+                  margin: "3.5rem 0  0 0",
+                }}
+              >
                 <img src={channelInfo.avatar_url}></img>
               </div>
               <p className="group-name">{channelInfo.title}</p>
@@ -124,6 +132,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
               <div className="layout-btn" onClick={handleShowAllMembers}>
                 <MdPeopleAlt size={24} className="util-icon" />
                 <p>Member</p>
+                <MdOutlineArrowForwardIos className="util-icons-right" />
               </div>
             </div>
           </div>

@@ -5,8 +5,7 @@ import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
-import { MdPeopleAlt } from "react-icons/md";
-
+import { MdPeopleAlt, MdExitToApp } from "react-icons/md";
 type UserType = {
   id: number;
   username: string;
@@ -53,7 +52,7 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
     setChangingForm(true);
   };
   return (
-    <div className="group-edit-slide">
+    <div>
       <div className="rightcolumn-header">
         <span className="btn-edit" onClick={handleEdit}>
           <IoMdArrowBack size={24} className="util-icon" />
@@ -62,12 +61,18 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
       </div>
 
       <div className="edit-body-right">
-        <div className="group-avatar-name">
-          <div className="edit-avatar-container">
+        <div>
+          <div>
             <div className="avatar">
               {existAvt ? (
                 <div className="group-avatar-wrapper">
-                  <div className="group-avatar-container">
+                  <div
+                    className="group-avatar-container"
+                    style={{
+                      width: "10rem",
+                      height: "10rem",
+                    }}
+                  >
                     <img src={channelInfo.avatar_url}></img>
                   </div>
                 </div>
@@ -190,12 +195,12 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
 
         <div className="delete-contact">
           <div className="layout-btn">
-            <IoMdTrash
+            <MdExitToApp
               size={24}
               className="util-icon"
               style={{ color: "red" }}
             />
-            <p>Delete Contact</p>
+            <p>Leave Group</p>
           </div>
         </div>
         {ChangingForm ? (
