@@ -43,25 +43,29 @@ const Sidebar = () => {
     const [adminProfile, setAdminProfile] = useState({
         avatar_url: "/assets/user.png",
         username: "admin",
-        fullname: "I am an admin"
+        fullname: "I am an admin",
+        getSuccess: false
     });
+
+    
 
     const getProfileInformation = async () => {
         const response = await UserProfileApi.getProfile();
+        console.log(response.data)
         setAdminProfile({
-            avatar_url: "/assets/user.png",
+            avatar_url: response.data.avatar_url,
             username: response.data.user.username,
-            fullname: response.data.user.fullname
+            fullname: response.data.user.fullname,
+            getSuccess: true
         })
     }
 
     useEffect( () => {
-        
-        // getProfileInformation();
-        // setAdminProfile({
-        //     avatar_url: response.data.avatar_url
-        // })
-    })
+        if(!adminProfile.getSuccess) {
+
+            getProfileInformation();
+        }
+    }, [])
 
     return (
         <Box
@@ -183,13 +187,13 @@ const Sidebar = () => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                        <Item
+                        {/* <Item
                             title="Invoices Balances"
                             to="/invoices"
                             icon={<ReceiptOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
-                        />
+                        /> */}
 
                         <Typography
                             variant="h6"

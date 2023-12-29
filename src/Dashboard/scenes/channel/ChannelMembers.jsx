@@ -13,13 +13,17 @@ import CheckIcon from "@mui/icons-material/Check";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-
+import BanApi from "../../../Api/BanApi";
 const ChannelMembers = () => {
     const {channelId} = useParams();
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
     const [userData, setUserData] = useState([]);
+    const [currentStatus, setCurrentStatus] = useState({
+        id: null,
+        is_active: false,
+    });
     const [confirmDialog, setConfirmDialog] = useState({
         title: "",
         content: "",
@@ -47,24 +51,58 @@ const ChannelMembers = () => {
         });
     };
 
-    const acceptBlockUser = () => {
+    const acceptBlockUser = async () => {
         setConfirmDialog({
             isOpen: false,
         });
-
-        toast.success("Block người dùng thành công", {
-            theme: theme.palette.mode,
-        });
+        if (currentStatus["is_active"]) {
+            const response = await BanApi.banUser(currentStatus["id"]);
+            console.log(response);
+            if (response.status) {
+                toast.error("Cannot ban this user", {
+                    theme: theme.palette.mode,
+                });
+            } else {
+                toast.success("Ban User successfully", {
+                    theme: theme.palette.mode,
+                });
+                getChannelMembers();
+            }
+        } else {
+            const response = await BanApi.unbanUser(currentStatus["id"]);
+            console.log(response);
+            if (response.status) {
+                toast.error("Cannot unban this user", {
+                    theme: theme.palette.mode,
+                });
+            } else {
+                toast.success("Unban User successfully!", {
+                    theme: theme.palette.mode,
+                });
+                getChannelMembers();
+            }
+        }
     };
     const handleClickBlockUser = (id, is_active) => {
-        setConfirmDialog({
-            title: "Block User",
-            content: "Do you want to block this user?",
-            isOpen: true,
+        setCurrentStatus({
+            id,
+            is_active,
         });
+        if (is_active) {
+            setConfirmDialog({
+                title: "Ban User",
+                content: "Do you want to ban this user?",
+                isOpen: true,
+            });
+        } else {
+            setConfirmDialog({
+                title: "Unban User",
+                content: "Do you want to unban this user?",
+                isOpen: true,
+            });
+        }
     };
     useEffect(() => {
-        console.log(channelId);
         getChannelMembers();
     }, []);
 
@@ -115,7 +153,7 @@ const ChannelMembers = () => {
         {
             field: "is_active",
             headerName: "Status",
-            renderCell: ({ id, row: is_active }) => {
+            renderCell: ({ id, row: {is_active} }) => {
                 return (
                     <Box
                         width="40%"
@@ -126,7 +164,7 @@ const ChannelMembers = () => {
                         backgroundColor={
                             is_active
                                 ? colors.greenAccent[600]
-                                : colors.greenAccent[700]
+                                : colors.redAccent[600]
                         }
                         borderRadius="4px"
                         sx={{
@@ -136,14 +174,16 @@ const ChannelMembers = () => {
                         }}
                         onClick={() => handleClickBlockUser(id, is_active)}
                     >
-                        {is_active ? <CheckIcon /> : <BlockIcon />}
+                        <Tooltip title={is_active ? "Active" : "Banned"}>
+                            {is_active ? <CheckIcon /> : <BlockIcon />}
+                        </Tooltip>
                     </Box>
                 );
             },
         },
         {
             field: "",
-            headerName: "",
+            headerName: "Detail",
             align: "center",
             renderCell: ({ id }) => {
                 return (

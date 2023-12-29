@@ -4,79 +4,21 @@ import { tokens } from "../theme";
 import { useState, useEffect } from "react";
 import ReportApi from "../../Api/ReportApi";
 import ChannelApi from "../../Api/ChannelApi";
-
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [getDataSuccess, setGetDataSuccess] = useState(false);
     const [recentActivities, setRecentActivities] = useState([
         {
             id: "channels",
             color: tokens("dark").greenAccent[500],
-            data: [
-              {
-                  "x": "18/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "19/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "20/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "21/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "22/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "23/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "24/12/2023",
-                  "y": 0
-              }
-          ],
+            data: [],
             key: 1,
         },
         {
             id: "reports",
             color: tokens("dark").blueAccent[300],
-            data: [
-              {
-                  "x": "18/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "19/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "20/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "21/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "22/12/2023",
-                  "y": 1
-              },
-              {
-                  "x": "23/12/2023",
-                  "y": 0
-              },
-              {
-                  "x": "24/12/2023",
-                  "y": 0
-              }
-          ],
+            data: [],
             key: 2,
         },
     ]);
@@ -149,19 +91,17 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
             });
         }
         setRecentActivities(copyRecentActivities);
+        setGetDataSuccess(true);
         console.log(recentActivities);
     };
 
-
     useEffect(() => {
-
-    handleGetData();
-
-    }, [recentActivities]);
+        handleGetData();
+    }, []);
 
     return (
         <ResponsiveLine
-            data={recentActivities}
+            data={getDataSuccess ? recentActivities : []}
             key={recentActivities.map((item) => item.key).join("-")}
             theme={{
                 axis: {
@@ -215,7 +155,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
                 tickSize: 0,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: isDashboard ? undefined : "transportation", // added
+                legend: isDashboard ? undefined : "date", // added
                 legendOffset: 36,
                 legendPosition: "middle",
             }}

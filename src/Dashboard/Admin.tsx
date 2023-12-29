@@ -24,24 +24,35 @@ import 'react-toastify/dist/ReactToastify.css';
 import User from './scenes/user/User';
 import { ToastContainer } from 'react-toastify';
 import ChannelMembers from './scenes/channel/ChannelMembers';
+import UserApi from '../Api/UserApi';
 const AdminManagement = () => {
     const channelId = useParams();
     const navigate = useNavigate();
-    const isAuthenticated = () => {
+    const isAuthenticated = async () => {
         const accessToken = localStorage.getItem('accessToken');
         // Your authentication logic here, e.g., checking if the token is valid
-        return accessToken;
+        if(accessToken) {
+            const response = await UserApi.getUserList();
+            if(!response.status || response.status === 200) {
+                return true;
+            }
+        }
+        return false;
     };
 
     useEffect(() => {
         // Check authentication before rendering the component
-        if (!isAuthenticated()) {
-            // Redirect to login if not authenticated
-            navigate('/admin/login');
-        }
+        new Promise((resolve, reject) => {
+            resolve( isAuthenticated())
+        }).then((isAuthenticated: any) => {
+            if(!isAuthenticated) {
+                localStorage.removeItem('accessToken');
+                navigate('/admin/login')
+            }
+        })
     }, [navigate]);
 
-    if(!isAuthenticated()) {
+    if(!localStorage.getItem('accessToken') || !isAuthenticated()) {
         return (
             <AdminLogin/>
         )

@@ -76,7 +76,7 @@ const AdminLogin = () => {
               pauseOnHover: true,
               closeOnClick: false,
               theme: "dark",
-            })}, 500);
+            })}, 100);
     
           setTimeout(() => {
             navigate('/admin');

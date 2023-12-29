@@ -9,20 +9,21 @@ import ChannelApi from "../../Api/ChannelApi";
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [getDataSuccess, setGetDataSuccess] = useState(false);
   const [data, setData] = useState([
   {
     field: "User",
-    "total users": 100,
+    "total users": 0,
     "total usersColor": "hsl(275, 70%, 50%)"
   },
   {
     field: "Channel",
-    "total channels": 20,
+    "total channels": 0,
     "total channelsColor": "hsl(307, 70%, 50%)"
   },
   {
     field: "Report",
-    "total reports": 30,
+    "total reports": 0,
     "total reportsColor": "hsl(97, 70%, 50%)"
   }
 
@@ -53,6 +54,7 @@ const BarChart = ({ isDashboard = false }) => {
     
     
     ])
+    setGetDataSuccess(true)
   }
 
   useEffect(() => {
@@ -61,7 +63,7 @@ const BarChart = ({ isDashboard = false }) => {
 
   return (
     <ResponsiveBar
-      data={data}
+      data={getDataSuccess ? data : data}
       theme={{
         // added
         axis: {

@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import { MenuItem } from "react-pro-sidebar";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ColorModeContext, tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -67,6 +67,7 @@ const Topbar = () => {
         avatar_url: "/assets/user.png",
         username: "admin",
         fullname: "I am an admin",
+        getSuccess: false
     });
 
     const handleSignout = () => {
@@ -77,11 +78,18 @@ const Topbar = () => {
     const getProfileInformation = async () => {
         const response = await UserProfileApi.getProfile();
         setAdminProfile({
-            avatar_url: "/assets/user.png",
+            avatar_url: response.data.avatar_url,
             username: response.data.user.username,
             fullname: response.data.user.fullname,
         });
     };
+
+    useEffect(() => {
+        console.log("Hello")
+        if(!adminProfile.getSuccess) {
+            getProfileInformation()
+        }
+    }, [])
 
     return (
         <Box display="flex" justifyContent="space-between" p={2}>

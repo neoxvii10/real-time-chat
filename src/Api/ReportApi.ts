@@ -11,6 +11,16 @@ class ReportApi {
         const url = '/api/report/channel/';
         return await axiosClient.get(url);
     }
+
+    processReport = async (reportId: any) => {
+        const url = `/api/report/${reportId}/`
+        return await axiosClient.put(url);
+    }
+
+    deleteReport = async (reportId: any) => {
+        const url = `/api/report/${reportId}/`;
+        return await axiosClient.delete(url);
+    }
 }
 
 export default new ReportApi();

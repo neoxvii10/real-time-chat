@@ -1,27 +1,29 @@
-import { Box, useTheme, Button, Typography } from "@mui/material";
+import { Box, useTheme, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataContacts } from "../../data/mockData";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserApi from "../../../Api/UserApi";
 import Header from "../../components/Header";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckIcon from "@mui/icons-material/Check";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import BanApi from "../../../Api/BanApi";
 
 const User = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
     const [userData, setUserData] = useState([]);
+    const [currentStatus, setCurrentStatus] = useState({
+        id: null,
+        is_active: false,
+    });
     const [confirmDialog, setConfirmDialog] = useState({
         title: "",
         content: "",
@@ -33,6 +35,7 @@ const User = () => {
     const getUserData = async () => {
         const userListResponse = await UserApi.getUserList();
         setUserData(userListResponse.data);
+        console.log(userListResponse.data);
     };
 
     const cancelBlockUser = () => {
@@ -41,21 +44,56 @@ const User = () => {
         });
     };
 
-    const acceptBlockUser = () => {
+    const acceptBlockUser = async () => {
         setConfirmDialog({
             isOpen: false,
         });
-
-        toast.success("Block người dùng thành công", {
-            theme: theme.palette.mode,
-        });
+        if (currentStatus["is_active"]) {
+            const response = await BanApi.banUser(currentStatus["id"]);
+            console.log(response);
+            if (response.status) {
+                toast.error("Cannot ban this user", {
+                    theme: theme.palette.mode,
+                });
+            } else {
+                toast.success("Ban User successfully", {
+                    theme: theme.palette.mode,
+                });
+                getUserData();
+            }
+        } else {
+            const response = await BanApi.unbanUser(currentStatus["id"]);
+            console.log(response);
+            if (response.status) {
+                toast.error("Cannot unban this user", {
+                    theme: theme.palette.mode,
+                });
+            } else {
+                toast.success("Unban User successfully!", {
+                    theme: theme.palette.mode,
+                });
+                getUserData();
+            }
+        }
     };
     const handleClickBlockUser = (id, is_active) => {
-        setConfirmDialog({
-            title: "Block User",
-            content: "Do you want to block this user?",
-            isOpen: true,
+        setCurrentStatus({
+            id,
+            is_active,
         });
+        if (is_active) {
+            setConfirmDialog({
+                title: "Ban User",
+                content: "Do you want to block this user?",
+                isOpen: true,
+            });
+        } else {
+            setConfirmDialog({
+                title: "Unban User",
+                content: "Do you want to unblock this user?",
+                isOpen: true,
+            });
+        }
     };
     useEffect(() => {
         getUserData();
@@ -101,7 +139,8 @@ const User = () => {
         {
             field: "is_active",
             headerName: "Status",
-            renderCell: ({ id, row: is_active }) => {
+            renderCell: ({ id, ...obj }) => {
+                const is_active = obj.row.is_active;
                 return (
                     <Box
                         width="40%"
@@ -112,7 +151,7 @@ const User = () => {
                         backgroundColor={
                             is_active
                                 ? colors.greenAccent[600]
-                                : colors.greenAccent[700]
+                                : colors.redAccent[600]
                         }
                         borderRadius="4px"
                         sx={{
@@ -120,23 +159,24 @@ const User = () => {
                                 cursor: "pointer",
                             },
                         }}
-                        onClick={() => handleClickBlockUser(id, is_active)}
+                        onClick={() => {
+                            handleClickBlockUser(id, is_active);
+                        }}
                     >
-                        {is_active ? <CheckIcon /> : <BlockIcon />}
+                        {" "}
+                        <Tooltip title={is_active ? "Active" : "Banned"}>
+                            {is_active ? <CheckIcon /> : <BlockIcon />}
+                        </Tooltip>
                     </Box>
                 );
             },
         },
         {
-            headerName: "",
+            headerName: "Detail",
             align: "center",
             renderCell: ({ id }) => {
                 return (
-                    <Box
-                        onClick={() =>
-                            navigate(`/admin/user/${id}/detail`)
-                        }
-                    >
+                    <Box onClick={() => navigate(`/admin/user/${id}/detail`)}>
                         <Tooltip title="View Detail">
                             <IconButton>
                                 <VisibilityIcon />
