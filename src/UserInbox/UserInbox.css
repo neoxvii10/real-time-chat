@@ -176,7 +176,7 @@ p {
   top: 3rem;
   right: 2rem;
   transition: all 300ms ease;
-
+  
 }
 
 .util-container ul {
@@ -210,7 +210,8 @@ p {
 }
 
 .util-container .dropdown-label {
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
   display: inline-flex;
   align-items: center;
   font-size: 0.87rem;
@@ -243,7 +244,7 @@ p {
   padding: 0.6rem;
   border-radius: 1.2rem;
   z-index: 6;
-
+  
 }
 
 .input-area {
@@ -335,29 +336,55 @@ p {
   background-color: transparent !important;
 }
 
-.emoji-picker-container .EmojiPickerReact .emoji-picker-react .emoji-picker .emoji-group {
+.emoji-picker-container
+  .EmojiPickerReact
+  .emoji-picker-react
+  .emoji-picker
+  .emoji-group {
   border: none !important;
   box-shadow: none !important;
   background-color: transparent !important;
 }
 
-.emoji-picker-container .EmojiPickerReact .emoji-picker-react .emoji-picker .emoji-group .emoji-group-title {
+.emoji-picker-container
+  .EmojiPickerReact
+  .emoji-picker-react
+  .emoji-picker
+  .emoji-group
+  .emoji-group-title {
   color: var(--font-color) !important;
 }
 
-.emoji-picker-container .EmojiPickerReact .emoji-picker-react .emoji-picker .emoji-group .emoji-group-list {
+.emoji-picker-container
+  .EmojiPickerReact
+  .emoji-picker-react
+  .emoji-picker
+  .emoji-group
+  .emoji-group-list {
   border: none !important;
   box-shadow: none !important;
   background-color: transparent !important;
 }
 
-.emoji-picker-container .EmojiPickerReact .emoji-picker-react .emoji-picker .emoji-group .emoji-group-list .emoji-group-emoji {
+.emoji-picker-container
+  .EmojiPickerReact
+  .emoji-picker-react
+  .emoji-picker
+  .emoji-group
+  .emoji-group-list
+  .emoji-group-emoji {
   border: none !important;
   box-shadow: none !important;
   background-color: transparent !important;
 }
 
-.emoji-picker-container .EmojiPickerReact .emoji-picker-react .emoji-picker .emoji-group .emoji-group-list .emoji-group-emoji:hover {
+.emoji-picker-container
+  .EmojiPickerReact
+  .emoji-picker-react
+  .emoji-picker
+  .emoji-group
+  .emoji-group-list
+  .emoji-group-emoji:hover {
   background-color: var(--hover) !important;
 }
 
@@ -429,10 +456,9 @@ p {
   border: none;
   box-shadow: none;
   width: 80%;
-
 }
 
-.file-popup-footer input[type=text] {
+.file-popup-footer input[type="text"] {
   color: var(--font-color);
 }
 
@@ -563,7 +589,5 @@ p {
   font-weight: bold;
 }
 
-.message-fullname {
-  font-size: 0.8rem;
-  font-weight: bold;
-}
+
+

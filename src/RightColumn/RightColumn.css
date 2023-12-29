@@ -1,0 +1,72 @@
+:root {
+  --align-dimension: 2rem;
+  --size-avatar-edit: 2.5rem;
+  --rightcolumn-backgroud: rgb(16, 16, 16);
+  --primary-color: rgb(135, 116, 225);
+  --background-avatar: linear-gradient(rgb(205, 83, 83) 10%, #f67a59 90%);
+}
+.RightColumn-container {
+  min-height: 100vh;
+}
+
+.RightColumn-container > .user-info {
+  width: 100%;
+  right: 0;
+  transition: 400ms;
+}
+
+.rightcolumn-header {
+  position: fixed;
+  display: flex;
+  height: 3.5rem;
+  width: 100%;
+  align-items: center;
+  background-color: var(--background-color);
+  z-index: 1;
+}
+
+.rightcolumn-header .util-icon {
+  margin-left: 1rem;
+}
+
+.rightcolumn-header h3 {
+  display: inline-block;
+  width: 73%;
+  font-size: x-large;
+  padding-left: 2%;
+}
+
+.rightcolumn-body {
+  overflow-y: scroll;
+}
+
+.rectangle-container {
+  height: 80px;
+  background-color: var(--background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rectangle-container > .layout-btn {
+  border-radius: 8px;
+  cursor: pointer;
+  width: 95%;
+  height: 75%;
+}
+
+.rectangle-container .layout-btn:hover {
+  background: var(--hover);
+}
+
+.rectangle-container p {
+  display: inline-block;
+  font-size: x-large;
+  margin-left: 15px;
+}
+
+.rectangle-container .util-icon {
+  position: relative;
+  top: 20%;
+  left: 0.5em;
+}

@@ -14,26 +14,24 @@ import { FaReply } from "react-icons/fa";
 import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
-import EmojiPicker, {
-  EmojiStyle,
-  EmojiClickData,
-} from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle, EmojiClickData } from "emoji-picker-react";
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
 import UserProfileApi from '../Api/UserProfileApi';
 import Report from "../Users/Report/Report";
+import UserInfor from "../RightColumn/RightColumn";
 import { timeEnd } from "console";
 
 // use api
 type UserType = {
-  id: number,
-  username: string,
-  avatar_url: any,
-  first_name: string,
-  last_name: string,
-  fullname: string
-}
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type UnifiedType = UserType | ChannelType;
 
@@ -52,18 +50,21 @@ type ChannelType = {
   create_at: string;
 };
 
-
-const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => {
+const UserInbox: React.FC<ChannelInboxProps> = ({
+  channel,
+  userId,
+  socket,
+}) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
-      console.log('WebSocket connection established');
+      console.log("WebSocket connection established");
     };
 
     // Close WebSocket connection when the component unmounts
     return () => {
       socket.close();
-      console.log('WebSocket connection closed');
+      console.log("WebSocket connection closed");
     };
   }, []);
 
@@ -76,7 +77,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         <div className="user">
           <div className="user-avatar">
             <img
-              src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              src={
+                user.avatar_url ||
+                "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              }
               alt="avatar user"
               className="user-avatar-img"
             />
@@ -93,7 +97,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         <div className="user">
           <div className="user-avatar">
             <img
-              src={channelInfo.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              src={
+                channelInfo.avatar_url ||
+                "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              }
               alt="avatar user"
               className="user-avatar-img"
             />
@@ -107,8 +114,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
     }
   };
 
-  const messageContainer = document.querySelector('.message-container')
-  const [onBottom, setOnBottom] = useState(true)
+  const messageContainer = document.querySelector(".message-container");
+  const [onBottom, setOnBottom] = useState(true);
 
   const [isSlided, setSlided] = useState<boolean>(true);
   const [messages, setMessages] = useState<{
@@ -141,8 +148,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
         setUserProfile(profileRes?.data);
       } else if (channelId) {
         // Make the API call only if channelId is defined
-        let res: any = await axiosClient.get(`api/channel/${channelId}/messages/?page=1`)
-        let messageList = []
+        let res: any = await axiosClient.get(
+          `api/channel/${channelId}/messages/?page=1`
+        );
+        let messageList = [];
         for (let message of res.data) {
           let messageElement = {
             id: message.id,
@@ -154,10 +163,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
           }
           messageList.push(messageElement)
         }
-        setMessages(messageList.reverse())
+        setMessages(messageList.reverse());
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error("Error fetching messages:", error);
     }
   };
 
@@ -216,7 +225,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
     }
   };
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+  function isOpen(WebSocket: { readyState: any; OPEN: any }) {
+    return WebSocket.readyState === WebSocket.OPEN;
+  }
 
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
@@ -265,7 +276,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
       handleFileMessage();
       setSelectedFile(null);
     }
-  }
+  };
 
   // handle receive message
   socket.addEventListener("message", function (e) {
@@ -540,7 +551,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
             className={`user-info ${isSlided ? "slided" : ""}`}
             style={translateX}
           >
-            Test
+            <UserInfor
+              userId={userId}
+              channel={channel}
+              handleClose={handleSlideAnimation}
+            />
           </div>
 
           <div className="message-container">
@@ -591,9 +606,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
                 </div>
         
                 <div className="sent-icon">
-                  {
-                    (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
-                  }
+                  {Object.hasOwn(message, "isSent") && !message.isSent && (
+                    <FaRegCheckCircle size={12} />
+                  )}
                 </div>
               </div>
             ))}
@@ -604,13 +619,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
               <MdOutlineEmojiEmotions
                 style={{
                   marginLeft: "0.2rem",
-                  color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
+                  color: isEmojiIconClicked
+                    ? "var(--border-on-click)"
+                    : "currentColor",
                 }}
                 size={25}
                 onClick={toggleEmojiPicker}
               />
               {isEmojiPickerVisible && (
-                <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
+                <div
+                  className={`emoji-picker-container ${
+                    isEmojiPickerVisible ? "visible" : ""
+                  }`}
+                >
                   <EmojiPicker
                     previewConfig={{
                       defaultCaption: "Pick one!",
@@ -632,7 +653,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
                 onKeyDown={handleInputKeyDown}
                 placeholder="Message"
               />
-              <div className="file-import-container" onClick={handleAttachmentButtonClick}>
+              <div
+                className="file-import-container"
+                onClick={handleAttachmentButtonClick}
+              >
                 <ImAttachment size={24} />
                 <input
                   type="file"
@@ -653,7 +677,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
                 <span>Send {contentType === "image" ? "Photo" : "File"}</span>
               </div>
               {contentType === "image" ? (
-                <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  alt="Selected File"
+                />
               ) : (
                 <div className="file-descriptions">
                   <p>Name: {selectedFile.name}</p>
@@ -662,7 +689,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
               )}
               <div className="file-popup-footer">
                 <input type="text" placeholder="Add a caption" />
-                <button onClick={handleSendingInputs}><span>SEND</span></button>
+                <button onClick={handleSendingInputs}>
+                  <span>SEND</span>
+                </button>
               </div>
             </div>
           )}
@@ -686,7 +715,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
       }
       {isReport && <Report setIsReport={setIsReport} channel={channel} isUserType={isUserType}/>}
     </>
-
   );
 };
 

@@ -20,6 +20,11 @@ class ChannelApi {
             }
         });
     }
+
+    getChannelMediaList = async (channelId: number) => {
+        const url = `/api/channel/${channelId}/media`;
+        return await axiosClient.get(url);
+    }
 }
 
 export default new ChannelApi();

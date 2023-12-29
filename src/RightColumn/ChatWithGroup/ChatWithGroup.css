@@ -1,0 +1,24 @@
+.group-avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.group-avatar-container {
+  margin-top: 3.5rem;
+  width: 10rem; /* Adjust as needed */
+  height: 10rem; /* Same as width for a circle */
+  border-radius: 50%; /* Make it a circle */
+  overflow: hidden; /* Hide any excess image */
+}
+
+.group-avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintain aspect ratio and fill container */
+}
+.group-name {
+  margin-top: 1rem;
+  font-size: 1.5rem;
+}
