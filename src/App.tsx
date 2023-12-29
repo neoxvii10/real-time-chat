@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route , Navigate} from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './Routes/Routes';
+import AdminManagement from './Dashboard/Admin';
+import Signin from './Authentications/Signin/Signin'
 import { useAuth } from './Hooks/AuthContext';
 
 function App() {
@@ -32,7 +34,9 @@ function App() {
             />
           )
         })}
-
+        <Route path="/admin" element = {isLoggedIn ? <AdminManagement/> : <Navigate to='/signin' />}>
+          <Route path='*'/>
+        </Route>
       </Routes>
     </Router>
 

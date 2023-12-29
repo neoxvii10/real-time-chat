@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction, CSSProperties } from "react";
 import { TbCameraPlus } from 'react-icons/tb';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
 import { AiOutlineClose } from 'react-icons/ai'
-import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
 import ImageCrop from './ImageCrop/ImageCrop';
 import './GroupCreation.css';
 import ChannelApi from "../../../../Api/ChannelApi";
@@ -90,10 +88,12 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       try {
         const response = await ChannelApi.uploadAvatar(formData);
         console.log("update avatar group", response);
+        alert("Update avatar channel successfully");
         // 
         setIsCropped(false);
       } catch (error) {
         console.log(error)
+        alert("Update avatar FAIL")
       }
     }
 

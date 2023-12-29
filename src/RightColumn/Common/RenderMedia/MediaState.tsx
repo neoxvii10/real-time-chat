@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./MediaState.css";
 
 import ChannelApi from "../../../Api/ChannelApi";
+import { channel } from "diagnostics_channel";
 
 type ChannelType = {
   id: number;
@@ -35,22 +36,23 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
 
   const [data, setData] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await ChannelApi.getChannelMediaList(channel.id); // Replace with your API endpoint
-        setData(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-        // Handle errors appropriately
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchData();
-  }, []);
+  const fetchImage = async (channelId: number) => {
+    try {
+      const response = await ChannelApi.getChannelMediaList(channelId); // Replace with your API endpoint
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      // Handle errors appropriately
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchImage(channel.id);
+  }, [channel.id]);
 
   return (
     <div>

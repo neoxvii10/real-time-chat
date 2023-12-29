@@ -77,10 +77,7 @@ export default function CountrySelect() {
         theme: "dark",
       });
 
-      const response = await axios.post(
-        "http://112.137.129.158:5002/api/user/signup/",
-        formData
-      );
+      const response = await axios.post('http://112.137.129.158:5002/api/user/signup/', formData);
 
       if (response.status === 200) {
         toast.dismiss();

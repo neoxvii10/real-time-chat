@@ -54,22 +54,22 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   const [members, setMemners] = useState<MemberType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
-        setMemners(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-        // Handle errors appropriately
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchMember = async () => {
+    try {
+      const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
+      setMemners(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      // Handle errors appropriately
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    fetchMember();
+  }, [channel.id]);
 
   return (
     <div>

@@ -61,7 +61,7 @@ const Member: React.FC<MemberType> = ({
                   <span className="dropdown-icon">
                     <FaKey size={22} />
                   </span>
-                  <span className="dropdown-label">Pass admin roll</span>
+                  <span className="dropdown-label">Set as admin</span>
                 </li>
               )}
 

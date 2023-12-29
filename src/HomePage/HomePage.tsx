@@ -34,9 +34,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id;
 }
 
-const socket = new WebSocket(
-  `ws://112.137.129.158:5002/ws/chat/?token=${token}`
-);
+const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 
 function HomePage() {
   const [user, setUser] = useState<UserType>({
