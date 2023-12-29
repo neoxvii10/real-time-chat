@@ -334,38 +334,60 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     }));
   };
 
-  const calculateTimeDifference = (createAt: string): string => {
-    if (!createAt) {
-      return 'Unknown time ago';
-    }
-  
+  const calculateTimeDifferenceForChannel = (channel: ChannelType): string => {
     const currentTime = new Date();
-    const requestTime = new Date(createAt);
-    
-    // Check if the requestTime is a valid date
-    if (isNaN(requestTime.getTime())) {
-      return 'Unknown time ago';
-    }
-  
-    const timeDifferenceInSeconds = Math.floor((currentTime.getTime() - requestTime.getTime()) / 1000);
-  
-    const minute = 60;
-    const hour = 3600;
-    const day = 86400;
-  
-    if (timeDifferenceInSeconds < minute) {
-      return '1 minute ago';
-    } else if (timeDifferenceInSeconds < hour) {
-      const minutes = Math.floor(timeDifferenceInSeconds / minute);
-      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    } else if (timeDifferenceInSeconds < day) {
-      const hours = Math.floor(timeDifferenceInSeconds / hour);
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    const lastMessageTime = new Date(channel.last_message?.create_at);
+    const channelCreateTime = new Date(channel.create_at);
+
+    // Check if the channel has any messages and the message time is valid
+    if (!isNaN(lastMessageTime.getTime())) {
+      const timeDifferenceInSeconds = Math.floor((currentTime.getTime() - lastMessageTime.getTime()) / 1000);
+
+      const minute = 60;
+      const hour = 3600;
+      const day = 86400;
+
+      if (timeDifferenceInSeconds < minute) {
+        return '1 minute ago';
+      } else if (timeDifferenceInSeconds < hour) {
+        const minutes = Math.floor(timeDifferenceInSeconds / minute);
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      } else if (timeDifferenceInSeconds < day) {
+        const hours = Math.floor(timeDifferenceInSeconds / hour);
+        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+      } else {
+        const days = Math.floor(timeDifferenceInSeconds / day);
+        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      }
     } else {
-      const days = Math.floor(timeDifferenceInSeconds / day);
-      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      // Use channel creation time if there are no messages
+      const channelCreateDifferenceInSeconds = Math.floor((currentTime.getTime() - channelCreateTime.getTime()) / 1000);
+
+      const minute = 60;
+      const hour = 3600;
+      const day = 86400;
+
+      if (channelCreateDifferenceInSeconds < minute) {
+        return '1 minute ago';
+      } else if (channelCreateDifferenceInSeconds < hour) {
+        const minutes = Math.floor(channelCreateDifferenceInSeconds / minute);
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      } else if (channelCreateDifferenceInSeconds < day) {
+        const hours = Math.floor(channelCreateDifferenceInSeconds / hour);
+        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+      } else {
+        const days = Math.floor(channelCreateDifferenceInSeconds / day);
+        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      }
     }
   };
+
+  // Sort the channelList based on the latest activity time
+  const sortedChannelList = channelList.slice().sort((a, b) => {
+    const timeA = new Date(a.last_message?.create_at || a.create_at).getTime();
+    const timeB = new Date(b.last_message?.create_at || b.create_at).getTime();
+    return timeB - timeA;
+  });
   
   return (
     <div className="users-container">
@@ -528,7 +550,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       {currentScreen === ScreenTypes.HomeScreen &&
       <div className="chatlist-container">
         <ul>
-          {channelList.map((channel) => (
+          {sortedChannelList.map((channel) => (
             <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
             className={(selectedChannel === channel) ? 'user-selected' : ''}>
               <div className="user">
@@ -541,7 +563,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
                     <p>{channel.last_message.content}</p>
                   </div>
                   <span className="latest-timestamps">
-                    {calculateTimeDifference(channel.last_message.create_at)}
+                    {calculateTimeDifferenceForChannel(channel)}
                   </span>
                 </div>
               </div>
