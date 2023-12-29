@@ -42,12 +42,12 @@ function HomePage() {
   }
 
   const [user, setUser] = useState<UserType>({
-    first_name: "thuan",
-    last_name: "le",
-    username: "leminhthuan",
+    first_name: "",
+    last_name: "",
+    username: "",
     id: 1,
-    avatar_url: null,
-    fullname: "thuan le"
+    avatar_url: "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg",
+    fullname: ""
   });
 
   const [channel, setChannel] = useState<ChannelType>({

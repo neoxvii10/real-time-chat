@@ -7,16 +7,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 type VerifyProp = {
-  username: string;
   verification_code: string;
 };
 
 const MediumPage = () => {
-  const { username } = useParams();
   const navigate = useNavigate();
 
   const [data, setData] = useState<VerifyProp>({
-    username: `${username}`,
     verification_code: "",
   });
 
@@ -28,7 +25,6 @@ const MediumPage = () => {
     event.preventDefault();
 
     const formData = {
-      username: `${username}`,
       verification_code: (event.target as any).verification_code.value,
     };
 
@@ -43,7 +39,7 @@ const MediumPage = () => {
       });
 
       setTimeout(async () => {
-        const response = await axios.post('http://112.137.129.158:5002/api/user/verify/', formData);
+        const response = await axios.post('http://112.137.129.158:5002/api/user/verify-user/', formData);
         console.log(response.data);
         navigate('/signin');
       }, 2000);
@@ -64,8 +60,7 @@ const MediumPage = () => {
     <div>
       <ToastContainer />
       <form action="" className='verify-contents' onSubmit={handleSubmit}>
-        <h2>Medium Page</h2>
-        <p>Username: {username}</p>
+        <h2>Verify Page</h2>
         <input
           id="verification_code"
           name="verification_code"

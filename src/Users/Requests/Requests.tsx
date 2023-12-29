@@ -4,7 +4,7 @@ import { TfiArrowLeft } from 'react-icons/tfi'
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { CSSProperties, useEffect, useState } from 'react';
 import UserNotiApi from '../../Api/UserNotiApi';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
     userId: number
     setUserNotiAmount: React.Dispatch<React.SetStateAction<number>>;
     socket: WebSocket;
+    onNewChannel: () => void;
 };
 
 type UserType = {
@@ -33,7 +34,8 @@ type NotiType = {
   create_at: string;
 }
 
-const Requests: React.FC<Props> = ({ translateX, setTranslateX, userId, setUserNotiAmount, socket }) => {
+const Requests: React.FC<Props> = (
+  { translateX, setTranslateX, userId, setUserNotiAmount, socket, onNewChannel }) => {
   const [userNoti, setUserNoti] = useState<NotiType[]>([]);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ const Requests: React.FC<Props> = ({ translateX, setTranslateX, userId, setUserN
       } 
       if (serverMessage.action === "friend_accept") {
         // Update state to include the new friend request
-    
+        onNewChannel();
         // Show a notification or handle the UI update as needed
         toast.info(`${newFriendRequest.sender.username} has accepted your friend request!`, {
           position: toast.POSITION.TOP_CENTER,
@@ -108,6 +110,8 @@ const Requests: React.FC<Props> = ({ translateX, setTranslateX, userId, setUserN
       const friendRqJSON = JSON.stringify(friendRq);
 
       socket.send(friendRqJSON);
+
+      onNewChannel();
 
       setUserNoti((prevNoti) => prevNoti.filter((noti) => noti.sender.id !== sender.sender.id));
       setUserNotiAmount((prevAmount) => prevAmount - 1);

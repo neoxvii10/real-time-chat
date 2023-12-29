@@ -59,7 +59,8 @@ export enum ScreenTypes {
   SearchScreen = 'searchScreen',
 }
 
-const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket, channelUpdate, onNewMessage }) => {
+const Users: React.FC<UsersTypes> = (
+  { onChannelClick, selectedChannel, userId, socket, channelUpdate, onNewMessage }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
@@ -73,7 +74,17 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     };
   }, []);
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+  function isOpen(WebSocket: { readyState: any; OPEN: any; }) 
+  { return WebSocket.readyState === WebSocket.OPEN }
+
+  
+  const [channelAdd, setChannelAdd] = useState<boolean>(false);
+
+  const handleChannelAddTrigger = () => {
+    setChannelAdd(prevState => !prevState);
+  }
+
+  const [selectedChannelId, setSelectedChannelId] = useState<number | null>(null);
 
   //api to get user list that would replace the users const rn
   const [searchUserList, setSearchUserList] = useState<UserType[]>([]);
@@ -89,7 +100,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (channelUpdate) {
+        if (channelUpdate || channelAdd) {
           // Your channel fetching logic here
           const listFriendRes = await UserApi.getFriends();
           const channelListRes = await ChannelApi.getChannelList();
@@ -98,15 +109,34 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
           setChannelList(channelListRes?.data);
           setSearchUserList(searchUserListRes?.data.users);
           // Reset channelUpdate to false after re-fetching
-          onNewMessage();
+          if (channelUpdate && !channelAdd) {
+            onNewMessage();
+          } else if (!channelUpdate && channelAdd) {
+            handleChannelAddTrigger();
+          } else if (channelUpdate && channelAdd) {
+            onNewMessage();
+            handleChannelAddTrigger();
+          }
         }
-
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, [channelUpdate])
+  }, [channelUpdate, channelAdd])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Your channel fetching logic here
+        const searchUserListRes = await SearchUserApi.getSearchResults();
+        setSearchUserList(searchUserListRes?.data.users);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, [])
 
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
@@ -404,6 +434,11 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     const timeB = new Date(b.last_message?.create_at || b.create_at).getTime();
     return timeB - timeA;
   });
+
+  const handleChannelClick = (channel: UnifiedType) => {
+    onChannelClick(channel);
+    setSelectedChannelId(channel.id);
+  };
   
   return (
     <div className="users-container">
@@ -506,8 +541,8 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
             {filteredUsers?.map((user) => (
               <li
                 key={user.id}
-                onClick={() => onChannelClick(user)} 
-                className={(selectedChannel === user) ? 'user-selected' : ''}
+                onClick={() => handleChannelClick(user)} 
+                className={(selectedChannelId === user.id) ? 'user-selected' : ''}
               >
                 <div className="user">
                   <div className="user-avatar">
@@ -544,11 +579,16 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
           </div>
           <ul>
             {searchChannelList?.map((channel) => (
-              <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
-              className={(selectedChannel === channel) ? 'user-selected' : ''}>
+                <li
+                  tabIndex={channel.id}
+                  key={channel.id}
+                  onClick={() => handleChannelClick(channel)}
+                  className={selectedChannelId === channel.id ? 'user-selected' : ''}
+                >
                 <div className="user">
                   <div className="user-avatar">
-                    <img src={channel.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
+                    <img src={channel.avatar_url || 
+                      "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
                   </div>
                   <div className="user-label-timestamps">
                     <div className="user-labels">
@@ -567,8 +607,12 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       <div className="chatlist-container">
         <ul>
           {sortedChannelList.map((channel) => (
-            <li tabIndex={channel.id} key={channel.id} onClick={() => onChannelClick(channel)} 
-            className={(selectedChannel === channel) ? 'user-selected' : ''}>
+              <li
+                tabIndex={channel.id}
+                key={channel.id}
+                onClick={() => handleChannelClick(channel)}
+                className={selectedChannelId === channel.id ? 'user-selected' : ''}
+              >
               <div className="user">
                 <div className="user-avatar">
                   <img src={channel.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"} alt="avatar user" className='user-avatar-img'/>
@@ -597,6 +641,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
         userId={userId}
         setUserNotiAmount={setUserNotiAmount}
         socket={socket}
+        onNewChannel={handleChannelAddTrigger}
       />
      </div>
   );
