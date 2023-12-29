@@ -1,0 +1,96 @@
+.wrapper-report {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 5;
+    width: 400px;
+    height: 560px;
+    background-color: var(--background-color);
+    box-shadow: 0 0.1rem 0.1rem 0.1rem var(--color-default-shadow);
+    border-radius: 0.75rem;
+}
+
+.header-report {
+  padding: 1rem 1rem 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+}
+
+.header-report .button-close {
+  color: var(--icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.button-close:hover {
+  background-color: var(--hover);
+}
+
+.header-title {
+  margin: 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  top: -1px
+}
+
+.content-report {
+  margin-top: 20px;
+}
+
+.Radio {
+  display: flex;
+  position: relative;
+  padding-left: 2.5rem;
+  text-align: left;
+  margin-bottom: 1.5rem;
+  line-height: 1.5rem;
+  cursor: var(--custom-cursor, pointer);
+  
+}
+
+.radio-input {
+  color: rebeccapurple;
+  width: 20px;
+  margin-right: 30px;
+  accent-color: var(--color-primary);
+}
+
+.description-report {
+  position: relative;
+  margin-bottom: 1.5rem;
+  margin: 30px 20px 10px;
+}
+
+.submit-report {
+  display: flex;
+  justify-content: end;
+}
+
+.btn-report {
+  float: left;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 5px 15px;
+  border-radius: 5px;
+  margin-right: 30px;
+  color: #e53935;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.btn-report:hover {
+  background-color: rgba( 229, 57, 53, 0.1);
+  cursor: pointer;
+}

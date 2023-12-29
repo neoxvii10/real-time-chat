@@ -38,7 +38,7 @@ const VerifyEmail: React.FC<Props> = ({translateXForVerifyEmail, setTranslateXFo
     }
     try {
         const response = await UserApi.verifyChangeEmail(formData)
-        alert("Change email successfully");
+        alert("Change email successfully. Logout");
 
         await localStorage.removeItem('accessToken');
         await localStorage.removeItem('user');

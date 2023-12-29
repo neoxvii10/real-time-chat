@@ -1,0 +1,21 @@
+.user-avatar-container {
+  padding-top: calc(3.5rem - 1.8rem);
+  height: 27rem;
+  background: var(--background-avatar);
+  position: static;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-wrapper .avatar {
+  font-size: xxx-large;
+}
+.avatar-wrapper .name {
+  display: inline;
+  left: var(--align-dimension);
+  top: 28rem;
+  font-size: 1.8rem;
+  position: relative;
+  z-index: 0;
+}

@@ -1,6 +1,7 @@
 import { ReactComponent as Logo } from "../pattern.svg";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
+import { FiFlag } from "react-icons/fi";
 import { IoNotificationsOffOutline } from "react-icons/io5";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { PiShareFat } from "react-icons/pi";
@@ -13,25 +14,25 @@ import { FaReply } from "react-icons/fa";
 import { GoSearch, GoX } from 'react-icons/go'
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
-import EmojiPicker, {
-  EmojiStyle,
-  EmojiClickData,
-} from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle, EmojiClickData } from "emoji-picker-react";
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
 import UserProfileApi from '../Api/UserProfileApi';
+import Report from "../Users/Report/Report";
+import UserInformation from "../RightColumn/RightColumn";
+import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
 import { timeEnd } from "console";
 
 // use api
 type UserType = {
-  id: number,
-  username: string,
-  avatar_url: any,
-  first_name: string,
-  last_name: string,
-  fullname: string
-}
+  id: number;
+  username: string;
+  avatar_url: any;
+  first_name: string;
+  last_name: string;
+  fullname: string;
+};
 
 type UnifiedType = UserType | ChannelType;
 
@@ -43,29 +44,29 @@ type ChannelInboxProps = {
 };
 
 type ChannelType = {
-  id: number,
-  member_count: number,
-  last_message?: any,
-  title: string,
-  avatar_url?: string,
-  create_at: string
-}
+  id: number;
+  member_count: number;
+  last_message?: any;
+  title: string;
+  avatar_url?: string;
+  create_at: string;
+};
 
 
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNewMessage }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
-      console.log('WebSocket connection established');
+      console.log("WebSocket connection established");
     };
-  
+
     // Close WebSocket connection when the component unmounts
     return () => {
       socket.close();
-      console.log('WebSocket connection closed');
+      console.log("WebSocket connection closed");
     };
   }, []);
-  
+
   const isUserType = (channel as UnifiedType).hasOwnProperty('username');
 
   const renderHeader = () => {
@@ -75,7 +76,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         <div className="user">
           <div className="user-avatar">
             <img
-              src={user.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              src={
+                user.avatar_url ||
+                "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              }
               alt="avatar user"
               className="user-avatar-img"
             />
@@ -92,7 +96,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         <div className="user">
           <div className="user-avatar">
             <img
-              src={channelInfo.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+              src={
+                channelInfo.avatar_url ||
+                "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              }
               alt="avatar user"
               className="user-avatar-img"
             />
@@ -106,8 +113,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     }
   };
 
-  const messageContainer = document.querySelector('.message-container')
-  const [onBottom, setOnBottom] = useState(true)
+  const messageContainer = document.querySelector(".message-container");
+  const [onBottom, setOnBottom] = useState(true);
 
   const [isSlided, setSlided] = useState<boolean>(true);
   const [messages, setMessages] = useState<{
@@ -140,8 +147,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         setUserProfile(profileRes?.data);
       } else if (channelId) {
         // Make the API call only if channelId is defined
-        let res: any = await axiosClient.get(`api/channel/${channelId}/messages/?page=1`)
-        let messageList = []
+        let res: any = await axiosClient.get(
+          `api/channel/${channelId}/messages/?page=1`
+        );
+        let messageList = [];
         for (let message of res.data) {
           let messageElement = {
             id: message.id,
@@ -153,27 +162,27 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           }
           messageList.push(messageElement)
         }
-        setMessages(messageList.reverse())
+        setMessages(messageList.reverse());
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error("Error fetching messages:", error);
     }
   };
-  
+
   useEffect(() => {
     // Fetch messages when medium or channel.id changes
     fetchMessages(channel.id);
     if (messageContainer && onBottom) {
-      messageContainer.scrollTop = messageContainer?.scrollHeight
+      messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
   }, [channel.id, isUserType]);
 
   useEffect(() => {
     // Scroll to bottom when receive message in case user is already bottom
     if (messageContainer && onBottom) {
-      messageContainer.scrollTop = messageContainer?.scrollHeight
+      messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
@@ -193,7 +202,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         ...translateX,
         visibility: isSlided ? "visible" : "hidden",
         opacity: isSlided ? 1 : 0,
-        transform: isSlided ? "translateX(0px)" : "translateX(480px)",
+        transform: isSlided ? "translateX(5px)" : "translateX(480px)",
       }));
     }
   };
@@ -215,20 +224,21 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     }
   };
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+  function isOpen(WebSocket: { readyState: any; OPEN: any }) {
+    return WebSocket.readyState === WebSocket.OPEN;
+  }
 
   const handleSendingInputs = () => {
     if (inputValue.trim() !== "") {
-
       const messageObject = {
-        "action": "create_message",
-        "target": "channel",
-        "targetId": channel.id,
-        'uuid': uuidv4(),
-        "data": {
-          "content": inputValue,
+        action: "create_message",
+        target: "channel",
+        targetId: channel.id,
+        uuid: uuidv4(),
+        data: {
+          content: inputValue,
           // "reply": null
-        }
+        },
       };
 
       const messageJSON = JSON.stringify(messageObject);
@@ -239,17 +249,23 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       socket.send(messageJSON);
 
       if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          setOnBottom(true)
+        if (
+          Math.abs(
+            messageContainer.scrollTop +
+            messageContainer.clientHeight -
+            messageContainer?.scrollHeight
+          ) < 1
+        ) {
+          setOnBottom(true);
         } else {
-          setOnBottom(false)
+          setOnBottom(false);
         }
       }
 
       let textMessage = {
         text: inputValue,
-        sender: 'self',
-        type: 'text',
+        sender: "self",
+        type: "text",
         uuid: messageObject.uuid,
         isSent: false,
       }
@@ -263,18 +279,23 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
   }
 
   // handle receive message
-  socket.addEventListener("message", function(e) {
+  socket.addEventListener("message", function (e) {
     // Parse the JSON data from the server
     const serverMessage = JSON.parse(e.data);
 
     // Check if the action is "create_message" and the message_type is "TEXT"
     if (serverMessage.action === "create_message") {
-
       if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          setOnBottom(true)
+        if (
+          Math.abs(
+            messageContainer.scrollTop +
+            messageContainer.clientHeight -
+            messageContainer?.scrollHeight
+          ) < 1
+        ) {
+          setOnBottom(true);
         } else {
-          setOnBottom(false)
+          setOnBottom(false);
         }
       }
       // Extract the content of the message
@@ -287,12 +308,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       }
 
       if (serverMessage.data.message_type === "IMAGE") {
-        textMessage.type = 'image'
+        textMessage.type = "image";
       }
 
-      let senderId = serverMessage.data.member.user.id
+      let senderId = serverMessage.data.member.user.id;
       if (senderId === userId) {
-        if (textMessage.type === 'image') {
+        if (textMessage.type === "image") {
           let fileMessage = {
             text: messageContent,
             sender: 'self',
@@ -301,25 +322,25 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           }
           setMessages([...messages, fileMessage]);
         } else {
-          let uuid = serverMessage.uuid
-          let isSelfMessageCheck = false
+          let uuid = serverMessage.uuid;
+          let isSelfMessageCheck = false;
           for (let i = messages.length - 1; i >= 0; i--) {
             if (messages[i].uuid === uuid) {
               // console.log("**Đã gửi**" + messages[i].text)
-              messages[i].isSent = true
-              setMessages([...messages])
-              isSelfMessageCheck = true
-              break
+              messages[i].isSent = true;
+              setMessages([...messages]);
+              isSelfMessageCheck = true;
+              break;
             }
           }
           if (!isSelfMessageCheck) {
             let textMessage = {
               text: messageContent,
-              sender: 'self',
-              type: 'text',
-              isSent: true
-            }
-            setMessages([...messages, textMessage])
+              sender: "self",
+              type: "text",
+              isSent: true,
+            };
+            setMessages([...messages, textMessage]);
           }
         }
       } else {
@@ -329,13 +350,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     }
   });
 
-
   const [popupVisible, setPopupVisible] = useState(false);
 
   const attachmentButtonRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const contentType = selectedFile && selectedFile.type.startsWith("image/") ? "image" : "normal";
+  const contentType =
+    selectedFile && selectedFile.type.startsWith("image/") ? "image" : "normal";
 
   const handleAttachmentButtonClick = (event: React.MouseEvent<Element>) => {
     if (attachmentButtonRef.current) {
@@ -362,13 +383,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       // };
       // setMessages([...messages, fileMessage]);
       const formData = new FormData();
-      formData.append('file', selectedFile)
-      formData.append('channel', channel.id.toString())
-      await axiosClient.post('api/message/upload/image/', formData, {
+      formData.append("file", selectedFile);
+      formData.append("channel", channel.id.toString());
+      await axiosClient.post("api/message/upload/image/", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
+      });
       setInputValue("");
       setPopupVisible(false);
     }
@@ -380,8 +401,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     if (attachmentButtonRef.current) {
       attachmentButtonRef.current.value = "";
     }
-  }
-
+  };
 
   function onClick(emojiData: EmojiClickData, event: MouseEvent) {
     const unicodeEmoji = emojiData.emoji;
@@ -394,6 +414,15 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     setEmojiPickerVisible(!isEmojiPickerVisible);
     setIsEmojiIconClicked(!isEmojiIconClicked);
   };
+
+  // hanle report channel
+  const [isReport, setIsReport] = useState(false);
+
+  const handleVisibleFormReport = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    e.preventDefault();
+
+    setIsReport(!isReport);
+  }
 
 
   function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
@@ -453,9 +482,58 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     setHoveredMessageIndex(null);
   };
 
+  // handle edit avatar channel
+
+  const [disEditAvatar, setDisEditAvatar] = useState<boolean>(false);
+
+  const [selectedImage, setSelectedImage] = useState<string>("");
+
+  const [croppedImage, setCroppedImage] = useState<string>();
+  const [croppedBlob, setCroppedBlob] = useState<Blob>();
+  const [isCropped, setIsCropped] = useState<boolean>(false);
+
+  const handleCropImage = ({ blob, url }: { blob: Blob; url: string }) => {
+    setCroppedBlob(blob);
+    setCroppedImage(url);
+    setIsCropped(true);
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target && e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+      setCroppedImage('');
+      setIsCropped(false);
+    }
+    setDisEditAvatar(true);
+    handleVisibleBtn(true);
+  };
+
+  const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
+    visibility: 'hidden',
+    bottom: '-4rem'
+  });
+
+  const handleVisibleBtn = (visible: boolean) => {
+      if (visible) {
+          setHideBtnSubmit({
+              ...hideBtnSubmit,
+              visibility: 'visible',
+              bottom: '1rem'
+          })
+      } else {
+          setHideBtnSubmit({
+              ...hideBtnSubmit,
+              visibility: 'hidden',
+              bottom: '-4rem'
+          })
+      }
+  }
+
   return (
     <>
-      {!isUserType ? 
+      {!isUserType ?
         <div className="user-box-chat">
           <div
             className="user-header-container"
@@ -499,11 +577,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                       </span>
                       <span className="dropdown-label">Share Contact</span>
                     </li>
-                    <li className="util-dropdown-item">
+                    <li className="util-dropdown-item" onClick={handleVisibleFormReport}>
                       <span className="dropdown-icon">
-                        <BiLockAlt size={22} />
+                        <FiFlag size={22} />
                       </span>
-                      <span className="dropdown-label">Block User</span>
+                      <span className="dropdown-label">Report</span>
                     </li>
                     <li className="util-dropdown-item">
                       <span className="dropdown-icon alert">
@@ -516,14 +594,25 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               </span>
             </div>
           </div>
-        
+
           <Logo />
 
           <div
             className={`user-info ${isSlided ? "slided" : ""}`}
             style={translateX}
           >
-            Test
+            <UserInformation
+              userId={userId}
+              channel={channel}
+              handleClose={handleSlideAnimation}
+              croppedImage={croppedImage}
+              croppedBlob={croppedBlob}
+              isCropped={isCropped}
+              handleImageChange={handleImageChange}
+              hideBtnSubmit={hideBtnSubmit}
+              handleVisibleBtn={handleVisibleBtn}
+              setIsCropped={setIsCropped}
+            />
           </div>
 
           <div className="message-container">
@@ -574,9 +663,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                 </div>
         
                 <div className="sent-icon">
-                  {
-                    (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
-                  }
+                  {Object.hasOwn(message, "isSent") && !message.isSent && (
+                    <FaRegCheckCircle size={12} />
+                  )}
                 </div>
               </div>
             ))}
@@ -587,13 +676,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               <MdOutlineEmojiEmotions
                 style={{
                   marginLeft: "0.2rem",
-                  color: isEmojiIconClicked ? "var(--border-on-click)" : "currentColor",
+                  color: isEmojiIconClicked
+                    ? "var(--border-on-click)"
+                    : "currentColor",
                 }}
                 size={25}
                 onClick={toggleEmojiPicker}
               />
               {isEmojiPickerVisible && (
-                <div className={`emoji-picker-container ${isEmojiPickerVisible ? 'visible' : ''}`}>
+                <div
+                  className={`emoji-picker-container ${
+                    isEmojiPickerVisible ? "visible" : ""
+                  }`}
+                >
                   <EmojiPicker
                     previewConfig={{
                       defaultCaption: "Pick one!",
@@ -615,7 +710,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                 onKeyDown={handleInputKeyDown}
                 placeholder="Message"
               />
-              <div className="file-import-container" onClick={handleAttachmentButtonClick}>
+              <div
+                className="file-import-container"
+                onClick={handleAttachmentButtonClick}
+              >
                 <ImAttachment size={24} />
                 <input
                   type="file"
@@ -636,7 +734,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                 <span>Send {contentType === "image" ? "Photo" : "File"}</span>
               </div>
               {contentType === "image" ? (
-                <img src={URL.createObjectURL(selectedFile)} alt="Selected File" />
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  alt="Selected File"
+                />
               ) : (
                 <div className="file-descriptions">
                   <p>Name: {selectedFile.name}</p>
@@ -645,30 +746,42 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               )}
               <div className="file-popup-footer">
                 <input type="text" placeholder="Add a caption" />
-                <button onClick={handleSendingInputs}><span>SEND</span></button>
+                <button onClick={handleSendingInputs}>
+                  <span>SEND</span>
+                </button>
               </div>
             </div>
           )}
         </div>
-      :
-      <div className="user-box-chat">
-        {userProfile && (
-        <div className="user-profile-container">
-          <div className="user-profile-ava-container">
-            <img src={userProfile.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
-            alt="profile-img" />
-          </div>
-          <div className="user-profile-labels-container">
-            <h4>{userProfile.user.fullname}</h4>
-            <p>{userProfile.bio}</p>
-          </div>
+        :
+        <div className="user-box-chat">
+          {userProfile && (
+            <div className="user-profile-container">
+              <div className="user-profile-ava-container">
+                <img src={userProfile.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
+                  alt="profile-img" />
+              </div>
+              <div className="user-profile-labels-container">
+                <h4>{userProfile.user.fullname}</h4>
+                <p>{userProfile.bio}</p>
+              </div>
+            </div>
+          )}
+          <Logo />
         </div>
-        )}
-        <Logo />
-      </div>
-    }
+      }
+      {isReport && <Report setIsReport={setIsReport} channel={channel} isUserType={isUserType}/>}
+      {disEditAvatar && <EditAvatarChannel
+        croppedImage={croppedImage}
+        croppedBlob={croppedBlob}
+        isCropped={isCropped}
+        handleCropImage={handleCropImage}
+        handleImageChange={handleImageChange}
+        setDisEditAvatar={setDisEditAvatar}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+      />}
     </>
-
   );
 };
 

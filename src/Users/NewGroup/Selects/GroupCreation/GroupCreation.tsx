@@ -88,10 +88,12 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       try {
         const response = await ChannelApi.uploadAvatar(formData);
         console.log("update avatar group", response);
+        
         // 
         setIsCropped(false);
       } catch (error) {
         console.log(error)
+        alert("Update avatar FAIL")
       }
     }
 
@@ -105,17 +107,19 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       title: groupName,
       members: members
     }
-
+    console.log(formData);
     try {
       const response = await ChannelApi.createChannel(formData);
       if(isCropped) {
         await handleSubmitAvatar(event, response.data?.id);
       }
+      alert("Create channel successfully");
       setSelectedOptions([]);
       handleClose()
       handleCloseAddmember();
     } catch (error) {
       console.log(error);
+      alert("Create channel FAIL");
     }
 
   }
