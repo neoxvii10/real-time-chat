@@ -260,7 +260,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         socket.removeEventListener("message", handleSocketChannel);
       };
     }
-  }, [messages]);
+  }, [messages, socket]);
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
