@@ -39,6 +39,7 @@ type ChannelInboxProps = {
   channel: UnifiedType;
   userId: number;
   socket: WebSocket;
+  onNewMessage: () => void;
 };
 
 type ChannelType = {
@@ -51,7 +52,7 @@ type ChannelType = {
 }
 
 
-const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => {
+const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNewMessage }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
@@ -258,6 +259,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
       handleFileMessage();
       setSelectedFile(null);
     }
+    onNewMessage();
   }
 
   // handle receive message
@@ -323,6 +325,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket }) => 
       } else {
         setMessages([...messages, textMessage]);
       }
+      onNewMessage();
     }
   });
 

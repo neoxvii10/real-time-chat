@@ -35,6 +35,12 @@ if (_token) {
 const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 
 function HomePage() {
+  const [channelUpdate, setChannelUpdate] = useState<boolean>(false);
+
+  const handleMessageTrigger = () => {
+    setChannelUpdate(prevState => !prevState);
+  }
+
   const [user, setUser] = useState<UserType>({
     first_name: "thuan",
     last_name: "le",
@@ -73,9 +79,18 @@ function HomePage() {
 
   return (
     <div className="HomePage">
-      <Users onChannelClick={handleChannelClick} selectedChannel={medium} userId={userId} socket={socket}/>
-      { isUserType ? <UserInbox channel={user} userId={userId} socket={socket}/>
-      : <UserInbox channel={channel} userId={userId} socket={socket}/> }
+      <Users 
+      onChannelClick={handleChannelClick} 
+      selectedChannel={medium} 
+      userId={userId} 
+      socket={socket}
+      channelUpdate={channelUpdate}
+      onNewMessage={handleMessageTrigger}
+      />
+      { isUserType ? <UserInbox channel={user} userId={userId} socket={socket} 
+      onNewMessage={handleMessageTrigger}/>
+      : <UserInbox channel={channel} userId={userId} socket={socket} 
+      onNewMessage={handleMessageTrigger}/> }
       
     </div>
   );

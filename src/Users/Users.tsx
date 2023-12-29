@@ -28,6 +28,8 @@ type UsersTypes = {
   selectedChannel?: UnifiedType;
   userId: number;
   socket: WebSocket;
+  channelUpdate: boolean;
+  onNewMessage: () => void;
 };
 
 type UserType = {
@@ -57,7 +59,7 @@ export enum ScreenTypes {
   SearchScreen = 'searchScreen',
 }
 
-const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket }) => {
+const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, socket, channelUpdate, onNewMessage }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
@@ -87,18 +89,24 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listFriendRes = await UserApi.getFriends();
-        const channelListRes = await ChannelApi.getChannelList();
-        const searchUserListRes = await SearchUserApi.getSearchResults();
-        setListFriends(listFriendRes?.data || []);
-        setChannelList(channelListRes?.data);
-        setSearchUserList(searchUserListRes?.data.users);
+        if (channelUpdate) {
+          // Your channel fetching logic here
+          const listFriendRes = await UserApi.getFriends();
+          const channelListRes = await ChannelApi.getChannelList();
+          const searchUserListRes = await SearchUserApi.getSearchResults();
+          setListFriends(listFriendRes?.data || []);
+          setChannelList(channelListRes?.data);
+          setSearchUserList(searchUserListRes?.data.users);
+          // Reset channelUpdate to false after re-fetching
+          onNewMessage();
+        }
+
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, [])
+  }, [channelUpdate])
 
   //hanlde new group slides
   const [isSlided, setSlided] = useState<boolean>(false);
@@ -338,15 +346,19 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     const currentTime = new Date();
     const lastMessageTime = new Date(channel.last_message?.create_at);
     const channelCreateTime = new Date(channel.create_at);
-
+  
     // Check if the channel has any messages and the message time is valid
     if (!isNaN(lastMessageTime.getTime())) {
       const timeDifferenceInSeconds = Math.floor((currentTime.getTime() - lastMessageTime.getTime()) / 1000);
-
+  
+      if (timeDifferenceInSeconds < 60) {
+        return 'Just now';
+      }
+  
       const minute = 60;
       const hour = 3600;
       const day = 86400;
-
+  
       if (timeDifferenceInSeconds < minute) {
         return '1 minute ago';
       } else if (timeDifferenceInSeconds < hour) {
@@ -362,11 +374,15 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
     } else {
       // Use channel creation time if there are no messages
       const channelCreateDifferenceInSeconds = Math.floor((currentTime.getTime() - channelCreateTime.getTime()) / 1000);
-
+  
+      if (channelCreateDifferenceInSeconds < 60) {
+        return 'Just now';
+      }
+  
       const minute = 60;
       const hour = 3600;
       const day = 86400;
-
+  
       if (channelCreateDifferenceInSeconds < minute) {
         return '1 minute ago';
       } else if (channelCreateDifferenceInSeconds < hour) {
@@ -381,7 +397,7 @@ const Users: React.FC<UsersTypes> = ({ onChannelClick, selectedChannel, userId, 
       }
     }
   };
-
+  
   // Sort the channelList based on the latest activity time
   const sortedChannelList = channelList.slice().sort((a, b) => {
     const timeA = new Date(a.last_message?.create_at || a.create_at).getTime();

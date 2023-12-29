@@ -153,6 +153,10 @@ const Requests: React.FC<Props> = ({ translateX, setTranslateX, userId, setUserN
     const requestTime = new Date(createAt);
     const timeDifferenceInSeconds = Math.floor((currentTime.getTime() - requestTime.getTime()) / 1000);
   
+    if (timeDifferenceInSeconds < 60) {
+      return 'Just now';
+    }
+  
     const minute = 60;
     const hour = 3600;
     const day = 86400;
@@ -170,7 +174,7 @@ const Requests: React.FC<Props> = ({ translateX, setTranslateX, userId, setUserN
       return `${days} ${days === 1 ? 'day' : 'days'} ago`;
     }
   };
-
+  
   return (
     <div style={translateX} className='rq-list-container'>
       <div className="rq-list-header">
