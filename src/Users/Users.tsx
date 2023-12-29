@@ -191,9 +191,6 @@ const Users: React.FC<UsersTypes> = (
       }
     }
     fetchData();
-  }, [translateX])
-
-  useEffect(() => {
     const handleSocketChannel = (e: MessageEvent) => {
       // Parse the JSON data from the server
       const serverMessage = JSON.parse(e.data);
@@ -213,7 +210,7 @@ const Users: React.FC<UsersTypes> = (
     return () => {
       socket.removeEventListener("message", handleSocketChannel);
     };
-  }, [socket]);
+  }, [translateX, socket])
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
