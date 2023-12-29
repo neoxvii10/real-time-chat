@@ -159,18 +159,9 @@ const Users: React.FC<UsersTypes> = ({
   socket.onmessage = async (e) => {
     const serverMessage = JSON.parse(e.data);
 
-    if (serverMessage.action === "create_channel") {
-      // setTimeout(async () => {
-      //   const channelListRes = await ChannelApi.getChannelList();
-      //   setChannelList(channelListRes?.data);
-      // }, 1000);
+    if (serverMessage.action === "create_channel" || serverMessage.action === 'upload_channel_avatar') {
       const channelListRes = await ChannelApi.getChannelList();
       setChannelList(channelListRes?.data);
-    }
-
-    if(serverMessage.action === 'upload_channel_avatar') {
-      const channelListRes = await ChannelApi.getChannelList();
-      setChannelList(channelListRes?.data)
     }
   }
 
