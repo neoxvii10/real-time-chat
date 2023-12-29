@@ -24,6 +24,7 @@ import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
 import { timeEnd } from "console";
+import axios from "axios";
 
 // use api
 type UserType = {
@@ -56,7 +57,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id
 }
 
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
@@ -66,19 +67,35 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const messageContainer = document.querySelector('.message-container')
   const [onBottom, setOnBottom] = useState(true)
 
-  const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{
+
+  type ReactionType = {
+    id: number,
+    member: any,
+    message: string,
+    emoji: number,
+  }
+
+  type MessageType = {
     id?: number;
     channel?: number;
     text: string;
     fullname?: string;
     sender: string;
     type: string;
+    reply?: number,
     file?: File;
     uuid?: string;
     isSent?: boolean;
     create_at: string;
-  }[]>([]);
+    reactions?: ReactionType[];
+  }
+
+
+  const [isSlided, setSlided] = useState<boolean>(true);
+  const [messages, setMessages] = useState<MessageType[]>([]);
+
+
+
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -96,21 +113,32 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const fetchMessage = async () => {
     let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
+    let reactionListRes = await axios.get(`http://127.0.0.1:8000/api/message/channel-reactions/${channel.id}/`)
     let messageList = []
     for (let message of res.data) {
-      let messageElement = {
+      let messageElement: MessageType = {
         id: message.id,
         channel: message.channel,
         text: message.content,
         fullname: message.member.user.fullname,
         sender: (userId === message.member.user.id) ? "self" : "user",
         type: message.message_type.toLowerCase(),
-        create_at: message.create_at,
+        create_at: message.create_at
+      }
+      for (let reaction of reactionListRes.data.data) {
+        if (reaction.message === message.id) {
+          if (!messageElement.reactions) {
+            messageElement.reactions = []
+          }
+          //@ts-ignore
+          messageElement.reactions.push(reaction)
+        }
       }
       messageList.push(messageElement)
     }
     setMessages(messageList.reverse())
   }
+
   useEffect(() => {
     fetchMessage()
     if (messageContainer && onBottom) {
@@ -219,74 +247,116 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   socket.onmessage = (e) => {
     // Parse the JSON data from the server
     const serverMessage = JSON.parse(e.data);
-
     // Check if the action is "create_message" and the message_type is "TEXT"
-    if (serverMessage.action === "create_message") {
-
-      if (messageContainer) {
-        if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
-          setOnBottom(true)
-        } else {
-          setOnBottom(false)
+    switch (serverMessage.action) {
+      case "create_message":
+        if (messageContainer) {
+          if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+            setOnBottom(true)
+          } else {
+            setOnBottom(false)
+          }
         }
-      }
-      // Extract the content of the message
-      const messageContent = serverMessage.data.content;
-      let textMessage = {
-        text: messageContent,
-        user: serverMessage.data.member.user.fullname,
-        sender: 'user',
-        type: 'text',
-        create_at: formatTimestamp(serverMessage.data.create_at),
-      }
-
-      if (serverMessage.data.message_type === "IMAGE") {
-        textMessage.type = 'image'
-      }
-
-      let senderId = serverMessage.data.member.user.id
-      if (senderId === userId) {
-        if (textMessage.type === 'image') {
-          let fileMessage = {
-            text: messageContent,
-            user: serverMessage.data.member.user.fullname,
-            sender: 'self',
-            type: 'image',
-            isSent: true,
-            create_at: formatTimestamp(serverMessage.data.create_at),
-          }
-          setMessages([...messages, fileMessage]);
-        } else {
-          let uuid = serverMessage.uuid
-          let isSelfMessageCheck = false
-          for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].uuid === uuid) {
-              // console.log("**Đã gửi**" + messages[i].text)
-              messages[i].isSent = true
-              setMessages([...messages])
-              isSelfMessageCheck = true
-              break
-            }
-          }
-          if (!isSelfMessageCheck) {
-            let textMessage = {
+        // Extract the content of the message
+        const messageContent = serverMessage.data.content;
+        let textMessage = {
+          text: messageContent,
+          user: serverMessage.data.member.user.fullname,
+          sender: 'user',
+          type: 'text',
+          create_at: formatTimestamp(serverMessage.data.create_at),
+        }
+  
+        if (serverMessage.data.message_type === "IMAGE") {
+          textMessage.type = 'image'
+        }
+  
+        let senderId = serverMessage.data.member.user.id
+        if (senderId === userId) {
+          if (textMessage.type === 'image') {
+            let fileMessage = {
               text: messageContent,
               user: serverMessage.data.member.user.fullname,
               sender: 'self',
-              type: 'text',
+              type: 'image',
               isSent: true,
               create_at: formatTimestamp(serverMessage.data.create_at),
             }
-            setMessages([...messages, textMessage])
+            setMessages([...messages, fileMessage]);
+          } else {
+            let uuid = serverMessage.uuid
+            let isSelfMessageCheck = false
+            for (let i = messages.length - 1; i >= 0; i--) {
+              if (messages[i].uuid === uuid) {
+                // console.log("**Đã gửi**" + messages[i].text)
+                messages[i].isSent = true
+                setMessages([...messages])
+                isSelfMessageCheck = true
+                break
+              }
+            }
+            if (!isSelfMessageCheck) {
+              let textMessage = {
+                text: messageContent,
+                user: serverMessage.data.member.user.fullname,
+                sender: 'self',
+                type: 'text',
+                isSent: true,
+                create_at: formatTimestamp(serverMessage.data.create_at),
+              }
+              setMessages([...messages, textMessage])
+            }
           }
+        } else {
+          setMessages([...messages, textMessage]);
         }
-      } else {
-        setMessages([...messages, textMessage]);
-      }
-    } else if (serverMessage.action === "remove_message") {
-      const messageId = serverMessage.data.messageId;
-      const updatedMessages = messages.filter((msg) => msg.id !== messageId);
-      setMessages(updatedMessages);
+        break;
+
+      case "remove_message":
+          const messageId = serverMessage.data.messageId;
+          const updatedMessages = messages.filter((msg) => msg.id !== messageId);
+          setMessages(updatedMessages);
+          break;
+
+      case "create_reaction":
+          const data = serverMessage.data
+          let newReaction = {
+            id: data.id,
+            member: data.member,  
+            message: data.message,
+            emoji: data.emoji
+          }
+          for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].id === newReaction.message) {
+              if (!messages[i].reactions) {
+                messages[i].reactions = []
+              }
+              messages[i].reactions?.push(newReaction)
+              setMessages([...messages])
+              break
+            }
+          }
+          break;
+
+      case "remove_reaction":
+          const removeReactionData = serverMessage.data
+          loop1:
+          for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].id === removeReactionData.messageId) {
+          loop2:
+              //@ts-ignore
+              for (let j = 0; j < messages[i]?.reactions?.length; j++) {
+                //@ts-ignore
+                let reaction = messages[i]?.reactions[j]
+                if (reaction.id === removeReactionData.reactionId) {
+                  messages[i]?.reactions?.splice(j, 1)
+                  setMessages([...messages])
+                  break loop1;
+                }
+              }
+            }
+          }
+          break;
     }
   };
 
@@ -319,7 +389,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       //   text: `${selectedFile.name}\n${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
       //   sender: "self",
       //   type: "file",
-      //   file: selectedFile,
+      //   file: selectedFile,  
       // };
       // setMessages([...messages, fileMessage]);
       const formData = new FormData();
@@ -388,7 +458,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       targetId: channel.id,
       data: {
         message: selectedMessageId,
-        emoji: emoji,
+        // emoji: emoji,
+        emoji: 1
       },
     };
 
@@ -399,16 +470,25 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       console.log("WebSocket is not open. Reaction failed.");
     }
   };
+   
 
-
-
-
-
-
-
-
-
-
+  const removeReactionHandle = (message: any, reaction: any) => {
+    const removeReactionObject = {
+      action: "remove_reaction",
+      target: "channel",
+      targetId: channel.id,
+      data: {
+        reactionId: reaction.id,
+        messageId: message.id
+      }
+    }
+    const jsonObject = JSON.stringify(removeReactionObject)
+    if (isOpen(socket)) {
+      socket.send(jsonObject);
+    } else {
+      console.log("WebSocket is not open. Remove reaction failed.");
+    }
+  }
 
   // TRẢ LỜI TIN NHẮN
 
@@ -650,6 +730,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                 (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
               }
             </div>
+            <span className="reaction-icon">
+              {message.reactions?.map((reaction) => (
+                <span onClick={() => removeReactionHandle(message, reaction)}>❤️</span>
+              ))}
+            </span>
           </div>
         ))}
       </div>
