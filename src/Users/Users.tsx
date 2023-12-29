@@ -130,12 +130,22 @@ const Users: React.FC<UsersTypes> = (
       try {
         // Your channel fetching logic here
         const searchUserListRes = await SearchUserApi.getSearchResults();
+        const channelListRes = await ChannelApi.getChannelList();
         setSearchUserList(searchUserListRes?.data.users);
+        setChannelList(channelListRes?.data);
       } catch (error) {
         console.log(error);
       }
     }
-    fetchData();
+    // Periodically fetch the latest data
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 60000);
+
+    // Cleanup interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [])
 
   //hanlde new group slides
@@ -176,26 +186,34 @@ const Users: React.FC<UsersTypes> = (
         setListFriends(listFriendRes?.data)
         const channelListRes = await ChannelApi.getChannelList();
         setChannelList(channelListRes?.data);
-        // console.log(listFriendRes);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-    // console.log("listFriend: ", listFriends);
   }, [translateX])
 
-  // hanle socket get new channel
-  socket.onmessage = (e) => {
-    const serverMessage = JSON.parse(e.data);
+  useEffect(() => {
+    const handleSocketChannel = (e: MessageEvent) => {
+      // Parse the JSON data from the server
+      const serverMessage = JSON.parse(e.data);
 
-    if (serverMessage.action === "create_channel") {
-      setTimeout( async () => {
-        const channelListRes = await ChannelApi.getChannelList()
-        setChannelList(channelListRes?.data);
-      }, 1000)
-    }
-  }
+      if (serverMessage.action === "create_channel" || serverMessage.action === "upload_channel_avatar") {
+        setTimeout( async () => {
+          const channelListRes = await ChannelApi.getChannelList();
+          setChannelList(channelListRes?.data);
+        }, 1000)
+      }
+    };
+
+    // Add event listener when component mounts
+    socket.addEventListener("message", handleSocketChannel);
+
+    // Remove event listener when component unmounts
+    return () => {
+      socket.removeEventListener("message", handleSocketChannel);
+    };
+  }, [socket]);
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);

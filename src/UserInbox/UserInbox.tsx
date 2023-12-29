@@ -175,12 +175,90 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
+    
   }, [channel.id, isUserType]);
 
   useEffect(() => {
     // Scroll to bottom when receive message in case user is already bottom
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
+      const handleSocketChannel = (e: MessageEvent) => {
+        // Parse the JSON data from the server
+        const serverMessage = JSON.parse(e.data);
+  
+        if (serverMessage.action === "create_message") {
+          if (messageContainer) {
+            if (
+              Math.abs(
+                messageContainer.scrollTop +
+                messageContainer.clientHeight -
+                messageContainer?.scrollHeight
+              ) < 1
+            ) {
+              setOnBottom(true);
+            } else {
+              setOnBottom(false);
+            }
+          }
+          // Extract the content of the message
+          const messageContent = serverMessage.data.content;
+    
+          let textMessage = {
+            text: messageContent,
+            sender: 'user',
+            type: 'text',
+          }
+    
+          if (serverMessage.data.message_type === "IMAGE") {
+            textMessage.type = "image";
+          }
+    
+          let senderId = serverMessage.data.member.user.id;
+          if (senderId === userId) {
+            if (textMessage.type === "image") {
+              let fileMessage = {
+                text: messageContent,
+                sender: 'self',
+                type: 'image',
+                isSent: true,
+              }
+              setMessages([...messages, fileMessage]);
+            } else {
+              let uuid = serverMessage.uuid;
+              let isSelfMessageCheck = false;
+              for (let i = messages.length - 1; i >= 0; i--) {
+                if (messages[i].uuid === uuid) {
+                  // console.log("**Đã gửi**" + messages[i].text)
+                  messages[i].isSent = true;
+                  setMessages([...messages]);
+                  isSelfMessageCheck = true;
+                  break;
+                }
+              }
+              if (!isSelfMessageCheck) {
+                let textMessage = {
+                  text: messageContent,
+                  sender: "self",
+                  type: "text",
+                  isSent: true,
+                };
+                setMessages([...messages, textMessage]);
+              }
+            }
+          } else {
+            setMessages([...messages, textMessage]);
+          }
+          onNewMessage();
+        }
+      };
+  
+      // Add event listener when component mounts
+      socket.addEventListener("message", handleSocketChannel);
+  
+      // Remove event listener when component unmounts
+      return () => {
+        socket.removeEventListener("message", handleSocketChannel);
+      };
     }
   }, [messages]);
 
@@ -277,78 +355,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     }
     onNewMessage();
   }
-
-  // handle receive message
-  socket.addEventListener("message", function (e) {
-    // Parse the JSON data from the server
-    const serverMessage = JSON.parse(e.data);
-
-    // Check if the action is "create_message" and the message_type is "TEXT"
-    if (serverMessage.action === "create_message") {
-      if (messageContainer) {
-        if (
-          Math.abs(
-            messageContainer.scrollTop +
-            messageContainer.clientHeight -
-            messageContainer?.scrollHeight
-          ) < 1
-        ) {
-          setOnBottom(true);
-        } else {
-          setOnBottom(false);
-        }
-      }
-      // Extract the content of the message
-      const messageContent = serverMessage.data.content;
-
-      let textMessage = {
-        text: messageContent,
-        sender: 'user',
-        type: 'text',
-      }
-
-      if (serverMessage.data.message_type === "IMAGE") {
-        textMessage.type = "image";
-      }
-
-      let senderId = serverMessage.data.member.user.id;
-      if (senderId === userId) {
-        if (textMessage.type === "image") {
-          let fileMessage = {
-            text: messageContent,
-            sender: 'self',
-            type: 'image',
-            isSent: true,
-          }
-          setMessages([...messages, fileMessage]);
-        } else {
-          let uuid = serverMessage.uuid;
-          let isSelfMessageCheck = false;
-          for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].uuid === uuid) {
-              // console.log("**Đã gửi**" + messages[i].text)
-              messages[i].isSent = true;
-              setMessages([...messages]);
-              isSelfMessageCheck = true;
-              break;
-            }
-          }
-          if (!isSelfMessageCheck) {
-            let textMessage = {
-              text: messageContent,
-              sender: "self",
-              type: "text",
-              isSent: true,
-            };
-            setMessages([...messages, textMessage]);
-          }
-        }
-      } else {
-        setMessages([...messages, textMessage]);
-      }
-      onNewMessage();
-    }
-  });
 
   const [popupVisible, setPopupVisible] = useState(false);
 

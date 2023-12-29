@@ -2,10 +2,8 @@ import "./HomePage.css";
 import Users from "../Users/Users";
 import UserInbox from "../UserInbox/UserInbox";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import axiosClient from "../Api/AxiosClient";
-import { v4 as uuidv4 } from "uuid";
 
 // use api
 type UserType = {
