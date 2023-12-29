@@ -57,7 +57,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id
 }
 
-const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
@@ -113,7 +113,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const fetchMessage = async () => {
     let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
-    let reactionListRes = await axios.get(`http://127.0.0.1:8000/api/message/channel-reactions/${channel.id}/`)
+    let reactionListRes = await axios.get(`http://16.162.46.190/api/message/channel-reactions/${channel.id}/`)
     let messageList = []
     for (let message of res.data) {
       let messageElement: MessageType = {
@@ -266,11 +266,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           type: 'text',
           create_at: formatTimestamp(serverMessage.data.create_at),
         }
-  
+
         if (serverMessage.data.message_type === "IMAGE") {
           textMessage.type = 'image'
         }
-  
+
         let senderId = serverMessage.data.member.user.id
         if (senderId === userId) {
           if (textMessage.type === 'image') {
@@ -313,50 +313,51 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         break;
 
       case "remove_message":
-          const messageId = serverMessage.data.messageId;
-          const updatedMessages = messages.filter((msg) => msg.id !== messageId);
-          setMessages(updatedMessages);
-          break;
+        const messageId = serverMessage.data.messageId;
+        console.log(`remove_message ${messageId}`)
+        const updatedMessages = messages.filter((msg) => msg.id !== messageId);
+        setMessages(updatedMessages);
+        break;
 
       case "create_reaction":
-          const data = serverMessage.data
-          let newReaction = {
-            id: data.id,
-            member: data.member,  
-            message: data.message,
-            emoji: data.emoji
-          }
-          for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].id === newReaction.message) {
-              if (!messages[i].reactions) {
-                messages[i].reactions = []
-              }
-              messages[i].reactions?.push(newReaction)
-              setMessages([...messages])
-              break
+        const data = serverMessage.data
+        let newReaction = {
+          id: data.id,
+          member: data.member,
+          message: data.message,
+          emoji: data.emoji
+        }
+        for (let i = messages.length - 1; i >= 0; i--) {
+          if (messages[i].id === newReaction.message) {
+            if (!messages[i].reactions) {
+              messages[i].reactions = []
             }
+            messages[i].reactions?.push(newReaction)
+            setMessages([...messages])
+            break
           }
-          break;
+        }
+        break;
 
       case "remove_reaction":
-          const removeReactionData = serverMessage.data
-          loop1:
-          for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].id === removeReactionData.messageId) {
-          loop2:
+        const removeReactionData = serverMessage.data
+        loop1:
+        for (let i = messages.length - 1; i >= 0; i--) {
+          if (messages[i].id === removeReactionData.messageId) {
+            loop2:
+            //@ts-ignore
+            for (let j = 0; j < messages[i]?.reactions?.length; j++) {
               //@ts-ignore
-              for (let j = 0; j < messages[i]?.reactions?.length; j++) {
-                //@ts-ignore
-                let reaction = messages[i]?.reactions[j]
-                if (reaction.id === removeReactionData.reactionId) {
-                  messages[i]?.reactions?.splice(j, 1)
-                  setMessages([...messages])
-                  break loop1;
-                }
+              let reaction = messages[i]?.reactions[j]
+              if (reaction.id === removeReactionData.reactionId) {
+                messages[i]?.reactions?.splice(j, 1)
+                setMessages([...messages])
+                break loop1;
               }
             }
           }
-          break;
+        }
+        break;
     }
   };
 
@@ -470,7 +471,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       console.log("WebSocket is not open. Reaction failed.");
     }
   };
-   
+
 
   const removeReactionHandle = (message: any, reaction: any) => {
     const removeReactionObject = {
@@ -669,23 +670,28 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
             <div key={index}
               className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
               <div className="message-content">
+                <div className="message-fullname">{message.fullname}</div>
                 {message.type === "image" ? (
                   <div>
                     <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                    {message.create_at && (
-                      <div className="timestamp">{formatTimestamp(message.create_at)}</div>
-                    )}
                   </div>
                 ) : (
                   <>
-                    <div className="message-fullname">{message.fullname}</div>
                     <div>{message.text}</div>
-                    {message.create_at && (
-                      <div className="timestamp">{formatTimestamp(message.create_at)}</div>
-                    )}
                   </>
                 )}
+
+                <div className="message-footer">
+                  <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                  <div className="reaction-icon">
+                    {message.reactions?.map((reaction) => (
+                      <span onClick={() => removeReactionHandle(message, reaction)}>❤️</span>
+                    ))}
+                  </div>
+                </div>
+
               </div>
+
               <div className="icon-container">
                 <div className="message-icons">
                   {/* {hoveredMessageIndex === index && ( */}
@@ -712,7 +718,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                         ))}
                       </div>
                     )}
-
                     <span className="icon" onClick={() => handleReplyClick(message)}>
                       <FaReply size={20} />
                     </span>
@@ -723,6 +728,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   </>
                   {/* ) } */}
                 </div>
+
               </div>
             </div>
             <div className="sent-icon">
@@ -730,11 +736,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                 (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
               }
             </div>
-            <span className="reaction-icon">
-              {message.reactions?.map((reaction) => (
-                <span onClick={() => removeReactionHandle(message, reaction)}>❤️</span>
-              ))}
-            </span>
           </div>
         ))}
       </div>

@@ -419,6 +419,7 @@ p {
   width: 63%;
   display: grid;
   top: 4rem;
+  bottom: 7rem;
   gap: 0.3rem;
   overflow-y: auto;
   max-height: 80vh;
@@ -477,7 +478,6 @@ p {
 }
 
 .icon-container {
-  position: relative;
   left: 85px;
   top: -30px;
 }
@@ -570,7 +570,7 @@ p {
 
 .reply-popup {
   position: absolute;
-  top: 43rem; /* Adjust this value to position it correctly */
+  top: 43.1rem; /* Adjust this value to position it correctly */
   left: 34.1rem;
   right: 6.88rem;
   bottom: 3rem;
@@ -593,6 +593,7 @@ p {
   position: absolute;
   font-size: 1.5rem;
   bottom: 30px;
+  left: -137px;
   background-color: var(--background-color);
   border-radius: 10px;
   padding: 7px;
@@ -607,3 +608,18 @@ p {
 .emoji:hover {
   transform: scale(1.1);
 }
+
+.message-footer {
+  display: flex;
+  justify-content: space-between; /* Add space between timestamp and reaction icons */
+  align-items: center; 
+}
+
+.reaction-icon {
+  display: flex;
+}
+
+.reaction-icon span {
+  cursor: pointer;
+}
+
