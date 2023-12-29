@@ -20,7 +20,8 @@ import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
 import UserProfileApi from '../Api/UserProfileApi';
 import Report from "../Users/Report/Report";
-import UserInfor from "../RightColumn/RightColumn";
+import UserInformation from "../RightColumn/RightColumn";
+import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
 import { timeEnd } from "console";
 
 // use api
@@ -203,7 +204,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
         ...translateX,
         visibility: isSlided ? "visible" : "hidden",
         opacity: isSlided ? 1 : 0,
-        transform: isSlided ? "translateX(0px)" : "translateX(480px)",
+        transform: isSlided ? "translateX(5px)" : "translateX(480px)",
       }));
     }
   };
@@ -481,6 +482,55 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
     setHoveredMessageIndex(null);
   };
 
+  // handle edit avatar channel
+
+  const [disEditAvatar, setDisEditAvatar] = useState<boolean>(false);
+
+  const [selectedImage, setSelectedImage] = useState<string>("");
+
+  const [croppedImage, setCroppedImage] = useState<string>();
+  const [croppedBlob, setCroppedBlob] = useState<Blob>();
+  const [isCropped, setIsCropped] = useState<boolean>(false);
+
+  const handleCropImage = ({ blob, url }: { blob: Blob; url: string }) => {
+    setCroppedBlob(blob);
+    setCroppedImage(url);
+    setIsCropped(true);
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target && e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+      setCroppedImage('');
+      setIsCropped(false);
+    }
+    setDisEditAvatar(true);
+    handleVisibleBtn(true);
+  };
+
+  const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
+    visibility: 'hidden',
+    bottom: '-4rem'
+  });
+
+  const handleVisibleBtn = (visible: boolean) => {
+      if (visible) {
+          setHideBtnSubmit({
+              ...hideBtnSubmit,
+              visibility: 'visible',
+              bottom: '1rem'
+          })
+      } else {
+          setHideBtnSubmit({
+              ...hideBtnSubmit,
+              visibility: 'hidden',
+              bottom: '-4rem'
+          })
+      }
+  }
+
   return (
     <>
       {!isUserType ?
@@ -551,10 +601,17 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
             className={`user-info ${isSlided ? "slided" : ""}`}
             style={translateX}
           >
-            <UserInfor
+            <UserInformation
               userId={userId}
               channel={channel}
               handleClose={handleSlideAnimation}
+              croppedImage={croppedImage}
+              croppedBlob={croppedBlob}
+              isCropped={isCropped}
+              handleImageChange={handleImageChange}
+              hideBtnSubmit={hideBtnSubmit}
+              handleVisibleBtn={handleVisibleBtn}
+              setIsCropped={setIsCropped}
             />
           </div>
 
@@ -714,6 +771,16 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
         </div>
       }
       {isReport && <Report setIsReport={setIsReport} channel={channel} isUserType={isUserType}/>}
+      {disEditAvatar && <EditAvatarChannel
+        croppedImage={croppedImage}
+        croppedBlob={croppedBlob}
+        isCropped={isCropped}
+        handleCropImage={handleCropImage}
+        handleImageChange={handleImageChange}
+        setDisEditAvatar={setDisEditAvatar}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+      />}
     </>
   );
 };

@@ -27,12 +27,26 @@ type ChannelInboxProps = {
   channel: UnifiedType;
   userId: number;
   handleClose: (event: React.MouseEvent<Element>) => void;
+  croppedImage: string | undefined;
+  croppedBlob: Blob | undefined;
+  isCropped: boolean;
+  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  hideBtnSubmit: CSSProperties;
+  handleVisibleBtn: (visible: boolean) => void;
 };
 
 const UserInfor: React.FC<ChannelInboxProps> = ({
   channel,
   handleClose,
   userId,
+  croppedImage,
+  croppedBlob,
+  isCropped,
+  handleImageChange,
+  hideBtnSubmit,
+  handleVisibleBtn,
+  setIsCropped,
 }) => {
   const isUserType = false;
 
@@ -44,12 +58,20 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
             channel={channel}
             userId={userId}
             handleClose={handleClose}
+            
           />
         ) : (
           <ChatWithGroup
             channel={channel}
             userId={userId}
             handleClose={handleClose}
+            croppedImage={croppedImage}
+            croppedBlob={croppedBlob}
+            isCropped={isCropped}
+            setIsCropped={setIsCropped}
+            handleImageChange={handleImageChange}
+            hideBtnSubmit={hideBtnSubmit}
+            handleVisibleBtn={handleVisibleBtn}
           />
         )}
       </div>

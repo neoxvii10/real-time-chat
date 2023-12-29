@@ -88,10 +88,12 @@ const GroupCreation: React.FC<GroupCreationProps> = ({ slideRight, handleNewGrou
       try {
         const response = await ChannelApi.uploadAvatar(formData);
         console.log("update avatar group", response);
+        alert("Update avatar channel successfully");
         // 
         setIsCropped(false);
       } catch (error) {
         console.log(error)
+        alert("Update avatar FAIL")
       }
     }
 

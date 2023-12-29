@@ -1,11 +1,17 @@
 import "./EditGroup.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, CSSProperties } from "react";
 import { TiTick } from "react-icons/ti";
 import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
+import { TbCameraPlus } from 'react-icons/tb'
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt } from "react-icons/md";
+import { FaCheck } from 'react-icons/fa6'
+import ChannelApi from "../../../Api/ChannelApi";
+import ImageCrop from "../../../Users/NewGroup/Selects/GroupCreation/ImageCrop/ImageCrop";
+
+import { AiOutlineClose } from 'react-icons/ai'
 
 type UserType = {
   id: number;
@@ -31,12 +37,26 @@ type ChannelInboxProps = {
   channel: UnifiedType;
   userId: number;
   handleEdit: (event: React.MouseEvent<HTMLSpanElement>) => void;
+  croppedImage: string | undefined;
+  croppedBlob: Blob | undefined;
+  isCropped: boolean;
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  hideBtnSubmit: CSSProperties;
+  handleVisibleBtn: (visible: boolean) => void;
+  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EditInforGroup: React.FC<ChannelInboxProps> = ({
   channel,
   handleEdit,
   userId,
+  croppedImage,
+  croppedBlob,
+  isCropped,
+  setIsCropped,
+  handleImageChange,
+  hideBtnSubmit,
+  handleVisibleBtn,
 }) => {
   const channelInfo = channel as ChannelType;
   const [existAvt, setExitAvt] = useState<boolean>(true);
@@ -52,6 +72,30 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
     setInputValues((prevState) => ({ ...prevState, [name]: value }));
     setChangingForm(true);
   };
+
+  // handle submit blob 
+  const handleSubmitAvatar = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    const stringId = channel.id.toString();
+    if (croppedBlob) {
+        const fileAvatar = new File([croppedBlob], "channel_avatar.jpg", { type: "image/jpeg", lastModified: new Date().getTime() })
+        const formData = new FormData();
+        formData.append('file', fileAvatar);
+        formData.append('channel', stringId);
+        try {
+          const response = await ChannelApi.uploadAvatar(formData);
+          console.log("update avatar group", response);
+          alert("Update avatar channel successfully");
+            // setIsCropped(false);?
+        } catch (error) {
+            console.log(error)
+            alert("Update avatar FAIL")
+        }
+    }
+
+    handleVisibleBtn(false);
+}
+
   return (
     <div className="group-edit-slide">
       <div className="rightcolumn-header">
@@ -60,22 +104,32 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
         </span>
         <h3>Edit</h3>
       </div>
-
       <div className="edit-body-right">
         <div className="group-avatar-name">
           <div className="edit-avatar-container">
-            <div className="avatar">
-              {existAvt ? (
-                <div className="group-avatar-wrapper">
-                  <div className="group-avatar-container">
-                    <img src={channelInfo.avatar_url}></img>
-                  </div>
-                </div>
-              ) : (
-                <div className="textAvt">
-                  <p>{}</p>
-                </div>
-              )}
+            <div className="file-container selected-image-container" >
+              <label htmlFor="file-input" className="change-image-button">
+                <TbCameraPlus className="add-photo-icon" size={50} />
+              </label>
+
+              <div className="image-container">
+                {isCropped && croppedImage && (
+                  <img className="cropped-img" src={croppedImage} alt="Cropped Image" />
+                )}
+                {!isCropped && (
+                  <img className="cropped-img" src={channel.avatar_url} alt="Image" />
+                )}
+              </div>
+
+              <input
+                type="file"
+                id="file-input"
+                name="photo"
+                accept="image/png, image/jpeg"
+                onChange={handleImageChange}
+                style={{ opacity: 0 }}
+                title=""
+              />
             </div>
           </div>
           <div className="name">{channelInfo.title}</div>
@@ -206,6 +260,9 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
           <></>
         )}
       </div>
+      <button style={hideBtnSubmit} className='btn-submit-edit' onClick={handleSubmitAvatar}>
+        <FaCheck size={24} />
+      </button>
     </div>
   );
 };

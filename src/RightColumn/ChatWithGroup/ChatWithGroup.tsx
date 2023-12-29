@@ -7,6 +7,8 @@ import MediaState from "../Common/RenderMedia/MediaState";
 import { RiPencilLine } from "react-icons/ri";
 import EditInforGroup from "./Edit/EditGroup";
 import MemberList from "./Member/MemberList";
+import { AiOutlineClose } from 'react-icons/ai'
+import ImageCrop from "../../Users/NewGroup/Selects/GroupCreation/ImageCrop/ImageCrop";
 
 type UserType = {
   id: number;
@@ -32,12 +34,26 @@ type ChannelInboxProps = {
   channel: UnifiedType;
   userId: number;
   handleClose: (event: React.MouseEvent<Element>) => void;
+  croppedImage: string | undefined;
+  croppedBlob: Blob | undefined;
+  isCropped: boolean;
+  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  hideBtnSubmit: CSSProperties;
+  handleVisibleBtn: (visible: boolean) => void;
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
   channel,
   userId,
   handleClose,
+  croppedImage,
+  croppedBlob,
+  isCropped,
+  setIsCropped,
+  handleImageChange,
+  hideBtnSubmit,
+  handleVisibleBtn,
 }) => {
   const [isSlidedEdit, setSlidedEdit] = useState<boolean>(true); //slide edit status
   const [isSlidedMember, setSlidedMember] = useState<boolean>(true); //slide member status
@@ -46,6 +62,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     transform: "translateX(480px)",
   });
   const [pageStatus, setPageStatus] = useState<string>("info");
+
   const handleClickOnEditButton = (
     event: React.MouseEvent<HTMLSpanElement>
   ) => {
@@ -77,7 +94,10 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 
   const channelInfo = channel as ChannelType;
 
-  const handleOnWheel = () => {};
+  const handleOnWheel = () => { };
+
+  // handle change avatar
+
 
   return (
     <div className="RightColumn-container">
@@ -86,6 +106,13 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           channel={channel}
           userId={userId}
           handleEdit={handleClickOnEditButton}
+          croppedImage={croppedImage}
+          croppedBlob={croppedBlob}
+          isCropped={isCropped}
+          setIsCropped={setIsCropped}
+          handleImageChange={handleImageChange}
+          hideBtnSubmit={hideBtnSubmit}
+          handleVisibleBtn={handleVisibleBtn}
         />
       </div>
       <div className={`user-info`} style={MemberTranslateX}>

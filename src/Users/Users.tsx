@@ -156,14 +156,21 @@ const Users: React.FC<UsersTypes> = ({
   }, [translateX]);
 
   // hanle socket get new channel
-  socket.onmessage = (e) => {
+  socket.onmessage = async (e) => {
     const serverMessage = JSON.parse(e.data);
 
     if (serverMessage.action === "create_channel") {
-      setTimeout(async () => {
-        const channelListRes = await ChannelApi.getChannelList();
-        setChannelList(channelListRes?.data);
-      }, 1000);
+      // setTimeout(async () => {
+      //   const channelListRes = await ChannelApi.getChannelList();
+      //   setChannelList(channelListRes?.data);
+      // }, 1000);
+      const channelListRes = await ChannelApi.getChannelList();
+      setChannelList(channelListRes?.data);
+    }
+
+    if(serverMessage.action === 'upload_channel_avatar') {
+      const channelListRes = await ChannelApi.getChannelList();
+      setChannelList(channelListRes?.data)
     }
   }
 
@@ -606,7 +613,7 @@ const Users: React.FC<UsersTypes> = ({
         </div>
       )}
 
-      {currentScreen === ScreenTypes.HomeScreen &&
+      {/* {currentScreen === ScreenTypes.HomeScreen &&
       <div className="chatlist-container">
         <ul>
           {channelList.map((channel) => (
@@ -630,7 +637,7 @@ const Users: React.FC<UsersTypes> = ({
           ))}
         </ul>
       </div>
-      }
+      } */}
     
       <Profile translateX={translateXforProfile} setTranslateX={setTranslateXforProfile}/>
       <Friends translateX={translateXforFriends} setTranslateX={setTranslateXforFriends}/>
