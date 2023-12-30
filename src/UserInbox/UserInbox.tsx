@@ -22,8 +22,6 @@ import UserProfileApi from '../Api/UserProfileApi';
 import Report from "../Users/Report/Report";
 import UserInformation from "../RightColumn/RightColumn";
 import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
-import { timeEnd } from "console";
-import { colors } from "@mui/material";
 
 // use api
 type UserType = {
@@ -130,9 +128,21 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
   }[]>([]);
 
   const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return `${date.getHours()}:${date.getMinutes()}`;
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        // If the timestamp is not in a valid format, return the original timestamp
+        return timestamp;
+      }
+      // Format the valid timestamp
+      return `${date.getHours()}:${date.getMinutes()}`;
+    } catch (error) {
+      // Handle parsing errors
+      console.error("Error parsing timestamp:", error);
+      return timestamp;
+    }
   };
+  
 
   const getCurrentTime = () => {
     let currentTime_ = new Date();
