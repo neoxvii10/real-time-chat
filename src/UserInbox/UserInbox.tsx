@@ -57,7 +57,7 @@ if (_token) {
   var userId = (jwtDecode(token) as any).user_id
 }
 
-const socket = new WebSocket(`ws://16.162.46.190/ws/chat/?token=${token}`);
+const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 console.log(socket);
 socket.onopen = () => {
   console.log('WebSocket connection established');
@@ -113,7 +113,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const fetchMessage = async () => {
     let res: any = await axiosClient.get(`api/channel/${channel.id}/messages/?page=1`)
-    let reactionListRes = await axios.get(`http://16.162.46.190/api/message/channel-reactions/${channel.id}/`)
+    let reactionListRes = await axios.get(`http://112.137.129.158:5002/api/message/channel-reactions/${channel.id}/`)
     let messageList = []
     for (let message of res.data) {
       let messageElement: MessageType = {
@@ -460,7 +460,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
 
 
   const [isMessageEmojiPickerVisible, setMessageEmojiPickerVisible] = useState(false);
-  const [selectedEmoji, setSelectedEmoji] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState<number>();
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
   const emojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
@@ -472,7 +472,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   };
 
   // Handle emoji selection
-  const handleEmojiClick = (emoji: string) => {
+  const handleEmojiClick = (emoji: number) => {
     setSelectedEmoji(emoji);
     setMessageEmojiPickerVisible(false);
     // Now you can send the reaction through WebSocket
@@ -480,15 +480,14 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   };
 
   // Function to send the reaction through WebSocket
-  const sendReactionToWebSocket = (emoji: string) => {
+  const sendReactionToWebSocket = (emoji: number) => {
     const reactionObject = {
       action: "create_reaction",
       target: "channel",
       targetId: channel.id,
       data: {
         message: selectedMessageId,
-        // emoji: emoji,
-        emoji: 1
+        emoji: emoji,
       },
     };
 
@@ -518,6 +517,18 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       console.log("WebSocket is not open. Remove reaction failed.");
     }
   }
+
+
+  const countEmoji = (emoji: any, reactionList: any) => {
+    let cnt = 0
+    for (let reaction of reactionList) {
+      if (reaction.emoji === emoji) {
+        cnt++
+      }
+    }
+    if (cnt !== 0) return cnt
+  }
+
 
   // TRẢ LỜI TIN NHẮN
 
@@ -723,9 +734,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                 <div className="message-footer">
                   <div className="timestamp">{formatTimestamp(message.create_at)}</div>
                   <div className="reaction-icon">
-                    {message.reactions?.map((reaction) => (
-                      <span onClick={() => removeReactionHandle(message, reaction)}>❤️</span>
-                    ))}
+                    { message.reactions && (
+                      emojis.map((emoji, index) => (
+                        <>{countEmoji(index + 1, message.reactions) && emoji + countEmoji(index + 1, message.reactions)}</>
+                      ))
+                    )}
                   </div>
                 </div>  
               </div>
@@ -745,10 +758,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                     </span>
                     {isMessageEmojiPickerVisible && (
                       <div className="emoji-popup">
-                        {emojis.map((emoji) => (
+                        {emojis.map((emoji, index) => (
                           <span
                             key={emoji}
-                            onClick={() => handleEmojiClick(emoji)}
+                            onClick={() => handleEmojiClick(index + 1)}
                             className="emoji"
                           >
                             {emoji}
