@@ -12,6 +12,11 @@ class ChannelApi {
         const url = `/api/channel/${channelId}/members`;
         return await axiosClient.get(url);
     }
+
+    getRecentChannelList = async () => {
+        const url = `/api/channel/recent/all/`;
+        return await axiosClient.get(url);
+    }
 }
 
 export default new ChannelApi();

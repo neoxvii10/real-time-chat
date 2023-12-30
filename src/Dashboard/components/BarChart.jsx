@@ -31,8 +31,7 @@ const BarChart = ({ isDashboard = false }) => {
 ]);
 
   const handleGetData = async () => {
-    const userReportResponse = await ReportApi.getUserReports();
-    const channelReportResponse = await ReportApi.getChannelReports();
+    const reportResponse = await ReportApi.getAllReports();
     const userListResponse = await UserApi.getUserList();
     const channelListResponse = await ChannelApi.getChannelList();
     setData([
@@ -48,7 +47,7 @@ const BarChart = ({ isDashboard = false }) => {
       },
       {
         field: "Report",
-        "total reports": userReportResponse.data.length + channelReportResponse.data.length,
+        "total reports": reportResponse.data.length,
         "total reportsColor": "hsl(97, 70%, 50%)"
       }
     

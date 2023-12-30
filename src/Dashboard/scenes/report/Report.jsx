@@ -28,14 +28,8 @@ const Report = () => {
     const [totalReports, setTotalReports] = useState([]);
 
     const getReportData = async () => {
-        const userReportResponse = await ReportApi.getUserReports();
-        const channelReportResponse = await ReportApi.getChannelReports();
-        const reports = [
-            ...userReportResponse.data,
-            ...channelReportResponse.data,
-        ];
-        setTotalReports(reports);
-        console.log(reports);
+        const response = await ReportApi.getAllReports();
+        setTotalReports(response.data.reverse());
     };
 
     const cancelDialog = () => {
@@ -114,7 +108,7 @@ const Report = () => {
         <Box m="20px">
             <Header title="REPORTS" subtitle="Manage the Reports" />
             {totalReports.map((report, i) => (
-                <Accordion defaultExpanded>
+                <Accordion defaultExpanded id={`report-${report.id}`}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Box
                             display="flex"

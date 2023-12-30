@@ -482,13 +482,13 @@ const Profile = () => {
                             color={colors.grey[100]}
                             fontWeight="bold"
                         >
-                            Admin
+                            {userInformation.username}
                         </Typography>
                         <Typography
                             variant="h5"
                             color={colors.greenAccent[500]}
                         >
-                            I am admin
+                            {userInformation.first_name + " " + userInformation.last_name}
                         </Typography>
                         <Box textAlign="justify" position="relative">
                             <Box

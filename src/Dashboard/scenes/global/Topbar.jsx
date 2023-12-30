@@ -85,7 +85,6 @@ const Topbar = () => {
     };
 
     useEffect(() => {
-        console.log("Hello")
         if(!adminProfile.getSuccess) {
             getProfileInformation()
         }

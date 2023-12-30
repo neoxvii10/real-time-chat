@@ -14,7 +14,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import BanApi from "../../../Api/BanApi";
-
+import PeopleIcon from '@mui/icons-material/People';
 const User = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -172,6 +172,23 @@ const User = () => {
             },
         },
         {
+            field: "1",
+            headerName: "Friends",
+            align: "center",
+            renderCell: ({ id }) => {
+                return (
+                    <Box onClick={() => navigate(`/admin/user/${id}/friends`)}>
+                        <Tooltip title="Friends">
+                            <IconButton>
+                                <PeopleIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                );
+            },
+        },
+        {
+            field: "2",
             headerName: "Detail",
             align: "center",
             renderCell: ({ id }) => {
@@ -186,6 +203,7 @@ const User = () => {
                 );
             },
         },
+        
     ];
 
     return (

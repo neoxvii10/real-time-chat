@@ -1,11 +1,11 @@
-import { Box, useTheme, Button} from "@mui/material";
+import { Box, useTheme, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useState, useEffect } from "react";
-import {useParams} from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import ChannelApi from "../../../Api/ChannelApi";
+import { useNavigate, useParams } from "react-router-dom";
+import UserApi from "../../../Api/UserApi";
 import Header from "../../components/Header";
+import AddIcon from "@mui/icons-material/Add";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import BlockIcon from "@mui/icons-material/Block";
@@ -15,13 +15,12 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import BanApi from "../../../Api/BanApi";
 import PeopleIcon from '@mui/icons-material/People';
-
-const ChannelMembers = () => {
-    const {channelId} = useParams();
+const FriendList = () => {
+    const {userId} = useParams()
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
-    const [userData, setUserData] = useState([]);
+    const [friendData, setFriendData] = useState([]);
     const [currentStatus, setCurrentStatus] = useState({
         id: null,
         is_active: false,
@@ -34,17 +33,10 @@ const ChannelMembers = () => {
         handleCancel: () => {},
     });
 
-    const getChannelMembers = async () => {
-        const channelMembersResponse = await ChannelApi.getChannelMembers(channelId);
-        const userList = channelMembersResponse.data.map((member) => {
-            return {
-                ...member["user"],
-                "role": member["role"],
-                "nickname": member["nickname"],
-            
-            };
-        });
-        setUserData(userList);
+    const getFriendList = async () => {
+        const userListResponse = await UserApi.getFriendsOfAUser(userId);
+        setFriendData(userListResponse.data);
+        console.log(userListResponse.data);
     };
 
     const cancelBlockUser = () => {
@@ -68,7 +60,7 @@ const ChannelMembers = () => {
                 toast.success("Ban User successfully", {
                     theme: theme.palette.mode,
                 });
-                getChannelMembers();
+                getFriendList();
             }
         } else {
             const response = await BanApi.unbanUser(currentStatus["id"]);
@@ -81,7 +73,7 @@ const ChannelMembers = () => {
                 toast.success("Unban User successfully!", {
                     theme: theme.palette.mode,
                 });
-                getChannelMembers();
+                getFriendList();
             }
         }
     };
@@ -93,20 +85,20 @@ const ChannelMembers = () => {
         if (is_active) {
             setConfirmDialog({
                 title: "Ban User",
-                content: "Do you want to ban this user?",
+                content: "Do you want to block this user?",
                 isOpen: true,
             });
         } else {
             setConfirmDialog({
                 title: "Unban User",
-                content: "Do you want to unban this user?",
+                content: "Do you want to unblock this user?",
                 isOpen: true,
             });
         }
     };
     useEffect(() => {
-        getChannelMembers();
-    }, []);
+        getFriendList();
+    }, [navigate]);
 
     const columns = [
         {
@@ -120,7 +112,12 @@ const ChannelMembers = () => {
             flex: 1,
             cellClassName: "name-column--cell",
         },
-
+        {
+            field: "email",
+            headerName: "Email",
+            flex: 1,
+            cellClassName: "name-column--cell",
+        },
         {
             field: "first_name",
             headerName: "First Name",
@@ -141,21 +138,10 @@ const ChannelMembers = () => {
             cellClassName: "name-column--cell",
         },
         {
-            field: "role",
-            headerName: "Role",
-            flex: 1,
-            cellClassName: "name-column--cell",
-        },
-        {
-            field: "nickname",
-            headerName: "Nickname",
-            flex: 1,
-            cellClassName: "name-column--cell",
-        },
-        {
             field: "is_active",
             headerName: "Status",
-            renderCell: ({ id, row: {is_active} }) => {
+            renderCell: ({ id, ...obj }) => {
+                const is_active = obj.row.is_active;
                 return (
                     <Box
                         width="40%"
@@ -174,8 +160,11 @@ const ChannelMembers = () => {
                                 cursor: "pointer",
                             },
                         }}
-                        onClick={() => handleClickBlockUser(id, is_active)}
+                        onClick={() => {
+                            handleClickBlockUser(id, is_active);
+                        }}
                     >
+                        {" "}
                         <Tooltip title={is_active ? "Active" : "Banned"}>
                             {is_active ? <CheckIcon /> : <BlockIcon />}
                         </Tooltip>
@@ -205,11 +194,7 @@ const ChannelMembers = () => {
             align: "center",
             renderCell: ({ id }) => {
                 return (
-                    <Box
-                        onClick={() =>
-                            navigate(`/admin/user/${id}/detail`)
-                        }
-                    >
+                    <Box onClick={() => navigate(`/admin/user/${id}/detail`)}>
                         <Tooltip title="View Detail">
                             <IconButton>
                                 <VisibilityIcon />
@@ -219,6 +204,7 @@ const ChannelMembers = () => {
                 );
             },
         },
+        
     ];
 
     return (
@@ -229,9 +215,24 @@ const ChannelMembers = () => {
                 alignItems="center"
             >
                 <Header
-                    title="CHANNEL MEMBERS"
-                    subtitle="List of channel members"
+                    title="CONTACTS"
+                    subtitle="List of Contacts for Future Reference"
                 />
+                <Box>
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                        }}
+                        onClick={() => navigate("/admin/user/create")}
+                    >
+                        <AddIcon sx={{ mr: "10px" }} />
+                        Create new user
+                    </Button>
+                </Box>
             </Box>
 
             <Box
@@ -267,7 +268,7 @@ const ChannelMembers = () => {
                 }}
             >
                 <DataGrid
-                    rows={userData}
+                    rows={friendData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
                 />
@@ -281,4 +282,4 @@ const ChannelMembers = () => {
     );
 };
 
-export default ChannelMembers;
+export default FriendList;

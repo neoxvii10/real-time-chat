@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import {  useTheme} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import UserProfile from "../../components/UserProfile";
+import FriendList from "./FriendList";
 const ManageUser = () => {
     const {userId} = useParams()
     const theme = useTheme();
@@ -35,6 +36,7 @@ const ManageUser = () => {
         <Routes>
             <Route path="/*" element={<User/>}/>
             <Route path="/:userId/detail" element={<UserProfile />} />
+            <Route path="/:userId/friends" element={<FriendList />} />
             <Route path="/create" 
             element={<UserForm
                 handleSubmit = {handleCreateUser}

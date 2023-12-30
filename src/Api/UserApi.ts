@@ -22,8 +22,18 @@ class UserApi {
         return await axiosClient.get(url);
     }
 
+    getFriendsOfAUser = async (userId: any) => {
+        const url = `/api/user/${userId}/friends/`;
+        return await axiosClient.get(url);
+    }
+
     getUserList = async () => {
         const url = '/api/user/all/';
+        return await axiosClient.get(url);
+    }
+
+    getRecentUserList = async () => {
+        const url = '/api/user/recent/all/';
         return await axiosClient.get(url);
     }
 

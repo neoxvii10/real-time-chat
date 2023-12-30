@@ -4,6 +4,7 @@ import { tokens } from "../theme";
 import { useState, useEffect } from "react";
 import ReportApi from "../../Api/ReportApi";
 import ChannelApi from "../../Api/ChannelApi";
+import UserApi from "../../Api/UserApi";
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -21,6 +22,12 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
             data: [],
             key: 2,
         },
+        {
+            id: "users",
+            color: tokens("dark").redAccent[500],
+            data: [],
+            key: 3,
+        }
     ]);
 
     const createEmptyData = async () => {
@@ -39,45 +46,46 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         return obj;
     };
     const handleGetData = async () => {
-        const userReportResponse = await ReportApi.getUserReports();
-        const channelReportResponse = await ReportApi.getChannelReports();
-        const channelListResponse = await ChannelApi.getChannelList();
-        const reportData = [
-            ...userReportResponse.data,
-            ...channelReportResponse.data,
-        ];
-        const dateNow = new Date(Date.now());
-        dateNow.setTime(dateNow.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const copyRecentActivities = recentActivities;
+        const recentUserListResponse = await UserApi.getRecentUserList();
+        const recentChannelListResponse = await ChannelApi.getRecentChannelList();
+        const recentReportListResponse = await ReportApi.getRecentAllReports();
+        const users = await createEmptyData();
         let reports = await createEmptyData();
         let channels = await createEmptyData();
-        reports = await reportData.reduce((acc, obj) => {
+        for(let i = 0; i < recentUserListResponse.data.data.length; i++) {
+            const obj = recentUserListResponse.data.data[i];
+            const date = new Date(Date.parse(obj.date_joined));
+            const day = date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+            users[day] = (users[day] || 0) + 1;
+        }
+        for(let i = 0; i < recentChannelListResponse.data.data.length; i++) {
+            const obj = recentChannelListResponse.data.data[i];
             const date = new Date(Date.parse(obj.create_at));
-            if (date.getTime() >= dateNow.getTime()) {
-                const day = date.toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                });
-                acc[day] = (acc[day] || 0) + 1;
-            }
-            return acc;
-        }, reports);
-
-        channels = await channelListResponse.data.reduce((acc, obj) => {
+            const day = date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+            channels[day] = (channels[day] || 0) + 1;
+        }
+        for(let i = 0; i < recentReportListResponse.data.data.length; i++) {
+            const obj = recentReportListResponse.data.data[i];
             const date = new Date(Date.parse(obj.create_at));
-            if (date.getTime() >= dateNow.getTime()) {
-                const day = date.toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                });
-                acc[day] = (acc[day] || 0) + 1;
-            }
-            return acc;
-        }, channels);
-        const copyRecentActivities = recentActivities;
+            const day = date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+            reports[day] = (reports[day] || 0) + 1;
+        }
         copyRecentActivities[0]["data"] = [];
         copyRecentActivities[1]["data"] = [];
+        copyRecentActivities[2]["data"] = [];
         for (const key of Object.keys(channels)) {
             copyRecentActivities[0]["data"].unshift({
                 x: key,
@@ -90,9 +98,14 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
                 y: reports[key],
             });
         }
+        for (const key of Object.keys(users)) {
+            copyRecentActivities[2]["data"].push({
+                x: key,
+                y: users[key]
+            })
+        }
         setRecentActivities(copyRecentActivities);
         setGetDataSuccess(true);
-        console.log(recentActivities);
     };
 
     useEffect(() => {

@@ -3,6 +3,7 @@ import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../data/mockData";
 import { useEffect, useState } from "react";
+import ReportApi from "../../Api/ReportApi";
 const PieChart = ({isDashboard = false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -18,12 +19,34 @@ const PieChart = ({isDashboard = false}) => {
     value: 5,
     color: "hsl(162, 70%, 50%)"
   }]);
-  useEffect(() => {
+  const [getDataSuccess, setGetDataSuccess] = useState(false);
 
+  const getReportsStat = async () => {
+    const response = await ReportApi.getReportsStat();
+
+    setReportData([{
+      id: "User reports",
+      label: "User reports",
+      value: response.data.reported_users,
+      color: "hsl(104, 70%, 50%)",
+    },
+    {
+      id: "Channel reports",
+      label: "Channel reports",
+      value: response.data.reported_channels,
+      color: "hsl(162, 70%, 50%)"
+    }])
+    setGetDataSuccess(true);
+  }
+
+  useEffect(() => {
+    if(!getDataSuccess) {
+      getReportsStat();
+    }
   }, [])
   return (
     <ResponsivePie
-      data={reportData}
+      data={getDataSuccess ? reportData : reportData}
       theme={{
         axis: {
           domain: {

@@ -17,7 +17,7 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import UserProfileApi from "../../../Api/UserProfileApi";
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -44,28 +44,25 @@ const Sidebar = () => {
         avatar_url: "/assets/user.png",
         username: "admin",
         fullname: "I am an admin",
-        getSuccess: false
+        getSuccess: false,
     });
-
-    
 
     const getProfileInformation = async () => {
         const response = await UserProfileApi.getProfile();
-        console.log(response.data)
+        console.log(response.data);
         setAdminProfile({
             avatar_url: response.data.avatar_url,
             username: response.data.user.username,
             fullname: response.data.user.fullname,
-            getSuccess: true
-        })
-    }
+            getSuccess: true,
+        });
+    };
 
-    useEffect( () => {
-        if(!adminProfile.getSuccess) {
-
+    useEffect(() => {
+        if (!adminProfile.getSuccess) {
             getProfileInformation();
         }
-    }, [])
+    }, []);
 
     return (
         <Box
@@ -216,13 +213,13 @@ const Sidebar = () => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                        <Item
+                        {/* <Item
                             title="FAQ Page"
                             to="/faq"
                             icon={<HelpOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
-                        />
+                        /> */}
                         <Item
                             title="Report Page"
                             to="/report"
