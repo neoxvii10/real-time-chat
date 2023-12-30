@@ -43,7 +43,7 @@ const AdminLogin = () => {
   
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-    
+      localStorage.removeItem('accessToken');
       setLoading(true);
     
       const formData = {

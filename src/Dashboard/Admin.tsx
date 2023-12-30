@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Topbar from './scenes/global/Topbar';
 import { ColorModeContext, useMode } from './theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
@@ -28,6 +28,7 @@ import UserApi from '../Api/UserApi';
 const AdminManagement = () => {
     const channelId = useParams();
     const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false);
     const isAuthenticated = async () => {
         const accessToken = localStorage.getItem('accessToken');
         // Your authentication logic here, e.g., checking if the token is valid
@@ -46,13 +47,14 @@ const AdminManagement = () => {
             resolve( isAuthenticated())
         }).then((isAuthenticated: any) => {
             if(!isAuthenticated) {
-                localStorage.removeItem('accessToken');
                 navigate('/admin/login')
+            } else {
+                setIsAdmin(true);
             }
         })
     }, [navigate]);
 
-    if(!localStorage.getItem('accessToken') || !isAuthenticated()) {
+    if(!isAdmin) {
         return (
             <AdminLogin/>
         )
