@@ -9,9 +9,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt, MdExitToApp } from "react-icons/md";
 import { FaCheck } from "react-icons/fa6";
 import ChannelApi from "../../../Api/ChannelApi";
-import ImageCrop from "../../../Users/NewGroup/Selects/GroupCreation/ImageCrop/ImageCrop";
 
-import { AiOutlineClose } from "react-icons/ai";
 type UserType = {
   id: number;
   username: string;
@@ -33,6 +31,7 @@ type ChannelType = {
 type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
+  socket: WebSocket;
   channel: UnifiedType;
   userId: number;
   handleEdit: (event: React.MouseEvent<HTMLSpanElement>) => void;
@@ -46,6 +45,7 @@ type ChannelInboxProps = {
 };
 
 const EditInforGroup: React.FC<ChannelInboxProps> = ({
+  socket,
   channel,
   handleEdit,
   userId,
@@ -61,16 +61,8 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
   const [existAvt, setExitAvt] = useState<boolean>(true);
   const [ChangingForm, setChangingForm] = useState<boolean>(false);
 
-  const [inputValues, setInputValues] = useState<{ [x: string]: string }>({
-    groupName: channelInfo.title,
-    description: "",
-  });
-
-  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
-    setInputValues((prevState) => ({ ...prevState, [name]: value }));
-    setChangingForm(true);
-  };
+  function isOpen(WebSocket: { readyState: any; OPEN: any; }) 
+  { return WebSocket.readyState === WebSocket.OPEN }
 
   // handle submit blob
   const handleSubmitAvatar = async (
@@ -90,7 +82,7 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
         const response = await ChannelApi.uploadAvatar(formData);
         console.log("update avatar group", response);
         alert("Update avatar channel successfully");
-        // setIsCropped(false);?
+        setIsCropped(false);
       } catch (error) {
         console.log(error);
         alert("Update avatar FAIL");
@@ -99,6 +91,53 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
 
     handleVisibleBtn(false);
   };
+
+  // handle edit group name
+  const [isNameChange, setNameChange] = useState(false);
+  const [groupName, setGroupName] = useState<string>(channelInfo?.title);
+
+  const handleGroupNameChange = ( e: React.ChangeEvent<HTMLInputElement>) => {
+    setGroupName(e.target.value);
+    handleVisibleBtn(true);
+    setNameChange(true);
+  }
+
+  const handleSubmitGroupName = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    try {
+      const formData = {
+        action: "set_channel_title",
+        target: "channel",
+        targetId: channelInfo.id,
+        data: {
+          title: groupName
+        }
+      }
+
+      const requestData = JSON.stringify(formData);
+
+      if (!isOpen(socket)) {
+        console.log("WebSocket connection is not open");
+        return;
+      }
+
+      await socket.send(requestData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleSubmitChange = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    if(isCropped) {
+      await  handleSubmitAvatar(event);
+      console.log("update avatar");
+    }
+    if(isNameChange) {
+      await handleSubmitGroupName(event);
+      console.log("update name");
+    }
+  }
 
   return (
     <div>
@@ -144,94 +183,11 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
               />
             </div>
           </div>
-          <div className="name">{channelInfo.title}</div>
-          <div className="form-name">
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { mx: "2rem", my: 2, width: "90%" },
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                sx={{
-                  "& .MuiInputLabel-root": { color: "#aaaaaa" }, //styles the label
-                  "& label.Mui-focused": {
-                    color: "var(--border-on-click) ",
-                    fontWeight: "bold",
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& > fieldset": {
-                      borderColor: "#aaaaaa",
-                      borderRadius: 3,
-                    },
-                  },
-
-                  "& .MuiOutlinedInput-root:hover": {
-                    "& > fieldset": {
-                      borderColor: "var(--border-on-click) ",
-                    },
-                  },
-                  "&:hover .MuiInputLabel-root": {
-                    color: "var(--border-on-click)",
-                  },
-                  "& .MuiOutlinedInput-root.Mui-focused": {
-                    "& > fieldset": {
-                      borderColor: "var(--border-on-click) ",
-                      borderWidth: "3px",
-                    },
-                  },
-                }}
-                InputProps={{ sx: { color: "white" } }}
-                color="primary"
-                id="outlined-basic"
-                label="Group Name (required)"
-                required
-                defaultValue={inputValues?.groupName || ""}
-                onChange={handleChangeInput}
-              />
-              <TextField
-                sx={{
-                  "& .MuiInputLabel-root": { color: "#aaaaaa" }, //styles the label
-                  "& label.Mui-focused": {
-                    color: "var(--border-on-click) ",
-                    fontWeight: "bold",
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& > fieldset": {
-                      borderColor: "#aaaaaa",
-                      borderRadius: 3,
-                    },
-                  },
-
-                  "& .MuiOutlinedInput-root:hover": {
-                    "& > fieldset": {
-                      borderColor: "var(--border-on-click) ",
-                    },
-                  },
-                  "&:hover .MuiInputLabel-root": {
-                    color: "var(--border-on-click)",
-                  },
-                  "& .MuiOutlinedInput-root.Mui-focused": {
-                    "& > fieldset": {
-                      borderColor: "var(--border-on-click) ",
-                    },
-                  },
-                }}
-                InputProps={{ sx: { color: "white" } }}
-                color="primary"
-                id="outlined-basic"
-                label="Description (optional)"
-                variant="outlined"
-                defaultValue={inputValues?.description || ""}
-                onChange={handleChangeInput}
-              />
-            </Box>
+          <div className="edit-group-title">
+            <div className="input-group">
+              <input onChange={handleGroupNameChange} className='form-control' dir='auto' type="text" name='title' value={groupName} placeholder='Group name' />
+              <label>Group name</label>
+            </div>
           </div>
         </div>
 
@@ -269,7 +225,7 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
       <button
         style={hideBtnSubmit}
         className="btn-submit-edit"
-        onClick={handleSubmitAvatar}
+        onClick={handleSubmitChange}
       >
         <FaCheck size={24} />
       </button>

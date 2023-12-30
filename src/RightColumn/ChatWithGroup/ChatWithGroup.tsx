@@ -127,6 +127,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
       {UserAdmin && (
         <div className={`user-info`} style={EditTranslateX}>
           <EditInforGroup
+            socket={socket}
             channel={channel}
             userId={userId}
             handleEdit={handleClickOnEditButton}

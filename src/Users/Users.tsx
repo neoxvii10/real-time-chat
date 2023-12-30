@@ -130,22 +130,12 @@ const Users: React.FC<UsersTypes> = (
       try {
         // Your channel fetching logic here
         const searchUserListRes = await SearchUserApi.getSearchResults();
-        const channelListRes = await ChannelApi.getChannelList();
         setSearchUserList(searchUserListRes?.data.users);
-        setChannelList(channelListRes?.data);
       } catch (error) {
         console.log(error);
       }
     }
-    // Periodically fetch the latest data
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 60000);
-
-    // Cleanup interval when the component unmounts
-    return () => {
-      clearInterval(intervalId);
-    };
+    fetchData();
   }, [])
 
   //hanlde new group slides
@@ -186,31 +176,28 @@ const Users: React.FC<UsersTypes> = (
         setListFriends(listFriendRes?.data)
         const channelListRes = await ChannelApi.getChannelList();
         setChannelList(channelListRes?.data);
+        // console.log(listFriendRes);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-    const handleSocketChannel = (e: MessageEvent) => {
-      // Parse the JSON data from the server
-      const serverMessage = JSON.parse(e.data);
+    // console.log("listFriend: ", listFriends);
+  }, [translateX])
 
-      if (serverMessage.action === "create_channel" || serverMessage.action === "upload_channel_avatar") {
-        setTimeout( async () => {
-          const channelListRes = await ChannelApi.getChannelList();
-          setChannelList(channelListRes?.data);
-        }, 1000)
-      }
-    };
+  // hanle socket get new channel
+  socket.onmessage = (e) => {
+    const serverMessage = JSON.parse(e.data);
 
-    // Add event listener when component mounts
-    socket.addEventListener("message", handleSocketChannel);
-
-    // Remove event listener when component unmounts
-    return () => {
-      socket.removeEventListener("message", handleSocketChannel);
-    };
-  }, [translateX, socket])
+    if (serverMessage.action === "create_channel" 
+    || serverMessage.action === "upload_channel_avatar"
+    || serverMessage.action === "set_channel_title") {
+      setTimeout( async () => {
+        const channelListRes = await ChannelApi.getChannelList()
+        setChannelList(channelListRes?.data);
+      }, 1000)
+    }
+  }
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);
