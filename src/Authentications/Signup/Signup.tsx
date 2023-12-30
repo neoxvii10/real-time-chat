@@ -1,9 +1,9 @@
-import { BsTelegram } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { BsTelegram } from 'react-icons/bs'
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import "./Signup.css";
 
@@ -13,6 +13,7 @@ type UserSignupProp = {
   password: string;
   username: string;
   email: string;
+  isActive: boolean
 };
 
 export default function CountrySelect() {
@@ -24,6 +25,7 @@ export default function CountrySelect() {
     password: "",
     username: "",
     email: "",
+    isActive: true
   });
 
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -64,6 +66,7 @@ export default function CountrySelect() {
       password: (event.target as any).password.value,
       username: (event.target as any).username.value,
       email: (event.target as any).email.value,
+      isActive: true
     };
 
     try {
@@ -93,7 +96,7 @@ export default function CountrySelect() {
         }, 500);
 
         setTimeout(() => {
-          navigate(`/redirect/${formData.username}`);
+          navigate(`/redirect`);
         }, 2500);
       } else {
         toast.dismiss();

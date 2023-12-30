@@ -2,10 +2,8 @@ import "./HomePage.css";
 import Users from "../Users/Users";
 import UserInbox from "../UserInbox/UserInbox";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import axiosClient from "../Api/AxiosClient";
-import { v4 as uuidv4 } from "uuid";
 
 // use api
 type UserType = {
@@ -37,13 +35,19 @@ if (_token) {
 const socket = new WebSocket(`ws://112.137.129.158:5002/ws/chat/?token=${token}`);
 
 function HomePage() {
+  const [channelUpdate, setChannelUpdate] = useState<boolean>(false);
+
+  const handleMessageTrigger = () => {
+    setChannelUpdate(prevState => !prevState);
+  }
+
   const [user, setUser] = useState<UserType>({
-    first_name: "thuan",
-    last_name: "le",
-    username: "leminhthuan",
+    first_name: "",
+    last_name: "",
+    username: "",
     id: 1,
-    avatar_url: null,
-    fullname: "thuan le",
+    avatar_url: "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg",
+    fullname: ""
   });
 
   const [channel, setChannel] = useState<ChannelType>({
@@ -75,17 +79,19 @@ function HomePage() {
 
   return (
     <div className="HomePage">
-      <Users
-        onChannelClick={handleChannelClick}
-        selectedChannel={medium}
-        userId={userId}
-        socket={socket}
+      <Users 
+      onChannelClick={handleChannelClick} 
+      selectedChannel={medium} 
+      userId={userId} 
+      socket={socket}
+      channelUpdate={channelUpdate}
+      onNewMessage={handleMessageTrigger}
       />
-      {isUserType ? (
-        <UserInbox channel={user} userId={userId} socket={socket} />
-      ) : (
-        <UserInbox channel={channel} userId={userId} socket={socket} />
-      )}
+      { isUserType ? <UserInbox channel={user} userId={userId} socket={socket} 
+      onNewMessage={handleMessageTrigger}/>
+      : <UserInbox channel={channel} userId={userId} socket={socket} 
+      onNewMessage={handleMessageTrigger}/> }
+      
     </div>
   );
 }

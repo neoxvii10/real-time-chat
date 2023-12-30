@@ -41,7 +41,7 @@ const InputEmail = () => {
                     <input onChange={handleInputChange} className='form-control' dir='auto' value={email} type="email" name='email' placeholder='' />
                     <label>Your email</label>
                 </div>
-                <button className='submit-btn signin' type='submit'>Submit</button>
+                <button className='submit-form-btn signin' type='submit'>Submit</button>
             </form>
             <span><Link to="/signin">Back to signin</Link></span>
         </section>

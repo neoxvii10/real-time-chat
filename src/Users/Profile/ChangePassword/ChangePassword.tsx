@@ -49,7 +49,7 @@ const ChangePassword: React.FC<Props> = ({ translateXForChangePassword, setTrans
     const handleSubmitChangePassword = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         if (password.newPassword !== password.confirmNewPassword) {
-            alert("New pass word and confirm not same");
+            alert("New password and confirm not same");
             setPassword({
                 oldPassword: '',
                 newPassword: '',

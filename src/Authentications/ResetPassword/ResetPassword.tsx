@@ -45,10 +45,11 @@ const ResetPassword = () => {
         try {
             const response = await UserApi.resetPassword(formData);
             console.log("response", response, formData.password);
+            alert("Reset password successfully")
             navigate("/signin");
         } catch (error) {
             console.log('error', error);
-            // alert(error.response?.data.detail)
+            alert("Reset FAIL. Password is too common")
         }
     }
 
@@ -67,7 +68,7 @@ const ResetPassword = () => {
                     <input onChange={handleInputChange} className='form-control' dir='auto' value={data.token} type="text" name='token' placeholder='' />
                     <label>Token confirm( has been sent to your email)</label>
                 </div>
-                <button className='submit-btn signin' type='submit'>Change Password</button>
+                <button className='submit-form-btn signin' type='submit'>Change Password</button>
             </form>
             <span><Link to="/reset-password/email">Back to input email</Link></span>
         </section>

@@ -156,7 +156,7 @@ export default function CountrySelect() {
           <input onChange={handleInputChange} value={data.password} className='form-control' dir='auto' type="password" name='password' placeholder='' />
           <label>Password</label>
         </div>
-        <button className='submit-btn signin' type='submit' disabled={loading}>Submit</button>
+        <button className='submit-form-btn signin' type='submit' disabled={loading}>Submit</button>
       </form>
       <div className="label-utils">
         <span>

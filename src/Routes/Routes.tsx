@@ -11,7 +11,7 @@ const publicRoutes = [
     {path: '/signup', component: Signup},
     {path: '/reset-password', component: ResetPassword},
     {path: '/reset-password/email', component: InputEmail},
-    {path: '/redirect/:username', component: Redirect}
+    {path: '/redirect', component: Redirect}
 ]
 
 const privateRoutes = [
