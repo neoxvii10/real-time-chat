@@ -134,6 +134,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           messageElement.reactions.push(reaction)
         }
       }
+      if (message.reply) {
+        messageElement.reply = message.reply
+      }
       messageList.push(messageElement)
     }
     setMessages(messageList.reverse())
@@ -206,9 +209,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         'uuid': uuidv4(),
         "data": {
           "content": inputValue,
-          // "reply": null
         }
       };
+
+      if (isReplying) {
+        // @ts-ignore
+        messageObject.data.reply = replyToMessage.id
+      }
 
       const messageJSON = JSON.stringify(messageObject);
       if (!isOpen(socket)) {
@@ -231,6 +238,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
         type: 'text',
         uuid: messageObject.uuid,
         isSent: false,
+        // @ts-ignore
+        reply: replyToMessage.id,
         create_at: getCurrentTime(),
       }
       setMessages([...messages, textMessage])
@@ -239,6 +248,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       handleFileMessage();
       setSelectedFile(null);
     }
+    setReplying(false)
   }
 
 
@@ -257,6 +267,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
             setOnBottom(false)
           }
         }
+
+        let hasReply = false
+        if (serverMessage.data.reply) {
+          hasReply = true
+        }
+
         // Extract the content of the message
         const messageContent = serverMessage.data.content;
         let textMessage = {
@@ -265,6 +281,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           sender: 'user',
           type: 'text',
           create_at: formatTimestamp(serverMessage.data.create_at),
+        }
+        if (hasReply) {
+          // @ts-ignore
+          textMessage.reply = serverMessage.data.reply
         }
 
         if (serverMessage.data.message_type === "IMAGE") {
@@ -281,6 +301,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
               type: 'image',
               isSent: true,
               create_at: formatTimestamp(serverMessage.data.create_at),
+            }
+            if (hasReply) {
+              // @ts-ignore
+              fileMessage.reply = serverMessage.data.reply
             }
             setMessages([...messages, fileMessage]);
           } else {
@@ -303,6 +327,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                 type: 'text',
                 isSent: true,
                 create_at: formatTimestamp(serverMessage.data.create_at),
+              }
+              if (hasReply) {
+                // @ts-ignore
+                textMessage.reply = serverMessage.data.reply
               }
               setMessages([...messages, textMessage])
             }
@@ -513,6 +541,18 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
   };
   
 
+  const getReplyContent = (messageId: number) => {
+    for (let message of messages) {
+      if (message.id === messageId) {
+        if (message.type === "text") {
+          return message.text
+        } else {
+          return "Image"
+        }
+      }
+    }
+  }
+
 
 
   // XOÁ TIN NHẮN
@@ -564,7 +604,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
     setDeleteConfirmationVisible(false);
     setMessageToDelete(null);
   };
-
 
 
 
@@ -677,7 +716,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   </div>
                 ) : (
                   <>
-                    <div>{message.text}</div>
+                    <div>{message.reply ? message.text + " " + getReplyContent(message.reply) : message.text}</div>
                   </>
                 )}
 
