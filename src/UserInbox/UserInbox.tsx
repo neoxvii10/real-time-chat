@@ -23,7 +23,6 @@ import EmojiPicker, {
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
 import { v4 as uuidv4 } from 'uuid';
-import { timeEnd } from "console";
 import axios from "axios";
 
 // use api
@@ -550,19 +549,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       </div>
     );
   };
-  
+
 
   const getReplyContent = (messageId: number) => {
     for (let message of messages) {
       if (message.id === messageId) {
         if (message.type === "text") {
-          return message.text
+          return `${message.fullname}: ${message.text}`;
         } else {
-          return "Image"
+          return `${message.fullname}: Image`; // You can modify this for other types if needed
         }
       }
     }
-  }
+  };
 
 
 
@@ -727,59 +726,75 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                   </div>
                 ) : (
                   <>
-                    <div>{message.reply ? message.text + " " + getReplyContent(message.reply) : message.text}</div>
+                    <div>
+                      {message.reply ? (
+                        <>
+                          <div className="reply-message">
+                            <span>{getReplyContent(message.reply)}</span>
+                          </div>
+                          <div className="original-message">{message.text}</div>
+
+                        </>
+                      ) : (
+                        <div className="single-message">{message.text}</div>
+                      )}
+                    </div>
                   </>
                 )}
 
                 <div className="message-footer">
                   <div className="timestamp">{formatTimestamp(message.create_at)}</div>
                   <div className="reaction-icon">
-                    { message.reactions && (
+                    {message.reactions && (
                       emojis.map((emoji, index) => (
                         <>{countEmoji(index + 1, message.reactions) && emoji + countEmoji(index + 1, message.reactions)}</>
                       ))
                     )}
                   </div>
-                </div>  
+                </div>
               </div>
 
               <div className="icon-container">
                 <div className="message-icons">
-                  {/* {hoveredMessageIndex === index && ( */}
-                  <>
-                    <span
-                      className="icon"
-                      onClick={() => {
-                        if (message.id) setSelectedMessageId(message.id);
-                        toggleMessageEmojiPicker();
-                      }}
-                    >
-                      <MdOutlineEmojiEmotions size={20} />
-                    </span>
-                    {isMessageEmojiPickerVisible && (
-                      <div className="emoji-popup">
-                        {emojis.map((emoji, index) => (
-                          <span
-                            key={emoji}
-                            onClick={() => handleEmojiClick(index + 1)}
-                            className="emoji"
-                          >
-                            {emoji}
+                  {hoveredMessageIndex === index && (
+                    <>
+                      <span
+                        className="icon"
+                        onClick={() => {
+                          if (message.id) setSelectedMessageId(message.id);
+                          toggleMessageEmojiPicker();
+                        }}
+                      >
+                        <MdOutlineEmojiEmotions size={20} />
+                      </span>
+                      {isMessageEmojiPickerVisible && (
+                        <div className="emoji-popup">
+                          {emojis.map((emoji, index) => (
+                            <span
+                              key={emoji}
+                              onClick={() => handleEmojiClick(index + 1)}
+
+                              className="emoji"
+                            >
+                              {emoji}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <span className="icon" onClick={() => handleReplyClick(message)}>
+                        <FaReply size={20} />
+                      </span>
+                      {message.sender === "self" && (
+                        <>
+                          <span className="icon" onClick={() => handleDeleteButtonClick(message)}>
+                            <FiTrash size={20} />
                           </span>
-                        ))}
-                      </div>
-                    )}
-                    <span className="icon" onClick={() => handleReplyClick(message)}>
-                      <FaReply size={20} />
-                    </span>
-                    <span className="icon" onClick={() => handleDeleteButtonClick(message)}>
-                      <FiTrash size={20} />
-                    </span>
+                        </>
+                      )}
 
-                  </>
-                  {/* ) } */}
+                    </>
+                  )}
                 </div>
-
               </div>
             </div>
             <div className="sent-icon">
@@ -799,7 +814,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       )}
 
       <div className="message-input-container">
-     {isReplying && <ReplyPopup />}
+        {isReplying && <ReplyPopup />}
 
         <div className="input-container">
           <MdOutlineEmojiEmotions
