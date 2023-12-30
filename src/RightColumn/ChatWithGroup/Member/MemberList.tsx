@@ -8,7 +8,6 @@ import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt } from "react-icons/md";
 import ChannelApi from "../../../Api/ChannelApi";
 import Member from "./Member";
-import { idID } from "@mui/material/locale";
 
 type UserType = {
   id: number;
@@ -30,12 +29,6 @@ type ChannelType = {
 
 type UnifiedType = UserType | ChannelType;
 
-type ChannelInboxProps = {
-  channel: UnifiedType;
-  userId: number;
-  handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
-};
-
 type MemberType = {
   id: number;
   user: any;
@@ -44,10 +37,20 @@ type MemberType = {
   channel: number;
 };
 
+type ChannelInboxProps = {
+  channel: UnifiedType;
+  userId: number;
+  handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
+  socket: WebSocket;
+  isUserAdmin: boolean;
+};
+
 const MemberList: React.FC<ChannelInboxProps> = ({
   channel,
   handMemberBack,
   userId,
+  socket,
+  isUserAdmin,
 }) => {
   const channelInfo = channel as ChannelType;
 
@@ -58,7 +61,6 @@ const MemberList: React.FC<ChannelInboxProps> = ({
     try {
       const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
       setMemners(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
       // Handle errors appropriately
@@ -88,6 +90,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
             nickname={member.nickname}
             role={member.role}
             user={member.user}
+            isUserAdmin
           />
         ))}
       </div>

@@ -41,7 +41,6 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
     try {
       const response = await ChannelApi.getChannelMediaList(channelId); // Replace with your API endpoint
       setData(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
       // Handle errors appropriately

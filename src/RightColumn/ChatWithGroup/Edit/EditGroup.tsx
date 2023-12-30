@@ -247,12 +247,6 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
             <p>Member</p>
           </div>
         </div>
-        <div className="rectangle-container">
-          <div className="layout-btn">
-            <MdPeopleAlt size={24} className="util-icon" />
-            <p>Member</p>
-          </div>
-        </div>
 
         <div className="delete-contact">
           <div className="layout-btn">

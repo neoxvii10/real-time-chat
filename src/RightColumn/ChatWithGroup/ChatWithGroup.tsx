@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
 import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
@@ -10,6 +10,7 @@ import MemberList from "./Member/MemberList";
 import { AiOutlineClose } from "react-icons/ai";
 import ImageCrop from "../../Users/NewGroup/Selects/GroupCreation/ImageCrop/ImageCrop";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
+import ChannelApi from "../../Api/ChannelApi";
 
 type UserType = {
   id: number;
@@ -42,9 +43,13 @@ type ChannelInboxProps = {
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
+  socket: WebSocket;
+  UserAdmin: boolean;
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
+  UserAdmin,
+  socket,
   channel,
   userId,
   handleClose,
@@ -93,7 +98,25 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     }));
   };
 
+  type MemberType = {
+    id: number;
+    user: any;
+    nickname: string;
+    role: any;
+    channel: number;
+  };
+
   const channelInfo = channel as ChannelType;
+
+  useEffect(() => {
+    if (isSlidedEdit) {
+      setSlidedEdit(false);
+      setPageStatus("info");
+    }
+    if (isSlidedMember) {
+      setSlidedMember(false);
+    }
+  }, [channel.id]);
 
   const handleOnWheel = () => {};
 
@@ -101,25 +124,29 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 
   return (
     <div className="RightColumn-container">
-      <div className={`user-info`} style={EditTranslateX}>
-        <EditInforGroup
-          channel={channel}
-          userId={userId}
-          handleEdit={handleClickOnEditButton}
-          croppedImage={croppedImage}
-          croppedBlob={croppedBlob}
-          isCropped={isCropped}
-          setIsCropped={setIsCropped}
-          handleImageChange={handleImageChange}
-          hideBtnSubmit={hideBtnSubmit}
-          handleVisibleBtn={handleVisibleBtn}
-        />
-      </div>
+      {UserAdmin && (
+        <div className={`user-info`} style={EditTranslateX}>
+          <EditInforGroup
+            channel={channel}
+            userId={userId}
+            handleEdit={handleClickOnEditButton}
+            croppedImage={croppedImage}
+            croppedBlob={croppedBlob}
+            isCropped={isCropped}
+            setIsCropped={setIsCropped}
+            handleImageChange={handleImageChange}
+            hideBtnSubmit={hideBtnSubmit}
+            handleVisibleBtn={handleVisibleBtn}
+          />
+        </div>
+      )}
       <div className={`user-info`} style={MemberTranslateX}>
         <MemberList
+          socket={socket}
           channel={channel}
           handMemberBack={handleShowAllMembers}
           userId={userId}
+          isUserAdmin={UserAdmin}
         />
       </div>
 
@@ -128,9 +155,11 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           <IoMdClose size={24} className="util-icon" />
         </span>
         <h3>Profile</h3>
-        <span className="btn-edit" onClick={handleClickOnEditButton}>
-          <RiPencilLine size={24} className={`util-icon`} />
-        </span>
+        {UserAdmin && (
+          <span className="btn-edit" onClick={handleClickOnEditButton}>
+            <RiPencilLine size={24} className={`util-icon`} />
+          </span>
+        )}
       </div>
       <div>
         <div className="wrapper" onWheel={handleOnWheel}>

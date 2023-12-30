@@ -4,6 +4,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiTrash } from "react-icons/fi";
 import { PiPencilSimpleLineBold } from "react-icons/pi";
 import { FaKey } from "react-icons/fa6";
+import { FaCrown } from "react-icons/fa";
 
 type MemberType = {
   id: number;
@@ -11,6 +12,7 @@ type MemberType = {
   nickname: string;
   role: any;
   channel: number;
+  isUserAdmin: boolean;
 };
 
 const Member: React.FC<MemberType> = ({
@@ -19,25 +21,54 @@ const Member: React.FC<MemberType> = ({
   nickname,
   role,
   channel,
+  isUserAdmin,
 }) => {
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
 
   const isAdmin = role === "CREATOR" ? true : false;
 
+  const handleDeleteMember = async () => {};
+
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
   };
+
   return (
     <div style={{ display: "flex", padding: "1rem" }}>
       <span className="group-member-container">
         <img src={user.avatar_url}></img>
       </span>
       <span style={{ margin: "0 0 0 1rem" }}>
-        <p style={{ margin: "0.3rem 0 0 0" }}>{user.fullname}</p>
-        <p style={{ margin: "0.2rem 0 0 0 " }} id="member-nickname">
-          {nickname ? nickname : "Set nickname"}
-        </p>
+        {isAdmin ? (
+          <>
+            <span style={{ margin: "0.3rem 0 0 0" }}>{user.fullname}</span>
+            <span style={{ margin: "0 0 0 0.2rem", color: "yellow" }}>
+              <FaCrown size={10} />
+            </span>
+          </>
+        ) : (
+          <p style={{ margin: "0.3rem 0 0 0" }}>{user.fullname}</p>
+        )}
+
+        {nickname ? (
+          <>
+            <p style={{ margin: "0.2rem 0 0 0" }} id="member-nickname">
+              {nickname}
+            </p>
+          </>
+        ) : (
+          <p
+            style={{
+              margin: "0.2rem 0 0 0 ",
+              fontSize: "0.6rem",
+              color: "white",
+            }}
+            id="member-nickname"
+          >
+            Set nickname
+          </p>
+        )}
       </span>
 
       <span id="member-threeDot">
@@ -54,6 +85,7 @@ const Member: React.FC<MemberType> = ({
               opacity: isUtilsVisible ? 1 : 0,
             }}
             onMouseLeave={() => setUtilsVisible(false)}
+            // onBlur={() => setUtilsVisible(false)}
           >
             <ul className="util-dropdown-item-container">
               {!isAdmin && (
