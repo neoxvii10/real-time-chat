@@ -30,13 +30,17 @@ type ChannelInboxProps = {
   croppedImage: string | undefined;
   croppedBlob: Blob | undefined;
   isCropped: boolean;
-  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>
+  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
+  socket: WebSocket;
+  UserAdmin: boolean;
 };
 
 const UserInfor: React.FC<ChannelInboxProps> = ({
+  UserAdmin,
+  socket,
   channel,
   handleClose,
   userId,
@@ -58,10 +62,11 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
             channel={channel}
             userId={userId}
             handleClose={handleClose}
-            
           />
         ) : (
           <ChatWithGroup
+            UserAdmin={UserAdmin}
+            socket={socket}
             channel={channel}
             userId={userId}
             handleClose={handleClose}

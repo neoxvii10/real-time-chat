@@ -6,9 +6,6 @@
 }
 
 .group-avatar-container {
-  margin-top: 3.5rem;
-  width: 10rem; /* Adjust as needed */
-  height: 10rem; /* Same as width for a circle */
   border-radius: 50%; /* Make it a circle */
   overflow: hidden; /* Hide any excess image */
 }
@@ -21,4 +18,7 @@
 .group-name {
   margin-top: 1rem;
   font-size: 1.5rem;
+}
+
+.util-icons-right {
 }

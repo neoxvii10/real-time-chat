@@ -1,0 +1,24 @@
+.group-member-container {
+  display: inline-block;
+  border-radius: 50%; /* Make it a circle */
+  overflow: hidden; /* Hide any excess image */
+  width: 3.2rem;
+  height: 3.2rem;
+}
+
+.group-member-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintain aspect ratio and fill container */
+}
+
+#member-threeDot {
+  position: absolute;
+  right: 0;
+}
+
+#member-nickname {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: aqua;
+}

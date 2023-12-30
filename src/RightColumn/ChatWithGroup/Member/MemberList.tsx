@@ -6,6 +6,8 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt } from "react-icons/md";
+import ChannelApi from "../../../Api/ChannelApi";
+import Member from "./Member";
 
 type UserType = {
   id: number;
@@ -27,38 +29,70 @@ type ChannelType = {
 
 type UnifiedType = UserType | ChannelType;
 
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
+};
+
 type ChannelInboxProps = {
   channel: UnifiedType;
   userId: number;
   handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
+  socket: WebSocket;
+  isUserAdmin: boolean;
 };
 
 const MemberList: React.FC<ChannelInboxProps> = ({
   channel,
   handMemberBack,
   userId,
+  socket,
+  isUserAdmin,
 }) => {
   const channelInfo = channel as ChannelType;
-  const [existAvt, setExitAvt] = useState<boolean>(true);
-  const [ChangingForm, setChangingForm] = useState<boolean>(false);
 
-  const [inputValues, setInputValues] = useState<{ [x: string]: string }>({
-    groupName: channelInfo.title,
-    description: "",
-  });
+  const [members, setMemners] = useState<MemberType[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
-    setInputValues((prevState) => ({ ...prevState, [name]: value }));
-    setChangingForm(true);
+  const fetchMember = async () => {
+    try {
+      const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
+      setMemners(response.data);
+    } catch (error) {
+      console.error(error);
+      // Handle errors appropriately
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchMember();
+  }, [channel.id]);
+
   return (
-    <div className="group-edit-slide">
+    <div>
       <div className="rightcolumn-header">
         <span className="btn-edit" onClick={handMemberBack}>
           <IoMdArrowBack size={24} className="util-icon" />
         </span>
         <h3>Member</h3>
+      </div>
+      <div style={{ height: "4rem" }}></div>
+      <div>
+        {members.map((member) => (
+          <Member
+            channel={member.channel}
+            id={member.id}
+            nickname={member.nickname}
+            role={member.role}
+            user={member.user}
+            isUserAdmin
+          />
+        ))}
       </div>
     </div>
   );

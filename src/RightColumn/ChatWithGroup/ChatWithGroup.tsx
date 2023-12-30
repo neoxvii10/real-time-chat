@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
 import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
@@ -7,8 +7,10 @@ import MediaState from "../Common/RenderMedia/MediaState";
 import { RiPencilLine } from "react-icons/ri";
 import EditInforGroup from "./Edit/EditGroup";
 import MemberList from "./Member/MemberList";
-import { AiOutlineClose } from 'react-icons/ai'
+import { AiOutlineClose } from "react-icons/ai";
 import ImageCrop from "../../Users/NewGroup/Selects/GroupCreation/ImageCrop/ImageCrop";
+import { MdOutlineArrowForwardIos } from "react-icons/md";
+import ChannelApi from "../../Api/ChannelApi";
 
 type UserType = {
   id: number;
@@ -37,13 +39,17 @@ type ChannelInboxProps = {
   croppedImage: string | undefined;
   croppedBlob: Blob | undefined;
   isCropped: boolean;
-  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>
+  setIsCropped: React.Dispatch<React.SetStateAction<boolean>>;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
+  socket: WebSocket;
+  UserAdmin: boolean;
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
+  UserAdmin,
+  socket,
   channel,
   userId,
   handleClose,
@@ -92,34 +98,55 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     }));
   };
 
+  type MemberType = {
+    id: number;
+    user: any;
+    nickname: string;
+    role: any;
+    channel: number;
+  };
+
   const channelInfo = channel as ChannelType;
 
-  const handleOnWheel = () => { };
+  useEffect(() => {
+    if (isSlidedEdit) {
+      setSlidedEdit(false);
+      setPageStatus("info");
+    }
+    if (isSlidedMember) {
+      setSlidedMember(false);
+    }
+  }, [channel.id]);
+
+  const handleOnWheel = () => {};
 
   // handle change avatar
 
-
   return (
     <div className="RightColumn-container">
-      <div className={`user-info`} style={EditTranslateX}>
-        <EditInforGroup
-          channel={channel}
-          userId={userId}
-          handleEdit={handleClickOnEditButton}
-          croppedImage={croppedImage}
-          croppedBlob={croppedBlob}
-          isCropped={isCropped}
-          setIsCropped={setIsCropped}
-          handleImageChange={handleImageChange}
-          hideBtnSubmit={hideBtnSubmit}
-          handleVisibleBtn={handleVisibleBtn}
-        />
-      </div>
+      {UserAdmin && (
+        <div className={`user-info`} style={EditTranslateX}>
+          <EditInforGroup
+            channel={channel}
+            userId={userId}
+            handleEdit={handleClickOnEditButton}
+            croppedImage={croppedImage}
+            croppedBlob={croppedBlob}
+            isCropped={isCropped}
+            setIsCropped={setIsCropped}
+            handleImageChange={handleImageChange}
+            hideBtnSubmit={hideBtnSubmit}
+            handleVisibleBtn={handleVisibleBtn}
+          />
+        </div>
+      )}
       <div className={`user-info`} style={MemberTranslateX}>
         <MemberList
+          socket={socket}
           channel={channel}
           handMemberBack={handleShowAllMembers}
           userId={userId}
+          isUserAdmin={UserAdmin}
         />
       </div>
 
@@ -128,15 +155,24 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           <IoMdClose size={24} className="util-icon" />
         </span>
         <h3>Profile</h3>
-        <span className="btn-edit" onClick={handleClickOnEditButton}>
-          <RiPencilLine size={24} className={`util-icon`} />
-        </span>
+        {UserAdmin && (
+          <span className="btn-edit" onClick={handleClickOnEditButton}>
+            <RiPencilLine size={24} className={`util-icon`} />
+          </span>
+        )}
       </div>
       <div>
         <div className="wrapper" onWheel={handleOnWheel}>
           <div className="rightcolumn-body">
             <div className="group-avatar-wrapper">
-              <div className="group-avatar-container">
+              <div
+                className="group-avatar-container"
+                style={{
+                  width: "10rem",
+                  height: "10rem",
+                  margin: "3.5rem 0  0 0",
+                }}
+              >
                 <img src={channelInfo.avatar_url}></img>
               </div>
               <p className="group-name">{channelInfo.title}</p>
@@ -151,6 +187,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
               <div className="layout-btn" onClick={handleShowAllMembers}>
                 <MdPeopleAlt size={24} className="util-icon" />
                 <p>Member</p>
+                <MdOutlineArrowForwardIos className="util-icons-right" />
               </div>
             </div>
           </div>
