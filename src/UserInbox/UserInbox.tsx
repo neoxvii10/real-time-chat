@@ -62,8 +62,12 @@ type ChannelType = {
   create_at: string;
 };
 
-
-const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNewMessage }) => {
+const UserInbox: React.FC<ChannelInboxProps> = ({
+  channel,
+  userId,
+  socket,
+  onNewMessage,
+}) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
     socket.onopen = () => {
@@ -188,12 +192,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     try {
       const response = await ChannelApi.getAllMembersChannel(channelID); // Replace with your API endpoint
       setMemberlist(response.data);
-      for (let member of members) {
-        if (member.user.id === userId && member.role === "CREATOR") {
-          setUserAdmin(true);
-          break;
-        }
-      }
     } catch (error) {
       console.error(error);
       // Handle errors appropriately
@@ -207,7 +205,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-    
+
+    for (let member of members) {
+      if (member.user.id === userId && member.role === "CREATOR") {
+        setUserAdmin(true);
+        break;
+      }
+    }
   }, [channel.id, isUserType]);
 
   useEffect(() => {
@@ -217,14 +221,14 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       const handleSocketChannel = (e: MessageEvent) => {
         // Parse the JSON data from the server
         const serverMessage = JSON.parse(e.data);
-  
+
         if (serverMessage.action === "create_message") {
           if (messageContainer) {
             if (
               Math.abs(
                 messageContainer.scrollTop +
-                messageContainer.clientHeight -
-                messageContainer?.scrollHeight
+                  messageContainer.clientHeight -
+                  messageContainer?.scrollHeight
               ) < 1
             ) {
               setOnBottom(true);
@@ -234,26 +238,26 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           }
           // Extract the content of the message
           const messageContent = serverMessage.data.content;
-    
+
           let textMessage = {
             text: messageContent,
-            sender: 'user',
-            type: 'text',
-          }
-    
+            sender: "user",
+            type: "text",
+          };
+
           if (serverMessage.data.message_type === "IMAGE") {
             textMessage.type = "image";
           }
-    
+
           let senderId = serverMessage.data.member.user.id;
           if (senderId === userId) {
             if (textMessage.type === "image") {
               let fileMessage = {
                 text: messageContent,
-                sender: 'self',
-                type: 'image',
+                sender: "self",
+                type: "image",
                 isSent: true,
-              }
+              };
               setMessages([...messages, fileMessage]);
             } else {
               let uuid = serverMessage.uuid;
@@ -283,10 +287,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           onNewMessage();
         }
       };
-  
+
       // Add event listener when component mounts
       socket.addEventListener("message", handleSocketChannel);
-  
+
       // Remove event listener when component unmounts
       return () => {
         socket.removeEventListener("message", handleSocketChannel);
@@ -386,7 +390,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       setSelectedFile(null);
     }
     onNewMessage();
-  }
+  };
 
   const [popupVisible, setPopupVisible] = useState(false);
 

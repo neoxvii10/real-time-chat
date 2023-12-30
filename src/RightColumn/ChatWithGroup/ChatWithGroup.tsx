@@ -188,7 +188,14 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
               <div className="layout-btn" onClick={handleShowAllMembers}>
                 <MdPeopleAlt size={24} className="util-icon" />
                 <p>Member</p>
-                <MdOutlineArrowForwardIos className="util-icons-right" />
+                <MdOutlineArrowForwardIos
+                  className="util-icons-right"
+                  style={{
+                    position: "absolute",
+                    right: "5%",
+                    margin: "4% 0 0 0",
+                  }}
+                />
               </div>
             </div>
           </div>
