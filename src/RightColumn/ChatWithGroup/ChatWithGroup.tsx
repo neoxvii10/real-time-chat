@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from "react";
-import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
+import { MdOutlineCall, MdPeopleAlt, MdExitToApp } from "react-icons/md";
 import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
 import "../RightColumn.css";
@@ -118,7 +118,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     }
   }, [channel.id]);
 
-  const handleOnWheel = () => {};
+  const handleOnWheel = () => { };
 
   // handle change avatar
 
@@ -191,6 +191,16 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 <MdOutlineArrowForwardIos className="util-icons-right" />
               </div>
             </div>
+            {/* <div className="rectangle-container">
+              <div className="layout-btn" >
+                <MdExitToApp
+                  size={24}
+                  className="util-icon"
+                  style={{ color: "red" }}
+                />
+                <p style={{ color: "red" }}>Leave group</p>
+              </div>
+            </div> */}
           </div>
 
           <MediaState channel={channel as ChannelType} />

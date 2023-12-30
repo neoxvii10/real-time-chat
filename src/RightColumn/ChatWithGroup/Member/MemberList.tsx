@@ -57,6 +57,18 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   const [members, setMemners] = useState<MemberType[]>([]);
   const [loading, setLoading] = useState(true);
 
+  socket.onmessage = (e) => {
+    const serverMessage = JSON.parse(e.data);
+
+    if (serverMessage.action === "change_creator" 
+    || serverMessage.action === "remove_member") {
+      setTimeout( async () => {
+        const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
+        setMemners(response.data);  
+      }, 100)
+    }
+  }
+
   const fetchMember = async () => {
     try {
       const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
@@ -72,6 +84,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   useEffect(() => {
     fetchMember();
   }, [channel.id]);
+
 
   return (
     <div>
@@ -91,6 +104,8 @@ const MemberList: React.FC<ChannelInboxProps> = ({
             role={member.role}
             user={member.user}
             isUserAdmin
+            socket={socket}
+            userId={userId}
           />
         ))}
       </div>

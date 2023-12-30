@@ -143,6 +143,8 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
     }
   }
 
+
+
   return (
     <div>
       <div className="rightcolumn-header">
