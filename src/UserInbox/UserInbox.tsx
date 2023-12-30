@@ -52,7 +52,6 @@ type ChannelType = {
   create_at: string;
 };
 
-
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNewMessage }) => {
   useEffect(() => {
     // Establish WebSocket connection when the component mounts
@@ -134,6 +133,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     return `${date.getHours()}:${date.getMinutes()}`;
   };
 
+  const getCurrentTime = () => {
+    let currentTime_ = new Date();
+    const currentTime = `${currentTime_.getHours()}:${currentTime_.getMinutes()}`;
+    return currentTime;
+  }
+
+
   const [inputValue, setInputValue] = useState<string>("");
 
   const [userProfile, setUserProfile] = useState<any>();
@@ -205,8 +211,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     
           let textMessage = {
             text: messageContent,
+            user: serverMessage.data.member.user.fullname,
             sender: 'user',
             type: 'text',
+            create_at: formatTimestamp(serverMessage.data.create_at),
           }
     
           if (serverMessage.data.message_type === "IMAGE") {
@@ -217,10 +225,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           if (senderId === userId) {
             if (textMessage.type === "image") {
               let fileMessage = {
-                text: messageContent,
-                sender: 'self',
-                type: 'image',
-                isSent: true,
+              	text: messageContent,
+              	user: serverMessage.data.member.user.fullname,
+              	sender: 'self',
+              	type: 'image',
+              	isSent: true,
+              	create_at: formatTimestamp(serverMessage.data.create_at),
               }
               setMessages([...messages, fileMessage]);
             } else {
@@ -237,10 +247,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               }
               if (!isSelfMessageCheck) {
                 let textMessage = {
-                  text: messageContent,
-                  sender: "self",
-                  type: "text",
-                  isSent: true,
+                	text: messageContent,
+                	user: serverMessage.data.member.user.fullname,
+                	sender: 'self',
+                	type: 'text',
+                	isSent: true,
+                	create_at: formatTimestamp(serverMessage.data.create_at),
                 };
                 setMessages([...messages, textMessage]);
               }
@@ -342,10 +354,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
 
       let textMessage = {
         text: inputValue,
-        sender: "self",
-        type: "text",
+        sender: 'self',
+        type: 'text',
         uuid: messageObject.uuid,
         isSent: false,
+        create_at: getCurrentTime(),
       }
       setMessages([...messages, textMessage])
       setInputValue("");
@@ -430,7 +443,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     setIsReport(!isReport);
   }
 
-
   function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
     throw new Error("Function not implemented.");
   }
@@ -478,7 +490,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     // }
   }
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
-
 
   const handleMouseEnter = (index: number) => {
     setHoveredMessageIndex(index);
