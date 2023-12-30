@@ -451,6 +451,13 @@ const Users: React.FC<UsersTypes> = (
     return timeB - timeA;
   });
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + '...';
+    }
+    return text;
+  };
+
   const handleChannelClick = (channel: UnifiedType) => {
     onChannelClick(channel);
     setSelectedChannelId(channel.id);
@@ -643,7 +650,7 @@ const Users: React.FC<UsersTypes> = (
                         ' Unknown User'}
                       </strong>{" "}
                       {channel.last_message.message_type === "IMAGE" ? 
-                      " đã gửi một ảnh" : channel.last_message.content}
+                      " đã gửi một ảnh" : truncateText(channel.last_message.content, 26)}
                     </p>
                   </div>
                   <span className="latest-timestamps">
