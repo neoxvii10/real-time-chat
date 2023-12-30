@@ -96,6 +96,10 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
   const [isNameChange, setNameChange] = useState(false);
   const [groupName, setGroupName] = useState<string>(channelInfo?.title);
 
+  useEffect(() => {
+    setGroupName(channelInfo.title)
+  }, [channelInfo])
+
   const handleGroupNameChange = ( e: React.ChangeEvent<HTMLInputElement>) => {
     setGroupName(e.target.value);
     handleVisibleBtn(true);
