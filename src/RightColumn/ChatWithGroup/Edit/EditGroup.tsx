@@ -250,12 +250,12 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
 
         <div className="delete-contact">
           <div className="layout-btn">
-            <MdExitToApp
+            <IoMdTrash
               size={24}
               className="util-icon"
               style={{ color: "red" }}
             />
-            <p>Leave Group</p>
+            <p>Delete Group</p>
           </div>
         </div>
         {ChangingForm ? (

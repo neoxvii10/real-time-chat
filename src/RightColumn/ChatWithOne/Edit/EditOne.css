@@ -48,7 +48,6 @@
 
 .delete-contact {
   background-color: var(--background-color);
-  border-top: 0.6rem solid rgba(0, 0, 0, 0.542);
   padding-top: 10px;
   height: 80px;
   display: flex;

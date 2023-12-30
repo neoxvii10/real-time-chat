@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from "react";
-import { MdOutlineCall, MdPeopleAlt } from "react-icons/md";
+import { MdExitToApp, MdOutlineCall, MdPeopleAlt } from "react-icons/md";
 import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
 import "../RightColumn.css";
@@ -189,6 +189,16 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 <p>Member</p>
                 <MdOutlineArrowForwardIos className="util-icons-right" />
               </div>
+            </div>
+          </div>
+          <div className="delete-contact">
+            <div className="layout-btn">
+              <MdExitToApp
+                size={24}
+                className="util-icon"
+                style={{ color: "red" }}
+              />
+              <p>Leave Group</p>
             </div>
           </div>
 

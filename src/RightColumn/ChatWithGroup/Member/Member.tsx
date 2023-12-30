@@ -85,7 +85,6 @@ const Member: React.FC<MemberType> = ({
               opacity: isUtilsVisible ? 1 : 0,
             }}
             onMouseLeave={() => setUtilsVisible(false)}
-            // onBlur={() => setUtilsVisible(false)}
           >
             <ul className="util-dropdown-item-container">
               {!isAdmin && (
