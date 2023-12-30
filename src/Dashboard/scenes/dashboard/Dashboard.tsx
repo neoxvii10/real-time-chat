@@ -18,6 +18,7 @@ import UserApi from "../../../Api/UserApi";
 import ReportApi from "../../../Api/ReportApi";
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import ChannelApi from "../../../Api/ChannelApi";
+import PieChart from "../../components/PieChart";
 
 interface ReportType {
     id: BigInteger;
@@ -26,32 +27,46 @@ interface ReportType {
     reason: string;
 }
 
+
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const [userReports, setUserReports] = useState([]);
-    const [channelReports, setChannelReports] = useState([]);
-    const [userList, setUserList] = useState([]);
-    const [channelList, setChannelList] = useState([]);
-    const [totalReports, setTotalReports] = useState<ReportType[]>([]);
+    const [userList, setUserList] = useState({
+        data: [],
+        percentage: 0
+    });
+    const [channelList, setChannelList] = useState({
+        data: [],
+        percentage: 0
+    });
+    const [recentReportsStat, setRecentReportsStat] = useState({
+        reported_users: {
+            number: 0,
+            percentage: 0
+        },
+        reported_channels: {
+            number: 0,
+            percentage: 0
+        }
+    });
 
+    const [recentReports, setRecentReports] = useState<ReportType[]>([])
     const handleReport = async () => {
-        const userReportResponse = await ReportApi.getUserReports();
-        const channelReportResponse = await ReportApi.getChannelReports();
-        setUserReports(userReportResponse.data);
-        setChannelReports(channelReportResponse.data);
-        const reports = [...userList, ...channelList];
-        setTotalReports(reports);
+
+        const recentReportsStatResponse = await ReportApi.getRecentStatReports();
+        setRecentReportsStat(recentReportsStatResponse.data)
+        
+        const recentReportsResponse = await ReportApi.getRecentAllReports();
+        setRecentReports(recentReportsResponse.data.data.reverse());
     }
 
     const handleUserList = async () => {
-        const userListResponse = await UserApi.getUserList();
+        const userListResponse = await UserApi.getRecentUserList();
         setUserList(userListResponse.data);
     }
 
     const handleChannelList = async () => {
-        const channelListResponse = await ChannelApi.getChannelList();
-        console.log(channelListResponse.data);
+        const channelListResponse = await ChannelApi.getRecentChannelList();
         setChannelList(channelListResponse.data);
     }
 
@@ -105,10 +120,10 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title={userReports.length}
+                        title={recentReportsStat.reported_users.number}
                         subtitle="User Reports"
-                        progress="0.75"
-                        increase="+14%"
+                        progress={recentReportsStat.reported_users.percentage}
+                        increase={`${(recentReportsStat.reported_users.percentage*100).toFixed(2)}%`}
                         icon={
                             <NoAccountsIcon
                                 sx={{
@@ -129,10 +144,10 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title={channelReports.length}
+                        title={recentReportsStat.reported_channels.number}
                         subtitle="Channel Reports"
-                        progress="0.5"
-                        increase="+21%"
+                        progress={recentReportsStat.reported_channels.percentage}
+                        increase={`${(recentReportsStat.reported_channels.percentage*100).toFixed(2)}%`}
                         icon={
                             <ReportIcon
                                 sx={{
@@ -153,10 +168,10 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title={userList.length}
+                        title={userList.data.length}
                         subtitle="New Clients"
-                        progress="0.75"
-                        increase="+14%"
+                        progress={userList.percentage}
+                        increase={`${(userList.percentage*100).toFixed(2)}%`}
                         icon={
                             <PersonAddIcon
                                 sx={{
@@ -177,10 +192,10 @@ const Dashboard = () => {
                     justifyContent="center"
                 >
                     <StatBox
-                        title={channelList.length}
+                        title={channelList.data.length}
                         subtitle="New Channels"
-                        progress="0.80"
-                        increase="+43%"
+                        progress={channelList.percentage}
+                        increase={`${(channelList.percentage*100).toFixed(2)}%`}
                         icon={
                             <GroupAddIcon
                                 sx={{
@@ -220,7 +235,7 @@ const Dashboard = () => {
                                 fontWeight="bold"
                                 color={colors.greenAccent[500]}
                             >
-                                $59,342.32
+                                {/* $59,342.32 */}
                             </Typography>
                         </Box>
                         <Box>
@@ -260,7 +275,7 @@ const Dashboard = () => {
                             Recent Reports
                         </Typography>
                     </Box>
-                    {totalReports.map((report, i) => (
+                    {recentReports.map((report, i) => (
                             <Box
                             key={`${report.id}`}
                             display="flex"
@@ -269,21 +284,6 @@ const Dashboard = () => {
                             borderBottom={`4px solid ${colors.primary[500]}`}
                             p="15px"
                         >
-                            <Box>
-                                <Typography
-                                    color={colors.greenAccent[500]}
-                                    variant="h5"
-                                    fontWeight="600"
-                                >
-                                    {report.id}
-                                </Typography>
-                                <Typography color={colors.grey[100]}>
-                                    {report.reason}
-                                </Typography>
-                            </Box>
-                            <Box color={colors.grey[100]}>
-                                {report.create_at}
-                            </Box>
                             <Box
                                 sx={{
                                     backgroundColor: colors.greenAccent[500],
@@ -291,8 +291,13 @@ const Dashboard = () => {
                                 p="5px 10px"
                                 borderRadius="4px"
                             >
-                                ${report.report_type}
+                                {report.report_type}
                             </Box>
+
+                            <Box color={colors.grey[100]}>
+                                {report.create_at}
+                            </Box>
+                            
                         </Box>
                     ))}
 
@@ -307,9 +312,9 @@ const Dashboard = () => {
                     p="30px"
                 >
                     <Typography variant="h5" fontWeight="600">
-                        Campaign
+                        Total Reports
                     </Typography>
-                    <Box
+                    {/* <Box
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
@@ -326,6 +331,9 @@ const Dashboard = () => {
                         <Typography>
                             Includes extra misc expenditures and costs
                         </Typography>
+                    </Box> */}
+                    <Box height="200px">
+                        <PieChart isDashboard={true} />
                     </Box>
                 </Box>
                 <Box
@@ -340,7 +348,7 @@ const Dashboard = () => {
                         fontWeight="600"
                         sx={{ padding: "30px 30px 0 30px" }}
                     >
-                        Sales Quantity
+                        Stats
                     </Typography>
                     <Box height="250px" mt="-20px">
                         <BarChart isDashboard={true} />

@@ -31,34 +31,43 @@ export default function ConfirmDialog(props) {
             <DialogActions>
                 <Box
                     onClick={handleOk}
-                    backgroundColor={colors.greenAccent[700]}
+                    backgroundColor={colors.greenAccent[500]}
                     sx={{
                         p: 0.25,
                         "&:hover": {
-                            backgroundColor: colors.greenAccent[500],
-                            cursor: "pointer"
-                        },
-                    }}
-                >
-                    <Button>
-
-                        Accept
-                    
-                    </Button>
-                </Box>
-                <Box
-                    onClick={handleCancel}
-                    backgroundColor={colors.redAccent[700]}
-                    sx={{
-                        p: 0.25,
-                        "&:hover": {
-                            backgroundColor: colors.redAccent[500],
+                            backgroundColor: colors.greenAccent[600],
                             cursor: "pointer",
                         },
                     }}
                 >
                     <Button
-                    >Cancel</Button>
+                        sx={{
+                            color: "black",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Accept
+                    </Button>
+                </Box>
+                <Box
+                    onClick={handleCancel}
+                    backgroundColor={colors.redAccent[500]}
+                    sx={{
+                        p: 0.25,
+                        "&:hover": {
+                            backgroundColor: colors.redAccent[600],
+                            cursor: "pointer",
+                        },
+                    }}
+                >
+                    <Button
+                        sx={{
+                            color: "black",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Cancel
+                    </Button>
                 </Box>
             </DialogActions>
         </Dialog>

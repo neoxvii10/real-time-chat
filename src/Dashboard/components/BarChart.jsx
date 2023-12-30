@@ -1,15 +1,68 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarData as data } from "../data/mockData";
-
+// import { mockBarData as data } from "../data/mockData";
+import { useEffect, useState } from "react";
+import UserApi from "../../Api/UserApi";
+import ReportApi from "../../Api/ReportApi";
+import ChannelApi from "../../Api/ChannelApi";
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [getDataSuccess, setGetDataSuccess] = useState(false);
+  const [data, setData] = useState([
+  {
+    field: "User",
+    "total users": 0,
+    "total usersColor": "hsl(275, 70%, 50%)"
+  },
+  {
+    field: "Channel",
+    "total channels": 0,
+    "total channelsColor": "hsl(307, 70%, 50%)"
+  },
+  {
+    field: "Report",
+    "total reports": 0,
+    "total reportsColor": "hsl(97, 70%, 50%)"
+  }
+
+
+]);
+
+  const handleGetData = async () => {
+    const reportResponse = await ReportApi.getAllReports();
+    const userListResponse = await UserApi.getUserList();
+    const channelListResponse = await ChannelApi.getChannelList();
+    setData([
+      {
+        field: "User",
+        "total users": userListResponse.data.length,
+        "total usersColor": "hsl(275, 70%, 50%)"
+      },
+      {
+        field: "Channel",
+        "total channels": channelListResponse.data.length,
+        "total channelsColor": "hsl(307, 70%, 50%)"
+      },
+      {
+        field: "Report",
+        "total reports": reportResponse.data.length,
+        "total reportsColor": "hsl(97, 70%, 50%)"
+      }
+    
+    
+    ])
+    setGetDataSuccess(true)
+  }
+
+  useEffect(() => {
+    handleGetData()
+  }, []);
 
   return (
     <ResponsiveBar
-      data={data}
+      data={getDataSuccess ? data : data}
       theme={{
         // added
         axis: {
@@ -44,8 +97,8 @@ const BarChart = ({ isDashboard = false }) => {
             },
           },
       }}
-      keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-      indexBy="country"
+      keys={["total users", "total channels", "total reports"]}
+      indexBy="field"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
@@ -81,7 +134,7 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "country", // changed
+        legend: isDashboard ? undefined : "field", // changed
         legendPosition: "middle",
         legendOffset: 32,
       }}
@@ -89,7 +142,7 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "food", // changed
+        legend: isDashboard ? undefined : "total numbers", // changed
         legendPosition: "middle",
         legendOffset: -40,
       }}
@@ -126,7 +179,7 @@ const BarChart = ({ isDashboard = false }) => {
       ]}
       role="application"
       barAriaLabel={function (e) {
-        return e.id + ": " + e.formattedValue + " in country: " + e.indexValue;
+        return e.id + ": " + e.formattedValue + " in field: " + e.indexValue;
       }}
     />
   );

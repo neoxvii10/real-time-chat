@@ -1,24 +1,26 @@
-import { Box, useTheme } from "@mui/material";
+import { Box, useTheme, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header";
 import { useState, useEffect } from "react";
-import ChannelApi from "../../../Api/ChannelApi";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import UserApi from "../../../Api/UserApi";
+import Header from "../../components/Header";
+import AddIcon from "@mui/icons-material/Add";
 import { toast } from "react-toastify";
-import BanApi from "../../../Api/BanApi";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckIcon from "@mui/icons-material/Check";
-import ConfirmDialog from "../../components/ConfirmDialog";
-
-const Channel = () => {
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import BanApi from "../../../Api/BanApi";
+import PeopleIcon from '@mui/icons-material/People';
+const FriendList = () => {
+    const {userId} = useParams()
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
-    const [channelData, setChannelData] = useState([]);
+    const [friendData, setFriendData] = useState([]);
     const [currentStatus, setCurrentStatus] = useState({
         id: null,
         is_active: false,
@@ -30,94 +32,108 @@ const Channel = () => {
         handleOk: () => {},
         handleCancel: () => {},
     });
-    const getChannelData = async () => {
-        const channelListResponse = await ChannelApi.getChannelList();
-        console.log(channelListResponse.data);
-        setChannelData(channelListResponse.data);
+
+    const getFriendList = async () => {
+        const userListResponse = await UserApi.getFriendsOfAUser(userId);
+        setFriendData(userListResponse.data);
+        console.log(userListResponse.data);
     };
 
-    const cancelBlockChannel = () => {
+    const cancelBlockUser = () => {
         setConfirmDialog({
             isOpen: false,
         });
     };
 
-    const acceptBlockChannel = async () => {
+    const acceptBlockUser = async () => {
         setConfirmDialog({
             isOpen: false,
         });
         if (currentStatus["is_active"]) {
-            const response = await BanApi.banChannel(currentStatus["id"]);
+            const response = await BanApi.banUser(currentStatus["id"]);
             console.log(response);
             if (response.status) {
-                toast.error("Cannot ban this channel", {
+                toast.error("Cannot ban this user", {
                     theme: theme.palette.mode,
                 });
             } else {
-                toast.success("Banned Channel successfully", {
+                toast.success("Ban User successfully", {
                     theme: theme.palette.mode,
                 });
-                getChannelData();
+                getFriendList();
             }
         } else {
-            const response = await BanApi.unbanChannel(currentStatus["id"]);
+            const response = await BanApi.unbanUser(currentStatus["id"]);
             console.log(response);
             if (response.status) {
-                toast.error("Cannot unban this channel", {
+                toast.error("Cannot unban this user", {
                     theme: theme.palette.mode,
                 });
             } else {
-                toast.success("Unbanned Channel successfully!", {
+                toast.success("Unban User successfully!", {
                     theme: theme.palette.mode,
                 });
-                getChannelData();
+                getFriendList();
             }
         }
     };
-    const handleClickBlockChannel = (id, is_active) => {
+    const handleClickBlockUser = (id, is_active) => {
         setCurrentStatus({
             id,
             is_active,
         });
         if (is_active) {
             setConfirmDialog({
-                title: "Ban Channel",
-                content: "Do you want to block this channel?",
+                title: "Ban User",
+                content: "Do you want to block this user?",
                 isOpen: true,
             });
         } else {
             setConfirmDialog({
-                title: "Unban Channel",
-                content: "Do you want to unblock this channel?",
+                title: "Unban User",
+                content: "Do you want to unblock this user?",
                 isOpen: true,
             });
         }
     };
-
     useEffect(() => {
-        getChannelData();
-    }, []);
+        getFriendList();
+    }, [navigate]);
 
     const columns = [
         {
             field: "id",
             headerName: "ID",
+            flex: 0.5,
         },
         {
-            field: "title",
-            headerName: "Channel Name",
+            field: "username",
+            headerName: "Username",
             flex: 1,
             cellClassName: "name-column--cell",
         },
         {
-            field: "member_count",
-            headerName: "Number of members",
+            field: "email",
+            headerName: "Email",
             flex: 1,
             cellClassName: "name-column--cell",
         },
         {
-            field: "create_at",
-            headerName: "Created Date",
+            field: "first_name",
+            headerName: "First Name",
+            headerAlign: "left",
+            align: "left",
+            cellClassName: "name-column--cell",
+        },
+        {
+            field: "last_name",
+            headerName: "Last Name",
+            flex: 1,
+            cellClassName: "name-column--cell",
+        },
+        {
+            field: "fullname",
+            headerName: "Full Name",
             flex: 1,
             cellClassName: "name-column--cell",
         },
@@ -145,9 +161,10 @@ const Channel = () => {
                             },
                         }}
                         onClick={() => {
-                            handleClickBlockChannel(id, is_active);
+                            handleClickBlockUser(id, is_active);
                         }}
                     >
+                        {" "}
                         <Tooltip title={is_active ? "Active" : "Banned"}>
                             {is_active ? <CheckIcon /> : <BlockIcon />}
                         </Tooltip>
@@ -156,13 +173,28 @@ const Channel = () => {
             },
         },
         {
+            field: "1",
+            headerName: "Friends",
+            align: "center",
+            renderCell: ({ id }) => {
+                return (
+                    <Box onClick={() => navigate(`/admin/user/${id}/friends`)}>
+                        <Tooltip title="Friends">
+                            <IconButton>
+                                <PeopleIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                );
+            },
+        },
+        {
+            field: "2",
             headerName: "Detail",
             align: "center",
             renderCell: ({ id }) => {
                 return (
-                    <Box
-                        onClick={() => navigate(`/admin/channel/${id}/members`)}
-                    >
+                    <Box onClick={() => navigate(`/admin/user/${id}/detail`)}>
                         <Tooltip title="View Detail">
                             <IconButton>
                                 <VisibilityIcon />
@@ -172,60 +204,37 @@ const Channel = () => {
                 );
             },
         },
-        // {
-        //     field: "age",
-        //     headerName: "Age",
-        //     type: "number",
-        //     headerAlign: "left",
-        //     align: "left"
-        // },
-        // {
-        //     field: "phone",
-        //     headerName: "Phone Number",
-        //     flex: 1,
-        // },
-        // {
-        //     field: "email",
-        //     headerName: "Email",
-        //     flex: 1,
-        // },
-        // {
-        //     field: "access",
-        //     headerName: "Access Level",
-        //     flex: 1,
-        //     renderCell: ({ row: {access}}) => {
-        //         return (
-        //             <Box
-        //             width="60%"
-        //             m ="0 auto"
-        //             p="5px"
-        //             display="flex"
-        //             justifyContent="center"
-        //             backgroundColor={
-        //                 access === "admin"
-        //                 ? colors.greenAccent[600]
-        //                 : colors.greenAccent[700]
-        //             }
-        //             borderRadius="4px"
-        //             >
-        //             {access === "admin" && <AdminPanelSettingsOutlinedIcon/>}
-        //             {access === "manager" && <SecurityOutlinedIcon/>}
-        //             {access === "user" && <LockOpenOutlinedIcon/>}
-        //             <Typography
-        //                 color={colors.grey[100]}
-        //                 sx={{ml: "5px"}}
-        //             >
-
-        //             </Typography>
-        //             </Box>
-        //         )
-        //     }
-        // },
+        
     ];
 
     return (
         <Box m="20px">
-            <Header title="CHANNEL" subtitle="Managing the Channels" />
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+            >
+                <Header
+                    title="CONTACTS"
+                    subtitle="List of Contacts for Future Reference"
+                />
+                <Box>
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                        }}
+                        onClick={() => navigate("/admin/user/create")}
+                    >
+                        <AddIcon sx={{ mr: "10px" }} />
+                        Create new user
+                    </Button>
+                </Box>
+            </Box>
+
             <Box
                 m="40px 0 0 0"
                 height="75vh"
@@ -253,21 +262,24 @@ const Channel = () => {
                     "& .MuiCheckbox-root": {
                         color: `${colors.greenAccent[200]} !important`,
                     },
+                    "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+                        color: `${colors.grey[100]} !important`,
+                    },
                 }}
             >
                 <DataGrid
-                    rows={channelData}
+                    rows={friendData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
                 />
             </Box>
             <ConfirmDialog
                 confirmDialog={confirmDialog}
-                handleCancel={cancelBlockChannel}
-                handleOk={acceptBlockChannel}
+                handleCancel={cancelBlockUser}
+                handleOk={acceptBlockUser}
             />
         </Box>
     );
 };
 
-export default Channel;
+export default FriendList;

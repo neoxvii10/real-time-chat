@@ -2,13 +2,51 @@ import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../data/mockData";
-
-const PieChart = () => {
+import { useEffect, useState } from "react";
+import ReportApi from "../../Api/ReportApi";
+const PieChart = ({isDashboard = false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [reportData, setReportData] = useState([{
+    id: "User reports",
+    label: "User reports",
+    value: 10,
+    color: "hsl(104, 70%, 50%)",
+  },
+  {
+    id: "Channel reports",
+    label: "Channel reports",
+    value: 5,
+    color: "hsl(162, 70%, 50%)"
+  }]);
+  const [getDataSuccess, setGetDataSuccess] = useState(false);
+
+  const getReportsStat = async () => {
+    const response = await ReportApi.getReportsStat();
+
+    setReportData([{
+      id: "User reports",
+      label: "User reports",
+      value: response.data.reported_users,
+      color: "hsl(104, 70%, 50%)",
+    },
+    {
+      id: "Channel reports",
+      label: "Channel reports",
+      value: response.data.reported_channels,
+      color: "hsl(162, 70%, 50%)"
+    }])
+    setGetDataSuccess(true);
+  }
+
+  useEffect(() => {
+    if(!getDataSuccess) {
+      getReportsStat();
+    }
+  }, [])
   return (
     <ResponsivePie
-      data={data}
+      data={getDataSuccess ? reportData : reportData}
       theme={{
         axis: {
           domain: {

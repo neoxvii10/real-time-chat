@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import { MenuItem } from "react-pro-sidebar";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ColorModeContext, tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -23,6 +23,9 @@ import Collapse from "@mui/material/Collapse";
 import StarBorder from "@mui/icons-material/StarBorder";
 import UserProfileApi from "../../../Api/UserProfileApi";
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+
 const Item = ({ title, icon, handleClick }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -37,6 +40,7 @@ const Item = ({ title, icon, handleClick }) => {
             padding="5px 10px"
             borderRadius="15px"
             marginBottom="10px"
+            onClick={handleClick}
             sx={{
                 "&:hover": {
                     backgroundColor: colors.grey[500],
@@ -54,6 +58,7 @@ const Item = ({ title, icon, handleClick }) => {
 };
 
 const Topbar = () => {
+    const navigate = useNavigate();
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const colorMode = useContext(ColorModeContext);
@@ -62,16 +67,28 @@ const Topbar = () => {
         avatar_url: "/assets/user.png",
         username: "admin",
         fullname: "I am an admin",
+        getSuccess: false
     });
+
+    const handleSignout = () => {
+        localStorage.removeItem("accessToken");
+        navigate('/admin/login');
+    }
 
     const getProfileInformation = async () => {
         const response = await UserProfileApi.getProfile();
         setAdminProfile({
-            avatar_url: "/assets/user.png",
+            avatar_url: response.data.avatar_url,
             username: response.data.user.username,
             fullname: response.data.user.fullname,
         });
     };
+
+    useEffect(() => {
+        if(!adminProfile.getSuccess) {
+            getProfileInformation()
+        }
+    }, [])
 
     return (
         <Box display="flex" justifyContent="space-between" p={2}>
@@ -161,12 +178,20 @@ const Topbar = () => {
                              marginTop="10px" display="flex"
                              flexDirection="column"
                             >
+                                <Item 
+                                    handleClick={() => navigate('/admin/profile')}
+                                    title="Thông tin tài khoản"
+                                    icon={<AccountCircleOutlinedIcon />}
+                                />
+
                                 <Item
+                                    handleClick={() => {}}
                                     title="Cài đặt"
                                     icon={<SettingsIcon />}
                                 />
 
                                 <Item
+                                    handleClick={handleSignout}
                                     title="Đăng xuất"
                                     icon={<LogoutIcon />}
                                 />
