@@ -511,7 +511,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
       </div>
     );
   };
-
+  
 
 
 
@@ -688,8 +688,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
                       <span onClick={() => removeReactionHandle(message, reaction)}>❤️</span>
                     ))}
                   </div>
-                </div>
-
+                </div>  
               </div>
 
               <div className="icon-container">
@@ -746,9 +745,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel }) => {
           <button onClick={handleCancelDelete}>No</button>
         </div>
       )}
-      {isReplying && <ReplyPopup />}
 
       <div className="message-input-container">
+     {isReplying && <ReplyPopup />}
+
         <div className="input-container">
           <MdOutlineEmojiEmotions
             style={{

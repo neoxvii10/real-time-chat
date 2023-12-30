@@ -569,21 +569,20 @@ p {
 }
 
 .reply-popup {
-  position: absolute;
-  top: 43.1rem; /* Adjust this value to position it correctly */
-  left: 34.1rem;
-  right: 6.88rem;
-  bottom: 3rem;
-  border-radius:10px;
-  background-color:grey;
+  /* position: absolute;
+  top: -60px; 
+  right: 10px;  */
+  background-color: var(--background-color);
+  border: 1px solid #ccc;
   padding: 10px;
+  z-index: 1;
 }
 
 .close-button {
-  position: absolute;
+  /* position: ; */
   font-size: 1.5rem;
-  top: 0.2rem;
-  right: 1.5rem;
+  /* top: 0.2rem;
+  right: 1.5rem; */
   cursor: pointer;
   font-weight: bold;
 }
