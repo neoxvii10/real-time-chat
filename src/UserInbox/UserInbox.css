@@ -589,5 +589,7 @@ p {
   font-weight: bold;
 }
 
-
+.message-fullname strong {
+  color: red;
+}
 

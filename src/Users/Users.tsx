@@ -137,6 +137,7 @@ const Users: React.FC<UsersTypes> = (
         console.log(error);
       }
     }
+    fetchData()
     // Periodically fetch the latest data
     const intervalId = setInterval(() => {
       fetchData();
@@ -635,7 +636,7 @@ const Users: React.FC<UsersTypes> = (
                 <div className="user-label-timestamps">
                   <div className="user-labels">
                     <h5>{channel.title}</h5>
-                    <p>{channel.last_message.content}</p>
+                    <p><strong>{channel.last_message.member.user.fullname}</strong> {channel.last_message.message_type === "IMAGE" ? "đã gửi một ảnh" : channel.last_message.content}</p>
                   </div>
                   <span className="latest-timestamps">
                     {calculateTimeDifferenceForChannel(channel)}

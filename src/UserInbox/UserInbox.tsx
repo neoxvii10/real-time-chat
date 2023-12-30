@@ -23,6 +23,7 @@ import Report from "../Users/Report/Report";
 import UserInformation from "../RightColumn/RightColumn";
 import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
 import { timeEnd } from "console";
+import { colors } from "@mui/material";
 
 // use api
 type UserType = {
@@ -161,10 +162,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           let messageElement = {
             id: message.id,
             text: message.content,
-            fullname: message.member.user.fullname,
             sender: (userId === message.member.user.id) ? "self" : "user",
             type: message.message_type.toLowerCase(),
             create_at: message.create_at,
+          }
+          if (message.member.user.id !== userId) {
+            // @ts-ignore
+            messageElement.fullname = message.member.user.fullname;
           }
           messageList.push(messageElement)
         }
@@ -211,7 +215,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     
           let textMessage = {
             text: messageContent,
-            user: serverMessage.data.member.user.fullname,
+            fullname: serverMessage.data.member.user.fullname,
             sender: 'user',
             type: 'text',
             create_at: formatTimestamp(serverMessage.data.create_at),
@@ -226,7 +230,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
             if (textMessage.type === "image") {
               let fileMessage = {
               	text: messageContent,
-              	user: serverMessage.data.member.user.fullname,
+              	// fullname: serverMessage.data.member.user.fullname,
               	sender: 'self',
               	type: 'image',
               	isSent: true,
@@ -248,7 +252,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               if (!isSelfMessageCheck) {
                 let textMessage = {
                 	text: messageContent,
-                	user: serverMessage.data.member.user.fullname,
+                	fullname: serverMessage.data.member.user.fullname,
                 	sender: 'self',
                 	type: 'text',
                 	isSent: true,
@@ -653,7 +657,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                     ) 
                     : 
                     (<>
-                      <div className="message-fullname">{message.fullname}</div>
+                      <div className="message-fullname"><strong>{message.fullname}</strong></div>
                         <div>{message.text}</div>
                         {message.create_at && (
                           <div className="timestamp">{formatTimestamp(message.create_at)}</div>
