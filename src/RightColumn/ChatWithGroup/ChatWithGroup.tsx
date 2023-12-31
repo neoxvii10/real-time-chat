@@ -128,9 +128,15 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
   }, [channel.id]);
 
   const handleOnWheel = () => {};
+  const date = new Date(Date.parse(channelInfo.create_at));
+  const day = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
-  const handleClickCopyLink = () => {
-    alert("Copied link to clipboard");
+  const handleClickInfomation = () => {
+    alert(`Group name: ${channelInfo.title}\nCreate at: ${day}`);
   };
 
   return (
@@ -197,10 +203,13 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 {memberList.length} Members
               </div>
             </div>
-            <div className="rectangle-container" onClick={handleClickCopyLink}>
+            <div
+              className="rectangle-container"
+              onClick={handleClickInfomation}
+            >
               <div className="layout-btn">
                 <IoIosInformationCircle size={24} className="util-icon" />
-                <p>Copy link group</p>
+                <p>Infomation</p>
               </div>
             </div>
             <div className="rectangle-container">

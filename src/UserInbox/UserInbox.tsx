@@ -469,7 +469,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
         uuid: uuidv4(),
         data: {
           content: inputValue,
-          reply: null,
+          // "reply": null
         },
       };
 
@@ -740,7 +740,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
   const [isReport, setIsReport] = useState(false);
 
   const handleVisibleFormReport = (
-    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+    e: React.MouseEvent<SVGElement, MouseEvent>
   ) => {
     e.preventDefault();
 
@@ -819,58 +819,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
             {renderHeader()}
             <div className="chat-utils">
               <span className="util-icon-container">
-                <GoSearch size={24} className="util-icon" />
-              </span>
-              <span className="util-icon-container">
-                <BsThreeDotsVertical
-                  size={22}
-                  className="util-icon"
-                  onClick={handleUtilsClick}
-                />
-                <div
-                  className="util-container"
-                  style={{
-                    visibility: isUtilsVisible ? "visible" : "hidden",
-                    opacity: isUtilsVisible ? 1 : 0,
-                  }}
-                  onMouseLeave={() => setUtilsVisible(false)}
-                >
-                  <ul className="util-dropdown-item-container">
-                    <li className="util-dropdown-item">
-                      <span className="dropdown-icon">
-                        <IoNotificationsOffOutline size={22} />
-                      </span>
-                      <span className="dropdown-label">Mute</span>
-                    </li>
-                    <li className="util-dropdown-item">
-                      <span className="dropdown-icon">
-                        <AiOutlineCheckCircle size={22} />
-                      </span>
-                      <span className="dropdown-label">Select Messages</span>
-                    </li>
-                    <li className="util-dropdown-item">
-                      <span className="dropdown-icon">
-                        <PiShareFat size={22} />
-                      </span>
-                      <span className="dropdown-label">Share Contact</span>
-                    </li>
-                    <li
-                      className="util-dropdown-item"
-                      onClick={handleVisibleFormReport}
-                    >
-                      <span className="dropdown-icon">
-                        <FiFlag size={22} />
-                      </span>
-                      <span className="dropdown-label">Report</span>
-                    </li>
-                    <li className="util-dropdown-item">
-                      <span className="dropdown-icon alert">
-                        <FiTrash size={22} />
-                      </span>
-                      <span className="dropdown-label alert">Delete Chat</span>
-                    </li>
-                  </ul>
-                </div>
+                <FiFlag size={22} onClick={handleVisibleFormReport} />
               </span>
             </div>
           </div>

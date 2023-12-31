@@ -555,6 +555,9 @@ p {
 }
 
 .message-container .icon-container {
+  left: 85px;
+  top: -30px;
+  position: relative;
 }
 
 .message.user.image .message-icons {
@@ -576,12 +579,6 @@ p {
 
 .message.image .message-footer .timestamp {
   color: white;
-}
-
-.icon-container {
-  left: 85px;
-  top: -30px;
-  position: relative;
 }
 
 .icon:hover {

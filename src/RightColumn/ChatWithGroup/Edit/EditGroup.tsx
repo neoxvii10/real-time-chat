@@ -254,16 +254,6 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
           </div>
         </div>
 
-        {/* <div className="delete-contact">
-          <div className="layout-btn">
-            <IoMdTrash
-              size={24}
-              className="util-icon"
-              style={{ color: "red" }}
-            />
-            <p>Delete Group</p>
-          </div>
-        </div> */}
         {ChangingForm ? (
           <button type="submit" className="submit-btn">
             <TiTick size={25} />

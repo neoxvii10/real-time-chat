@@ -111,12 +111,6 @@ const ChatWithOne: React.FC<ProfileProps> = ({
           </span>
           <div className="main-header">
             <h3 className="title">Profile</h3>
-            <span
-              className="icon-container"
-              onClick={(e) => handleSlideEdit(e)}
-            >
-              <MdOutlineModeEditOutline size={22} className="header-icon" />
-            </span>
           </div>
         </div>
         <div className="content-profile">
