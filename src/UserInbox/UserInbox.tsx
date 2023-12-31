@@ -22,6 +22,8 @@ import UserProfileApi from '../Api/UserProfileApi';
 import Report from "../Users/Report/Report";
 import UserInformation from "../RightColumn/RightColumn";
 import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
+import axios from "axios";
+
 
 // use api
 type UserType = {
@@ -50,6 +52,29 @@ type ChannelType = {
   avatar_url?: string;
   create_at: string;
 };
+
+  type ReactionType = {
+    id: number,
+    member: any,
+    message: string,
+    emoji: number,
+  }
+
+  type MessageType = {
+    id?: number;
+    channel?: number;
+    text: string;
+    fullname?: string;
+    sender: string;
+    type: string;
+    reply?: number,
+    file?: File;
+    uuid?: string;
+    isSent?: boolean;
+    create_at: string;
+    reactions?: ReactionType[];
+  }
+
 
 const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNewMessage }) => {
   useEffect(() => {
@@ -115,17 +140,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
   const [onBottom, setOnBottom] = useState(true);
 
   const [isSlided, setSlided] = useState<boolean>(true);
-  const [messages, setMessages] = useState<{
-    // id?: number;
-    text: string;
-    fullname?: string;
-    sender: string;
-    type: string;
-    file?: File;
-    uuid?: string;
-    isSent?: boolean;
-    create_at?: string;
-  }[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   const formatTimestamp = (timestamp: string) => {
     try {
@@ -150,7 +165,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     return currentTime;
   }
 
-
   const [inputValue, setInputValue] = useState<string>("");
 
   const [userProfile, setUserProfile] = useState<any>();
@@ -167,15 +181,32 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         let res: any = await axiosClient.get(
           `api/channel/${channelId}/messages/?page=1`
         );
+    let reactionListRes = await  axios.get(`http://112.137.129.158:5002/api/message/channel-reactions/${channel.id}/`)
+
         let messageList = [];
         for (let message of res.data) {
-          let messageElement = {
-            id: message.id,
-            text: message.content,
-            sender: (userId === message.member.user.id) ? "self" : "user",
-            type: message.message_type.toLowerCase(),
-            create_at: message.create_at,
+          let messageElement: MessageType = {
+        id: message.id,
+        channel: message.channel,
+        text: message.content,
+        fullname: message.member.user.fullname,
+        sender: (userId === message.member.user.id) ? "self" : "user",
+        type: message.message_type.toLowerCase(),
+        create_at: message.create_at
           }
+      for (let reaction of reactionListRes.data.data) {
+        if (reaction.message === message.id) {
+          if (!messageElement.reactions) {
+            messageElement.reactions = []
+          }
+          //@ts-ignore
+          messageElement.reactions.push(reaction)
+        }
+      }
+      if (message.reply) {
+        messageElement.reply = message.reply
+      }
+
           if (message.member.user.id !== userId) {
             // @ts-ignore
             messageElement.fullname = message.member.user.fullname;
@@ -202,91 +233,98 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     // Scroll to bottom when receive message in case user is already bottom
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
-      const handleSocketChannel = (e: MessageEvent) => {
-        // Parse the JSON data from the server
-        const serverMessage = JSON.parse(e.data);
-  
-        if (serverMessage.action === "create_message") {
+    }
+  }, [messages]);
+
+    // handle receive message
+    socket.onmessage = (e) => {
+      // Parse the JSON data from the server
+      const serverMessage = JSON.parse(e.data);
+      // Check if the action is "create_message" and the message_type is "TEXT"
+      switch (serverMessage.action) {
+        case "create_message":
           if (messageContainer) {
-            if (
-              Math.abs(
-                messageContainer.scrollTop +
-                messageContainer.clientHeight -
-                messageContainer?.scrollHeight
-              ) < 1
-            ) {
-              setOnBottom(true);
+            if (Math.abs(messageContainer.scrollTop + messageContainer.clientHeight - messageContainer?.scrollHeight) < 1) {
+              setOnBottom(true)
             } else {
-              setOnBottom(false);
+              setOnBottom(false)
             }
           }
+  
+          let hasReply = false
+          if (serverMessage.data.reply) {
+            hasReply = true
+          }
+  
           // Extract the content of the message
           const messageContent = serverMessage.data.content;
-    
           let textMessage = {
             text: messageContent,
-            fullname: serverMessage.data.member.user.fullname,
+            user: serverMessage.data.member.user.fullname,
             sender: 'user',
             type: 'text',
             create_at: formatTimestamp(serverMessage.data.create_at),
           }
-    
-          if (serverMessage.data.message_type === "IMAGE") {
-            textMessage.type = "image";
+          if (hasReply) {
+            // @ts-ignore
+            textMessage.reply = serverMessage.data.reply
           }
-    
-          let senderId = serverMessage.data.member.user.id;
+  
+          if (serverMessage.data.message_type === "IMAGE") {
+            textMessage.type = 'image'
+          }
+  
+          let senderId = serverMessage.data.member.user.id
           if (senderId === userId) {
-            if (textMessage.type === "image") {
+            if (textMessage.type === 'image') {
               let fileMessage = {
-              	text: messageContent,
-              	// fullname: serverMessage.data.member.user.fullname,
-              	sender: 'self',
-              	type: 'image',
-              	isSent: true,
-              	create_at: formatTimestamp(serverMessage.data.create_at),
+                text: messageContent,
+                user: serverMessage.data.member.user.fullname,
+                sender: 'self',
+                type: 'image',
+                isSent: true,
+                create_at: formatTimestamp(serverMessage.data.create_at),
+              }
+              if (hasReply) {
+                // @ts-ignore
+                fileMessage.reply = serverMessage.data.reply
               }
               setMessages([...messages, fileMessage]);
             } else {
-              let uuid = serverMessage.uuid;
-              let isSelfMessageCheck = false;
+              let uuid = serverMessage.uuid
+              let isSelfMessageCheck = false
               for (let i = messages.length - 1; i >= 0; i--) {
                 if (messages[i].uuid === uuid) {
                   // console.log("**Đã gửi**" + messages[i].text)
-                  messages[i].isSent = true;
-                  setMessages([...messages]);
-                  isSelfMessageCheck = true;
-                  break;
+                  messages[i].isSent = true
+                  setMessages([...messages])
+                  isSelfMessageCheck = true
+                  break
                 }
               }
               if (!isSelfMessageCheck) {
                 let textMessage = {
-                	text: messageContent,
-                	fullname: serverMessage.data.member.user.fullname,
-                	sender: 'self',
-                	type: 'text',
-                	isSent: true,
-                	create_at: formatTimestamp(serverMessage.data.create_at),
-                };
-                setMessages([...messages, textMessage]);
+                  text: messageContent,
+                  user: serverMessage.data.member.user.fullname,
+                  sender: 'self',
+                  type: 'text',
+                  isSent: true,
+                  create_at: formatTimestamp(serverMessage.data.create_at),
+                }
+                if (hasReply) {
+                  // @ts-ignore
+                  textMessage.reply = serverMessage.data.reply
+                }
+                setMessages([...messages, textMessage])
               }
             }
           } else {
             setMessages([...messages, textMessage]);
           }
           onNewMessage();
-        }
-      };
-  
-      // Add event listener when component mounts
-      socket.addEventListener("message", handleSocketChannel);
-  
-      // Remove event listener when component unmounts
-      return () => {
-        socket.removeEventListener("message", handleSocketChannel);
-      };
-    }
-  }, [messages, socket]);
+          break;
+      }
+    };
 
   const [translateX, setTranslateX] = useState<CSSProperties>({
     visibility: "hidden",
@@ -345,6 +383,12 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         },
       };
 
+      if (isReplying) {
+        // @ts-ignore
+        messageObject.data.reply = replyToMessage.id
+      }
+
+
       const messageJSON = JSON.stringify(messageObject);
       if (!isOpen(socket)) {
         console.log("Message can't be sent");
@@ -372,6 +416,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         type: 'text',
         uuid: messageObject.uuid,
         isSent: false,
+        // @ts-ignore
+        reply: replyToMessage.id,
         create_at: getCurrentTime(),
       }
       setMessages([...messages, textMessage])
@@ -381,6 +427,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       setSelectedFile(null);
     }
     onNewMessage();
+    setReplying(false)
+
   }
 
   const [popupVisible, setPopupVisible] = useState(false);
@@ -445,8 +493,162 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
 
   const toggleEmojiPicker = () => {
     setEmojiPickerVisible(!isEmojiPickerVisible);
-    setIsEmojiIconClicked(!isEmojiIconClicked);
   };
+
+  // THẢ EMOJI
+
+  const [isMessageEmojiPickerVisible, setMessageEmojiPickerVisible] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState<number>();
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
+  const emojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
+
+
+  // Toggle emoji picker visibility
+  const toggleMessageEmojiPicker = () => {
+    setMessageEmojiPickerVisible(!isMessageEmojiPickerVisible);
+  };
+
+  // Handle emoji selection
+  const handleEmojiClick = (emoji: number) => {
+    setSelectedEmoji(emoji);
+    setMessageEmojiPickerVisible(false);
+    // Now you can send the reaction through WebSocket
+    sendReactionToWebSocket(emoji);
+  };
+
+  // Function to send the reaction through WebSocket
+  const sendReactionToWebSocket = (emoji: number) => {
+    const reactionObject = {
+      action: "create_reaction",
+      target: "channel",
+      targetId: channel.id,
+      data: {
+        message: selectedMessageId,
+        emoji: emoji,
+      },
+    };
+
+    const reactionJSON = JSON.stringify(reactionObject);
+    if (isOpen(socket)) {
+      socket.send(reactionJSON);
+    } else {
+      console.log("WebSocket is not open. Reaction failed.");
+    }
+  };
+
+  const removeReactionHandle = (message: any, reaction: any) => {
+    const removeReactionObject = {
+      action: "remove_reaction",
+      target: "channel",
+      targetId: channel.id,
+      data: {
+        reactionId: reaction.id,
+        messageId: message.id
+      }
+    }
+    const jsonObject = JSON.stringify(removeReactionObject)
+    if (isOpen(socket)) {
+      socket.send(jsonObject);
+    } else {
+      console.log("WebSocket is not open. Remove reaction failed.");
+    }
+  }
+
+  const countEmoji = (emoji: any, reactionList: any) => {
+    let cnt = 0
+    for (let reaction of reactionList) {
+      if (reaction.emoji === emoji) {
+        cnt++
+      }
+    }
+    if (cnt !== 0) return cnt
+  }
+
+// TRẢ LỜI TIN NHẮN
+
+  const [isReplying, setReplying] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState<any>(null);
+
+  const handleReplyClick = (message: any) => {
+    setReplying(true);
+    setReplyToMessage(message);
+  };
+
+  const ReplyPopup = () => {
+    return (
+      <div className="reply-popup">
+        <div className="close-button" onClick={() => setReplying(false)}>
+          x
+        </div>
+        <p>Replying to: {replyToMessage && replyToMessage.text}</p>
+      </div>
+    );
+  };
+
+  const getReplyContent = (messageId: number) => {
+    for (let message of messages) {
+      if (message.id === messageId) {
+        if (message.type === "text") {
+          return `${message.fullname}: ${message.text}`;
+        } else {
+          return `${message.fullname}: Image`; // You can modify this for other types if needed
+        }
+      }
+    }
+  };
+
+
+  // XOÁ TIN NHẮN
+  // state to manage delete confirmation modal visibility
+  const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<any>(null);
+
+  // Function to handle delete button click
+  const handleDeleteButtonClick = (message: any) => {
+    setMessageToDelete(message);
+    setDeleteConfirmationVisible(true);
+  };
+
+  // Function to handle delete confirmation
+  const handleDeleteConfirmation = () => {
+    if (messageToDelete.id) {
+      const messageIdtoDelete = messageToDelete.id;
+      const channelId = messageToDelete.channel;
+      const deleteMessageObject = {
+        action: "remove_message",
+        target: "channel",
+        targetId: channelId,
+        data: {
+          messageId: messageIdtoDelete,
+        },
+      };
+
+      const deleteMessageJSON = JSON.stringify(deleteMessageObject);
+
+      if (isOpen(socket)) {
+        socket.send(deleteMessageJSON);
+
+      } else {
+        console.log("WebSocket is not open. Message deletion failed.");
+      }
+
+      const updatedMessages = messages.filter((msg) => msg.id !== messageIdtoDelete);
+      setMessages(updatedMessages);
+    } else {
+      console.error("Invalid message format. Unable to delete message.");
+    }
+    setDeleteConfirmationVisible(false);
+    setMessageToDelete(null);
+  };
+
+  // Function to handle cancel button click
+  const handleCancelDelete = () => {
+    // Close the confirmation modal
+    setDeleteConfirmationVisible(false);
+    setMessageToDelete(null);
+  };
+
+
 
   // hanle report channel
   const [isReport, setIsReport] = useState(false);
@@ -457,52 +659,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     setIsReport(!isReport);
   }
 
-  function handleEmojiClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function handleReplyClick(message: { text: string; sender: string; type: string; file?: File | undefined; uuid?: string | undefined; isSent?: boolean | undefined; create_at?: string | undefined; }): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function handleDeleteClick(
-  //   message: {
-  //   id?: number; 
-  //   text: string;
-  //   sender: string;
-  //   type: string;
-  //   file?: File | undefined;
-  //   uuid?: string | undefined;
-  //   isSent?: boolean | undefined;
-  //   create_at?: string | undefined;
-  // }
-  ): void {
-    // if (message.id) {
-      // const messageId = message.id;
-      const deleteMessageObject = {
-        action: "remove_message",
-        target: "channel",
-        targetId: 4,
-        data: {
-          messageId: 869,
-        },
-      };
-  
-      const deleteMessageJSON = JSON.stringify(deleteMessageObject);
-      
-      if (isOpen(socket)) {
-        socket.send(deleteMessageJSON);
-      } else {
-        console.log("WebSocket is not open. Message deletion failed.");
-      }
-  
-      // You may also want to update the local state to reflect the deletion
-      // const updatedMessages = messages.filter((msg) => msg.data?.id !== messageId);
-      // setMessages(updatedMessages);
-    // } else {
-    //   console.error("Invalid message format. Unable to delete message.");
-    // }
-  }
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
 
   const handleMouseEnter = (index: number) => {
@@ -656,53 +812,105 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               >
                 <div key={index}
                 className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
-                  <div className="message-content">
-                    {message.type === "image" ? 
-                    (<div>
-                      <img src={message.text.split(' ')[0]} alt={message.type}></img>
-                      {message.create_at && (
-                          <div className="timestamp">{formatTimestamp(message.create_at)}</div>
-                        )}
+              <div className="message-content">
+                <div className="message-fullname">{message.fullname}</div>
+                {message.type === "image" ? (
+                  <div>
+                    <img src={message.text.split(' ')[0]} alt={message.type}></img>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      {message.reply ? (
+                        <>
+                          <div className="reply-message">
+                            <span>{getReplyContent(message.reply)}</span>
+                          </div>
+                          <div className="original-message">{message.text}</div>
+
+                        </>
+                      ) : (
+                        <div className="single-message">{message.text}</div>
+                      )}
                     </div>
-                    ) 
-                    : 
-                    (<>
-                      <div className="message-fullname"><strong>{message.fullname}</strong></div>
-                        <div>{message.text}</div>
-                        {message.create_at && (
-                          <div className="timestamp">{formatTimestamp(message.create_at)}</div>
-                        )}
-                      </>
+                  </>
+                )}
+
+                <div className="message-footer">
+                  <div className="timestamp">{formatTimestamp(message.create_at)}</div>
+                  <div className="reaction-icon">
+                    {message.reactions && (
+                      emojis.map((emoji, index) => (
+                        <>{countEmoji(index + 1, message.reactions) && emoji + countEmoji(index + 1, message.reactions)}</>
+                      ))
                     )}
                   </div>
-
-                  <div className="icon-container">
-                    <div className="message-icons"> 
-                      <>
-                        <span className="icon" onClick={() => handleEmojiClick(message)}>
-                          <MdOutlineEmojiEmotions size={20} />
-                        </span>
-                        <span className="icon" onClick={() => handleReplyClick(message)}>
-                          <FaReply size={20} />
-                        </span>
-                        <span className="icon" onClick={() => handleDeleteClick()}>
-                          <FiTrash size={20} />
-                        </span>
-                      </>
-                    </div>
-                  </div>
                 </div>
-        
-                <div className="sent-icon">
-                  {Object.hasOwn(message, "isSent") && !message.isSent && (
-                    <FaRegCheckCircle size={12} />
+              </div>
+
+              <div className="icon-container">
+                <div className="message-icons">
+                  {hoveredMessageIndex === index && (
+                    <>
+                      <span
+                        className="icon"
+                        onClick={() => {
+                          if (message.id) setSelectedMessageId(message.id);
+                          toggleMessageEmojiPicker();
+                        }}
+                      >
+                        <MdOutlineEmojiEmotions size={20} />
+                      </span>
+                      {isMessageEmojiPickerVisible && (
+                        <div className="emoji-popup">
+                          {emojis.map((emoji, index) => (
+                            <span
+                              key={emoji}
+                              onClick={() => handleEmojiClick(index + 1)}
+
+                              className="emoji"
+                            >
+                              {emoji}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <span className="icon" onClick={() => handleReplyClick(message)}>
+                        <FaReply size={20} />
+                      </span>
+                      {message.sender === "self" && (
+                        <>
+                          <span className="icon" onClick={() => handleDeleteButtonClick(message)}>
+                            <FiTrash size={20} />
+                          </span>
+                        </>
+                      )}
+
+                    </>
                   )}
                 </div>
               </div>
-            ))}
+            </div>
+            <div className="sent-icon">
+              {
+                (Object.hasOwn(message, "isSent")) && (!message.isSent && <FaRegCheckCircle size={12} />)
+              }
+            </div>
           </div>
+        ))}
+      </div>
+      {isDeleteConfirmationVisible && (
+        <div className="delete-confirmation-modal">
+          <p>Are you sure you want to delete this message?</p>
+          <button onClick={handleDeleteConfirmation}>Yes</button>
+          <button onClick={handleCancelDelete}>No</button>
+        </div>
+      )}
+
 
           <div className="message-input-container">
+          {isReplying && <ReplyPopup />}
+
             <div className="input-container">
               <MdOutlineEmojiEmotions
                 style={{
@@ -817,3 +1025,5 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
 };
 
 export default UserInbox;
+
+
