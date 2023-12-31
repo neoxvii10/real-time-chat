@@ -155,6 +155,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
       )}
       <div className={`user-info`} style={MemberTranslateX}>
         <MemberList
+          memberList={memberList}
           socket={socket}
           channel={channel}
           handMemberBack={handleShowAllMembers}

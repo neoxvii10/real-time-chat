@@ -46,6 +46,7 @@ type ChannelInboxProps = {
   handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
   socket: WebSocket;
   Creator: boolean;
+  memberList: MemberType[];
 };
 
 const MemberList: React.FC<ChannelInboxProps> = ({
@@ -54,10 +55,11 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   userId,
   socket,
   Creator,
+  memberList,
 }) => {
   const channelInfo = channel as ChannelType;
 
-  const [members, setMemners] = useState<MemberType[]>([]);
+  const [members, setMembers] = useState<MemberType[]>(memberList);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,7 +78,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
           const response = await ChannelApi.getAllMembersChannel(
             channelInfo.id
           ); // Replace with your API endpoint
-          setMemners(response.data);
+          setMembers(response.data);
         }, 100);
       }
     };
@@ -93,7 +95,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   const fetchMember = async () => {
     try {
       const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
-      setMemners(response.data);
+      setMembers(response.data);
     } catch (error) {
       console.error(error);
       // Handle errors appropriately
