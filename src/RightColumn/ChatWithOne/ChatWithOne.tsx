@@ -57,7 +57,6 @@ const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
 
   const channelInfo = channel as ChannelType;
 
-  const handleOnWheel = () => {};
   const handleClickOnMedia = (
     event: React.MouseEvent<HTMLParagraphElement>
   ) => {
@@ -88,41 +87,10 @@ const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
           <RiPencilLine size={24} className={`util-icon`} />
         </span>
       </div>
-      <div>
-        <div className="wrapper" onWheel={handleOnWheel}>
-          <div className="rightcolumn-body">
-            <div className="status1-container">
-              <div className="avatar-wrapper">
-                <p className="name">Name</p>
-                <div className="avatar-container">
-                  <p className="avatar">Avatar</p>
-                </div>
-              </div>
-              <div className="phone-container">
-                <div className="layout-btn">
-                  <MdOutlineCall size={24} className="util-icon" />
-                  <p>Phone number</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* <MediaState /> */}
-        </div>
-      </div>
+      <div className="rightcolumn-body"></div>
 
-      {/* {pageStatus !== "edit" && pageStatus !== "info" && (
-        <div>
-          <div className="rightcolumn-header">
-            <span className="btn-edit" onClick={handleClickOnEditButton}>
-              <IoMdArrowBack size={24} className="util-icon" />
-            </span>
-            <h3>Shared Media</h3>
-          </div>
-          <div className="info-body"></div>
-          <MediaState userProp={userProp} stateMedia={mediaClicked} />
-        </div>
-      )} */}
+      {/* <MediaState /> */}
     </div>
   );
 };

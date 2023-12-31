@@ -29,6 +29,13 @@ type ChannelType = {
   avatar_url?: string;
   create_at: string;
 };
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
+};
 
 type UnifiedType = UserType | ChannelType;
 
@@ -45,9 +52,11 @@ type ChannelInboxProps = {
   handleVisibleBtn: (visible: boolean) => void;
   socket: WebSocket;
   UserAdmin: boolean;
+  memberList: MemberType[];
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
+  memberList,
   UserAdmin,
   socket,
   channel,
@@ -120,13 +129,16 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 
   const handleOnWheel = () => {};
 
-  // handle change avatar
+  const handleClickCopyLink = () => {
+    alert("Copied link to clipboard");
+  };
 
   return (
     <div className="RightColumn-container">
       {UserAdmin && (
         <div className={`user-info`} style={EditTranslateX}>
           <EditInforGroup
+            memberList={memberList}
             socket={socket}
             channel={channel}
             userId={userId}
@@ -177,11 +189,17 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 <img src={channelInfo.avatar_url}></img>
               </div>
               <p className="group-name">{channelInfo.title}</p>
+              <div
+                className="description-role-group"
+                style={{ margin: "5px auto " }}
+              >
+                {memberList.length} Members
+              </div>
             </div>
-            <div className="rectangle-container">
+            <div className="rectangle-container" onClick={handleClickCopyLink}>
               <div className="layout-btn">
                 <IoIosInformationCircle size={24} className="util-icon" />
-                <p>Info</p>
+                <p>Copy link group</p>
               </div>
             </div>
             <div className="rectangle-container">

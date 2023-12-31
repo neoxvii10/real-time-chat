@@ -78,3 +78,9 @@
 .edit-group-title {
   margin: 0 20px;
 }
+
+.description-role-group {
+  font-size: 1rem;
+  color: rgba(197, 193, 193, 0.808);
+  margin-left: 1rem;
+}

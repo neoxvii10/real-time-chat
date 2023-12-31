@@ -3,6 +3,7 @@ import "./RightColumn.css";
 import ChatWithOne from "./ChatWithOne/ChatWithOne";
 import ChatWithGroup from "./ChatWithGroup/ChatWithGroup";
 import ChannelApi from "../Api/ChannelApi";
+import Member from "./ChatWithGroup/Member/Member";
 
 type UserType = {
   id: number;
@@ -106,6 +107,7 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
           />
         ) : (
           <ChatWithGroup
+            memberList={memberList}
             UserAdmin={UserAdmin}
             socket={socket}
             channel={channel}
