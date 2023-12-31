@@ -27,8 +27,8 @@ import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/Edit
 import axios from "axios";
 import { timeEnd } from "console";
 import ChannelApi from "../Api/ChannelApi";
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 // use api
 type UserType = {
   id: number;
@@ -100,6 +100,14 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
 
   const isUserType = (channel as UnifiedType).hasOwnProperty("username");
 
+  const formatChannelTitle = (title: string) => {
+    if (title.indexOf(" || ") === -1) {
+      return title;
+    }
+    let [name1, name2] = title.split(" || ");
+    return name2;
+  };
+
   const renderHeader = () => {
     if (isUserType) {
       const user = channel as UserType;
@@ -116,7 +124,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
             />
           </div>
           <div className="user-labels">
-            <h5>{user.fullname}</h5>
+            <h5>{formatChannelTitle(user.fullname)}</h5>
             <p>Last seen now</p>
           </div>
         </div>
@@ -275,7 +283,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-  }, [messages]);
+  }, [messages.length]);
 
   // handle receive message
   socket.onmessage = (e) => {
@@ -875,13 +883,17 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
                   } ${message.type === "image" ? "image" : ""}`}
                 >
                   <div className="message-content">
-                    <div className="message-fullname">{message.fullname}</div>
+                    <div className="message-fullname">
+                      {message.sender === "user" && message.fullname}
+                    </div>
                     {message.type === "image" ? (
                       <div>
                         <img
                           src={message.text.split(" ")[0]}
                           alt={message.type}
-                          onClick={(e) => handleImage(message.text.split(' ')[0])}
+                          onClick={(e) =>
+                            handleImage(message.text.split(" ")[0])
+                          }
                         ></img>
                       </div>
                     ) : (
@@ -1114,19 +1126,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          boxShadow: 24,
-          p: 4,
-        }}>
-          
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
           <img
             src={image}
             alt="asd"

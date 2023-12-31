@@ -471,6 +471,15 @@ const Users: React.FC<UsersTypes> = (
     onChannelClick(channel);
     setSelectedChannelId(channel.id);
   };
+
+  const formatChannelTitle = (title: string) => {
+    if (title.indexOf(' || ') === -1) {
+      return title
+    }
+    let [name1, name2] = title.split(' || ')
+    return name2
+  }
+
   
   return (
     <div className="users-container">
@@ -624,7 +633,7 @@ const Users: React.FC<UsersTypes> = (
                   </div>
                   <div className="user-label-timestamps">
                     <div className="user-labels">
-                      <h5>{channel.title}</h5>
+                      <h5>{formatChannelTitle(channel.title)}</h5>
                     </div>
                   </div>
                 </div>
@@ -651,7 +660,7 @@ const Users: React.FC<UsersTypes> = (
                 </div>
                 <div className="user-label-timestamps">
                   <div className="user-labels">
-                    <h5>{channel.title}</h5>
+                    <h5>{formatChannelTitle(channel.title)}</h5>
                     <p>
                       <strong>
                         {channel.last_message.member && 
