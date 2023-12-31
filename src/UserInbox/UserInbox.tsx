@@ -25,10 +25,10 @@ import Report from "../Users/Report/Report";
 import UserInformation from "../RightColumn/RightColumn";
 import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
 import axios from "axios";
-
 import { timeEnd } from "console";
 import ChannelApi from "../Api/ChannelApi";
-
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 // use api
 type UserType = {
   id: number;
@@ -810,6 +810,19 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
     }
   };
 
+  const [open, setOpen] = useState(false);
+  const [image, setImage] = useState("false");
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleImage = (value: any) => {
+    setImage(value);
+    setOpen(true);
+    console.log(image);
+  };
+
   return (
     <>
       {!isUserType ? (
@@ -921,6 +934,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
                         <img
                           src={message.text.split(" ")[0]}
                           alt={message.type}
+                          onClick={(e) => handleImage(message.text.split(' ')[0])}
                         ></img>
                       </div>
                     ) : (
@@ -1147,6 +1161,32 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
           setSelectedImage={setSelectedImage}
         />
       )}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+        }}>
+          
+          <img
+            src={image}
+            alt="asd"
+            style={{ maxHeight: "100%", maxWidth: "100%" }}
+          />
+        </Box>
+      </Modal>
     </>
   );
 };
