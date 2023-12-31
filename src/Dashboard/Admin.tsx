@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Topbar from './scenes/global/Topbar';
 import { ColorModeContext, useMode } from './theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
@@ -16,28 +16,45 @@ import FAQ from './scenes/faq/FAQ';
 import Bar from './scenes/bar/Bar';
 import Pie from './scenes/pie/Pie';
 import Line from './scenes/line/Line';
+import Profile from './scenes/profile/Profile';
 import Geography from './scenes/geography/Geography';
 import AdminLogin from './authentications/AdminLogin';
 import Report from './scenes/report/Report';
 import 'react-toastify/dist/ReactToastify.css';
 import User from './scenes/user/User';
+import { ToastContainer } from 'react-toastify';
+import ChannelMembers from './scenes/channel/ChannelMembers';
+import UserApi from '../Api/UserApi';
 const AdminManagement = () => {
+    const channelId = useParams();
     const navigate = useNavigate();
-    const isAuthenticated = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    const isAuthenticated = async () => {
         const accessToken = localStorage.getItem('accessToken');
         // Your authentication logic here, e.g., checking if the token is valid
-        return accessToken;
+        if(accessToken) {
+            const response = await UserApi.getUserList();
+            if(!response.status || response.status === 200) {
+                return true;
+            }
+        }
+        return false;
     };
 
     useEffect(() => {
         // Check authentication before rendering the component
-        if (!isAuthenticated()) {
-            // Redirect to login if not authenticated
-            navigate('/admin/login');
-        }
+        new Promise((resolve, reject) => {
+            resolve( isAuthenticated())
+        }).then((isAuthenticated: any) => {
+            if(!isAuthenticated) {
+                navigate('/admin/login')
+            } else {
+                setIsAdmin(true);
+            }
+        })
     }, [navigate]);
 
-    if(!isAuthenticated()) {
+    if(!isAdmin) {
         return (
             <AdminLogin/>
         )
@@ -71,6 +88,7 @@ const Admin= () => {
                             <Route path="/user" element={<ManageUser />}>
                                 <Route path="*" />
                             </Route>
+                            <Route path="/channel/:channelId/members" element = {<ChannelMembers />} />
                             <Route path="/invoices" element={<Invoices/>}/>
                             <Route path="/form" element={<Form/>}/>
                             <Route path="/bar" element={<Bar/>}/>
@@ -80,10 +98,13 @@ const Admin= () => {
                             <Route path="/geography" element={<Geography/>}/>
                             <Route path="/calendar" element={<Calendar/>}/>
                             <Route path="/report" element={<Report/>}/>
+                            <Route path="/profile" element={<Profile/>}/>
                         </Routes>
                     </main>
                 </div>
             </ThemeProvider>
+            <ToastContainer/>
+            
         </ColorModeContext.Provider>
     )
 };

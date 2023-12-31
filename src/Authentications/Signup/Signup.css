@@ -25,6 +25,7 @@
   grid-template-columns: repeat(2, 1fr);
   column-gap: 1.4rem;
   margin-bottom: 1rem;
+  width: 600px;
 }
 
 .signup-btn {
@@ -38,6 +39,7 @@
   border: none;
   font-weight: 550;
   transition: filter 0.1s ease;
+  width: 270px;
 }
 
 .submit-btn:hover {
@@ -46,19 +48,21 @@
 
 .inputBox {
   position: relative;
-  width: 250px;
-  margin-top: 0.4rem;
+  width: 270px;
+  margin-top: 0.3rem;
+  outline: none;
+  border: none;
 }
 
 .inputBox input {
-  margin-top: 1rem;
+  box-shadow: 0px 0px 3px;
+  margin-top: 0.9rem;
   width: 100%;
   padding: 20px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: #1d2b3a;
   border-radius: 10px;
   outline: none;
-  color: #fff;
+  border: none;
+  color: var(--font-color);
   font-size: 1rem;
   background: var(--background-color);
 }
@@ -69,8 +73,8 @@
   left: 0;
   padding: 16px 10px;
   pointer-events: none;
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.25);
+  font-size: 1rem;
+  color: var(--font-color);
   transition: 0.2s ease;
 }
 
@@ -85,5 +89,6 @@
 
 .inputBox input:focus,
 .inputBox input:valid {
+  box-shadow: none;
   border: 2px solid var(--border-on-click);
 }

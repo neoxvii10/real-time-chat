@@ -43,7 +43,7 @@ const AdminLogin = () => {
   
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-    
+      localStorage.removeItem('accessToken');
       setLoading(true);
     
       const formData = {
@@ -76,7 +76,7 @@ const AdminLogin = () => {
               pauseOnHover: true,
               closeOnClick: false,
               theme: "dark",
-            })}, 500);
+            })}, 100);
     
           setTimeout(() => {
             navigate('/admin');

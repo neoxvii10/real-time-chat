@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosClient from "./AxiosClient";
 
 class ChannelApi {
@@ -28,6 +29,16 @@ class ChannelApi {
 
     getChannelMediaList = async (channelId: number) => {
         const url = `/api/channel/${channelId}/media`;
+        return await axiosClient.get(url);
+    }
+
+    getChannelMembers = async (channelId: string) => {
+        const url = `/api/channel/${channelId}/members`;
+        return await axiosClient.get(url);
+    }
+
+    getRecentChannelList = async () => {
+        const url = `/api/channel/recent/all/`;
         return await axiosClient.get(url);
     }
 }

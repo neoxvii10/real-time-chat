@@ -475,6 +475,8 @@ p {
   display: grid;
   top: 4rem;
   gap: 0.2rem;
+  /* bottom: 7rem;
+  gap: 0.3rem; */
   overflow-y: auto;
   max-height: 74.5vh;
   margin-left: 2.4rem;
@@ -493,9 +495,9 @@ p {
 
 .message.self {
   background-color: var(--chat-ib-color-self);
-  color: #fff;
+  color: auto;
   border-radius: 10px;
-  margin-right: 90px;
+  margin-right: 85px;
   margin-left: auto;
   max-width: 70%;
   padding: 8px;
@@ -507,7 +509,7 @@ p {
   color: #333;
   border-radius: 10px;
   margin-right: auto;
-  margin-left: 10px;
+  margin-left: 40px;
   max-width: 70%;
   padding: 8px;
   width: fit-content;
@@ -533,8 +535,36 @@ p {
 
 .message-container .icon-container {
   position: relative;
+}
+
+.message.user.image .message-icons {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  display: none;
+  flex-direction: row;
+}
+
+.message.user.image:hover .message-icons {
+  display: flex;
+  top: -2.5rem;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.message.image .message-footer .timestamp {
+  color: white;
+}
+
+.icon-container {
   left: 85px;
   top: -30px;
+}
+
+.icon:hover {
+  transform: scale(1.1);
 }
 
 .timestamp {
@@ -558,8 +588,10 @@ p {
 }
 
 .message.user.image div {
-  max-width: 65% !important;
   display: flex;
+  flex-direction: column;
+  align-items: left;
+  max-width: 65% !important;
   justify-content: left;
   width: fit-content;
 }
@@ -573,4 +605,133 @@ p {
   text-decoration: none;
   color: var(--font-color);
   font-weight: bold;
+}
+
+.message-fullname {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.delete-confirmation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--background-color);
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.delete-confirmation-modal p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.delete-confirmation-modal button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+}
+
+.delete-confirmation-modal button:first-child {
+  color: #fff;
+}
+
+.delete-confirmation-modal button:last-child {
+  background-color: #6c757d; /* Gray color for "No" button */
+  color: #fff;
+}
+
+.reply-popup {
+  position: relative;
+  max-width: 15rem;
+  max-height: 2.5rem;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 0.5rem;
+  padding-right: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  overflow: hidden;
+}
+
+.close-button {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--chat-ib-color-self);
+  position: absolute;
+  top: 0rem;
+  right: 0.5rem;
+  font-weight: bold;
+}
+
+.emoji-popup {
+  position: absolute;
+  font-size: 1.5rem;
+  bottom: 30px;
+  left: -137px;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 7px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.message.user.image .emoji-popup {
+  position: absolute;
+  font-size: 1.5rem;
+  bottom: 30px;
+  left: 50%;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 7px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.message.user.image .message-footer {
+  flex-direction: row;
+}
+
+.message.user.image .reaction-icon {
+  flex-direction: row;
+  color: white;
+  border-radius: 10px;
+}
+
+.emoji-popup span {
+  cursor: pointer;
+}
+
+.emoji:hover {
+  transform: scale(1.1);
+}
+
+.message-footer {
+  display: flex;
+  justify-content: space-between; /* Add space between timestamp and reaction   s */
+  align-items: center;
+}
+
+.reaction-icon {
+  display: flex;
+}
+
+.reaction-icon span {
+  cursor: pointer;
+}
+
+.reply-message span {
+  background-color: #7f858b;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 5px;
+  color: white;
 }

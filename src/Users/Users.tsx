@@ -164,6 +164,15 @@ const Users: React.FC<UsersTypes> = (
       }
     }
     fetchData();
+    // Periodically fetch the latest data
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 60000);
+
+    // Cleanup interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [])
 
   //hanlde new group slides
@@ -451,6 +460,13 @@ const Users: React.FC<UsersTypes> = (
     return timeB - timeA;
   });
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + '...';
+    }
+    return text;
+  };
+
   const handleChannelClick = (channel: UnifiedType) => {
     onChannelClick(channel);
     setSelectedChannelId(channel.id);
@@ -636,7 +652,15 @@ const Users: React.FC<UsersTypes> = (
                 <div className="user-label-timestamps">
                   <div className="user-labels">
                     <h5>{channel.title}</h5>
-                    <p>{channel.last_message.content}</p>
+                    <p>
+                      <strong>
+                        {channel.last_message.member && 
+                        channel.last_message.member.user ? channel.last_message.member.user.fullname : 
+                        ' Unknown User'}
+                      </strong>{" "}
+                      {channel.last_message.message_type === "IMAGE" ? 
+                      " đã gửi một ảnh" : truncateText(channel.last_message.content, 26)}
+                    </p>
                   </div>
                   <span className="latest-timestamps">
                     {calculateTimeDifferenceForChannel(channel)}

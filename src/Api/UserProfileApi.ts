@@ -8,6 +8,10 @@ class UserProfileApi {
 
     getChatProfile = async (channelId: number) => {
         const url = `/api/user/${channelId}/profile`;
+    }
+    
+    getParticularProfile = async (id: any) => {
+        const url = `/api/user/${id}/profile`;
         return await axiosClient.get(url);
     }
 
