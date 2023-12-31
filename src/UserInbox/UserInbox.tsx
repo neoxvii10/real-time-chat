@@ -95,6 +95,15 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
 
   const isUserType = (channel as UnifiedType).hasOwnProperty("username");
 
+
+  const formatChannelTitle = (title: string) => {
+    if (title.indexOf(' || ') === -1) {
+      return title
+    }
+    let [name1, name2] = title.split(' || ')
+    return name2
+  }
+
   const renderHeader = () => {
     if (isUserType) {
       const user = channel as UserType;
@@ -111,7 +120,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
             />
           </div>
           <div className="user-labels">
-            <h5>{user.fullname}</h5>
+            <h5>{formatChannelTitle(user.fullname)}</h5>
             <p>Last seen now</p>
           </div>
         </div>
@@ -184,7 +193,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         let res: any = await axiosClient.get(
           `api/channel/${channelId}/messages/?page=1`
         );
-        let reactionListRes = await axios.get(`http://16.162.46.190/api/message/channel-reactions/${channel.id}/`)
+        let reactionListRes = await axios.get(`http://112.137.129.158:5002/api/message/channel-reactions/${channel.id}/`)
 
         let messageList = [];
         for (let message of res.data) {
@@ -235,7 +244,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
     }
-  }, [messages]);
+  }, [messages.length]);
 
   // handle receive message
   socket.onmessage = (e) => {
@@ -772,7 +781,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       });
     }
   };
-
+  
   return (
     <>
       {!isUserType ? (
@@ -873,7 +882,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                 <div key={index}
                   className={`message ${message.sender === "self" ? "self" : "user"} ${message.type === "image" ? "image" : ""}`}>
                   <div className="message-content">
-                    <div className="message-fullname">{message.fullname}</div>
+                    <div className="message-fullname">{message.sender === "user" && message.fullname}</div>
                     {message.type === "image" ? (
                       <div>
                         <img src={message.text.split(' ')[0]} alt={message.type}></img>
