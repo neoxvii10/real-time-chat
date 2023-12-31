@@ -244,31 +244,13 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
         <div className="rectangle-container">
           <div className="layout-btn">
             <MdAdminPanelSettings size={24} className="util-icon" />
-            <p>Creator</p>
-            {quantitiesAd > 1 ? (
-              <div className="description-role-group">
-                {quantitiesAd} Creators
-              </div>
-            ) : (
-              <div className="description-role-group">
-                {quantitiesAd} Creator
-              </div>
-            )}
+            <p>Creator: {quantitiesAd}</p>
           </div>
         </div>
         <div className="rectangle-container">
           <div className="layout-btn">
             <MdPeopleAlt size={24} className="util-icon" />
-            <p>Member</p>
-            {quantitiesMem > 1 ? (
-              <div className="description-role-group">
-                {quantitiesMem} Members
-              </div>
-            ) : (
-              <div className="description-role-group">
-                {quantitiesMem} Member
-              </div>
-            )}
+            <p>Member: {quantitiesMem}</p>
           </div>
         </div>
 
