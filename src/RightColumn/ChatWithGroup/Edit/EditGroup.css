@@ -18,7 +18,6 @@
 
 .delete-contact {
   background-color: var(--background-color);
-  border-top: 0.6rem solid rgba(0, 0, 0, 0.542);
   padding-top: 10px;
   height: 80px;
   display: flex;
@@ -78,4 +77,10 @@
 
 .edit-group-title {
   margin: 0 20px;
+}
+
+.description-role-group {
+  font-size: 1rem;
+  color: rgba(197, 193, 193, 0.808);
+  margin-left: 1rem;
 }

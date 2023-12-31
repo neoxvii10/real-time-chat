@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from "react";
-import { MdOutlineCall, MdPeopleAlt, MdExitToApp } from "react-icons/md";
+import { MdExitToApp, MdOutlineCall, MdPeopleAlt } from "react-icons/md";
 import { IoIosInformationCircle, IoMdClose } from "react-icons/io";
 import "./ChatWithGroup.css";
 import "../RightColumn.css";
@@ -29,6 +29,13 @@ type ChannelType = {
   avatar_url?: string;
   create_at: string;
 };
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
+};
 
 type UnifiedType = UserType | ChannelType;
 
@@ -44,11 +51,13 @@ type ChannelInboxProps = {
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
   socket: WebSocket;
-  UserAdmin: boolean;
+  Creator: boolean;
+  memberList: MemberType[];
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
-  UserAdmin,
+  memberList,
+  Creator,
   socket,
   channel,
   userId,
@@ -118,15 +127,18 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
     }
   }, [channel.id]);
 
-  const handleOnWheel = () => { };
+  const handleOnWheel = () => {};
 
-  // handle change avatar
+  const handleClickCopyLink = () => {
+    alert("Copied link to clipboard");
+  };
 
   return (
     <div className="RightColumn-container">
-      {UserAdmin && (
+      {Creator && (
         <div className={`user-info`} style={EditTranslateX}>
           <EditInforGroup
+            memberList={memberList}
             socket={socket}
             channel={channel}
             userId={userId}
@@ -147,7 +159,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           channel={channel}
           handMemberBack={handleShowAllMembers}
           userId={userId}
-          isUserAdmin={UserAdmin}
+          Creator={Creator}
         />
       </div>
 
@@ -156,15 +168,15 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           <IoMdClose size={24} className="util-icon" />
         </span>
         <h3>Profile</h3>
-        {UserAdmin && (
+        {Creator && (
           <span className="btn-edit" onClick={handleClickOnEditButton}>
             <RiPencilLine size={24} className={`util-icon`} />
           </span>
         )}
       </div>
-      <div>
+      <div className="rightcolumn-body">
         <div className="wrapper" onWheel={handleOnWheel}>
-          <div className="rightcolumn-body">
+          <div>
             <div className="group-avatar-wrapper">
               <div
                 className="group-avatar-container"
@@ -177,30 +189,43 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 <img src={channelInfo.avatar_url}></img>
               </div>
               <p className="group-name">{channelInfo.title}</p>
+              <div
+                className="description-role-group"
+                style={{ margin: "5px auto " }}
+              >
+                {memberList.length} Members
+              </div>
             </div>
-            <div className="rectangle-container">
+            <div className="rectangle-container" onClick={handleClickCopyLink}>
               <div className="layout-btn">
                 <IoIosInformationCircle size={24} className="util-icon" />
-                <p>Info</p>
+                <p>Copy link group</p>
               </div>
             </div>
             <div className="rectangle-container">
               <div className="layout-btn" onClick={handleShowAllMembers}>
                 <MdPeopleAlt size={24} className="util-icon" />
                 <p>Member</p>
-                <MdOutlineArrowForwardIos className="util-icons-right" />
+                <MdOutlineArrowForwardIos
+                  className="util-icons-right"
+                  style={{
+                    position: "absolute",
+                    right: "5%",
+                    margin: "4% 0 0 0",
+                  }}
+                />
               </div>
             </div>
-            {/* <div className="rectangle-container">
-              <div className="layout-btn" >
-                <MdExitToApp
-                  size={24}
-                  className="util-icon"
-                  style={{ color: "red" }}
-                />
-                <p style={{ color: "red" }}>Leave group</p>
-              </div>
-            </div> */}
+          </div>
+          <div className="delete-contact">
+            <div className="layout-btn">
+              <MdExitToApp
+                size={24}
+                className="util-icon"
+                style={{ color: "red" }}
+              />
+              <p>Leave Group</p>
+            </div>
           </div>
 
           <MediaState channel={channel as ChannelType} />

@@ -3,12 +3,14 @@ import { useEffect, useState, CSSProperties } from "react";
 import { TiTick } from "react-icons/ti";
 import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
+import { MdAdminPanelSettings } from "react-icons/md";
 import { TbCameraPlus } from "react-icons/tb";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt, MdExitToApp } from "react-icons/md";
 import { FaCheck } from "react-icons/fa6";
 import ChannelApi from "../../../Api/ChannelApi";
+import { number } from "yup";
 
 type UserType = {
   id: number;
@@ -27,10 +29,18 @@ type ChannelType = {
   avatar_url?: string;
   create_at: string;
 };
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
+};
 
 type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
+  memberList: MemberType[];
   socket: WebSocket;
   channel: UnifiedType;
   userId: number;
@@ -45,6 +55,7 @@ type ChannelInboxProps = {
 };
 
 const EditInforGroup: React.FC<ChannelInboxProps> = ({
+  memberList,
   socket,
   channel,
   handleEdit,
@@ -61,8 +72,9 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
   const [existAvt, setExitAvt] = useState<boolean>(true);
   const [ChangingForm, setChangingForm] = useState<boolean>(false);
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) 
-  { return WebSocket.readyState === WebSocket.OPEN }
+  function isOpen(WebSocket: { readyState: any; OPEN: any }) {
+    return WebSocket.readyState === WebSocket.OPEN;
+  }
 
   // handle submit blob
   const handleSubmitAvatar = async (
@@ -97,16 +109,18 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
   const [groupName, setGroupName] = useState<string>(channelInfo?.title);
 
   useEffect(() => {
-    setGroupName(channelInfo.title)
-  }, [channelInfo])
+    setGroupName(channelInfo.title);
+  }, [channelInfo]);
 
-  const handleGroupNameChange = ( e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGroupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGroupName(e.target.value);
     handleVisibleBtn(true);
     setNameChange(true);
-  }
+  };
 
-  const handleSubmitGroupName = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmitGroupName = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     event.preventDefault();
     try {
       const formData = {
@@ -114,9 +128,9 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
         target: "channel",
         targetId: channelInfo.id,
         data: {
-          title: groupName
-        }
-      }
+          title: groupName,
+        },
+      };
 
       const requestData = JSON.stringify(formData);
 
@@ -129,21 +143,43 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const handleSubmitChange = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmitChange = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     event.preventDefault();
-    if(isCropped) {
-      await  handleSubmitAvatar(event);
+    if (isCropped) {
+      await handleSubmitAvatar(event);
       console.log("update avatar");
     }
-    if(isNameChange) {
+    if (isNameChange) {
       await handleSubmitGroupName(event);
       console.log("update name");
     }
+  };
+
+  function countAd() {
+    var quantities = 0;
+    memberList.map((member) => {
+      if (member.role === "CREATOR") {
+        ++quantities;
+      }
+    });
+    return quantities;
   }
+  const quantitiesAd = countAd();
 
-
+  function countMember() {
+    var quantities = 0;
+    memberList.map((member) => {
+      if (member.role === "MEMBER") {
+        ++quantities;
+      }
+    });
+    return quantities;
+  }
+  const quantitiesMem = countMember();
 
   return (
     <div>
@@ -191,7 +227,15 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
           </div>
           <div className="edit-group-title">
             <div className="input-group">
-              <input onChange={handleGroupNameChange} className='form-control' dir='auto' type="text" name='title' value={groupName} placeholder='Group name' />
+              <input
+                onChange={handleGroupNameChange}
+                className="form-control"
+                dir="auto"
+                type="text"
+                name="title"
+                value={groupName}
+                placeholder="Group name"
+              />
               <label>Group name</label>
             </div>
           </div>
@@ -199,25 +243,25 @@ const EditInforGroup: React.FC<ChannelInboxProps> = ({
 
         <div className="rectangle-container">
           <div className="layout-btn">
-            <MdPeopleAlt size={24} className="util-icon" />
-            <p>Member</p>
+            <MdAdminPanelSettings size={24} className="util-icon" />
+            <p>Creator: {quantitiesAd}</p>
           </div>
         </div>
         <div className="rectangle-container">
           <div className="layout-btn">
             <MdPeopleAlt size={24} className="util-icon" />
-            <p>Member</p>
+            <p>Member: {quantitiesMem}</p>
           </div>
         </div>
 
         <div className="delete-contact">
           <div className="layout-btn">
-            <MdExitToApp
+            <IoMdTrash
               size={24}
               className="util-icon"
               style={{ color: "red" }}
             />
-            <p>Leave Group</p>
+            <p>Delete Group</p>
           </div>
         </div>
         {ChangingForm ? (

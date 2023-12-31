@@ -1,11 +1,11 @@
-import React, { useState , CSSProperties, useEffect} from "react";
+import React, { useState, CSSProperties, useEffect } from "react";
 import "./Member.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiTrash } from "react-icons/fi";
 import { PiPencilSimpleLineBold } from "react-icons/pi";
 import { FaKey } from "react-icons/fa6";
 import { FaCrown } from "react-icons/fa";
-import { FaCheck  } from "react-icons/fa6";
+import { FaCheck } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 import { eventManager } from "react-toastify/dist/core";
 import AddMember from "./AddMember/AddMember";
@@ -43,34 +43,37 @@ const Member: React.FC<MemberType> = ({
   socket,
   userId,
   setMemberId,
-  handleSlideAnimation
+  handleSlideAnimation,
 }) => {
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
 
   const isAdmin = role === "CREATOR" ? true : false;
 
-  const [isCurrentUser, setCurrentUser] = useState<boolean>(false)
+  const [isCurrentUser, setCurrentUser] = useState<boolean>(false);
   useEffect(() => {
-    setCurrentUser(userId === user.id && !isAdmin )
-  }, [user])
-
+    setCurrentUser(userId === user.id && !isAdmin);
+  }, [user]);
 
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
   };
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) {
-     return WebSocket.readyState === WebSocket.OPEN 
+  function isOpen(WebSocket: { readyState: any; OPEN: any }) {
+    return WebSocket.readyState === WebSocket.OPEN;
   }
 
-  const handleVisibleInputNickName = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleVisibleInputNickName = (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
     setMemberId(id);
     handleSlideAnimation(e);
-  }
+  };
 
   //
-  const handleSetAdmin = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleSetAdmin = async (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
     e.preventDefault();
     try {
       const formAdmin = {
@@ -79,8 +82,8 @@ const Member: React.FC<MemberType> = ({
         targetId: channel,
         data: {
           memberId: id,
-        }
-      }
+        },
+      };
       const changeAdmin = JSON.stringify(formAdmin);
       if (!isOpen(socket)) {
         console.log("WebSocket connection is not open");
@@ -92,9 +95,11 @@ const Member: React.FC<MemberType> = ({
       console.log(error);
       alert("Change admin FAIL");
     }
-  }
+  };
 
-  const handleRemoveMember = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleRemoveMember = async (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
     e.preventDefault();
     try {
       const formRemove = {
@@ -103,8 +108,8 @@ const Member: React.FC<MemberType> = ({
         targetId: channel,
         data: {
           memberId: id,
-        }
-      }
+        },
+      };
       const removeMember = JSON.stringify(formRemove);
       if (!isOpen(socket)) {
         console.log("WebSocket connection is not open");
@@ -113,13 +118,15 @@ const Member: React.FC<MemberType> = ({
       await socket.send(removeMember);
       alert("Remove member successfully");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       alert("Remove member FAIL");
     }
-  }
+  };
 
   // leave group
-  const handleLeaveGroup = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleLeaveGroup = async (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
     e.preventDefault();
 
     try {
@@ -129,8 +136,8 @@ const Member: React.FC<MemberType> = ({
         targetId: channel,
         data: {
           memberId: id,
-        }
-      }
+        },
+      };
       const leaveData = JSON.stringify(formLeave);
       if (!isOpen(socket)) {
         console.log("WebSocket connection is not open");
@@ -142,7 +149,7 @@ const Member: React.FC<MemberType> = ({
       console.log(error);
       alert("Leave group FAIL");
     }
-  }
+  };
 
   return (
     <div style={{ display: "flex", padding: "1rem" }}>
@@ -195,7 +202,7 @@ const Member: React.FC<MemberType> = ({
               opacity: isUtilsVisible ? 1 : 0,
             }}
             onMouseLeave={() => setUtilsVisible(false)}
-          // onBlur={() => setUtilsVisible(false)}
+            // onBlur={() => setUtilsVisible(false)}
           >
             <ul className="util-dropdown-item-container">
               {!isAdmin && (
@@ -207,7 +214,10 @@ const Member: React.FC<MemberType> = ({
                 </li>
               )}
 
-              <li className="util-dropdown-item" onClick={handleVisibleInputNickName}>
+              <li
+                className="util-dropdown-item"
+                onClick={handleVisibleInputNickName}
+              >
                 <span className="dropdown-icon">
                   <PiPencilSimpleLineBold size={22} />
                 </span>
@@ -226,18 +236,15 @@ const Member: React.FC<MemberType> = ({
               {isCurrentUser && (
                 <li className="util-dropdown-item" onClick={handleLeaveGroup}>
                   <span className="dropdown-icon alert">
-                    <IoExitOutline  size={22} />
+                    <IoExitOutline size={22} />
                   </span>
-                  <span className="dropdown-label alert">
-                    Leave group
-                  </span>
+                  <span className="dropdown-label alert">Leave group</span>
                 </li>
               )}
             </ul>
           </div>
         </span>
       </span>
-      
     </div>
   );
 };

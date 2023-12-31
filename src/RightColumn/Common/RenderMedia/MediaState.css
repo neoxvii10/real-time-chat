@@ -12,10 +12,6 @@
   cursor: pointer;
 }
 
-.media-container .media-topic:hover {
-  background-color: var(--hover);
-}
-
 .media-container > .header {
   border-bottom: rgba(25, 17, 17, 0.14) solid 1px;
 }
@@ -25,15 +21,14 @@
   color: #686c72;
 }
 
-.media-container .media-clicked {
-  border-bottom: var(--primary-color) solid 3px;
-  color: rgb(135, 116, 225) !important;
+.media-grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, calc(98% / 4));
+  grid-gap: 1px;
 }
 
-.media-body {
-}
-
-.media-body img {
-  width: calc(100% / 4);
+.media-grid-container > img {
+  cursor: pointer;
+  width: 100%;
   aspect-ratio: 1;
 }
