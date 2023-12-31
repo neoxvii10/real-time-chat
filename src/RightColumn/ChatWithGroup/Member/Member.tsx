@@ -1,4 +1,4 @@
-import React, { useState , CSSProperties} from "react";
+import React, { useState , CSSProperties, useEffect} from "react";
 import "./Member.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiTrash } from "react-icons/fi";
@@ -50,7 +50,11 @@ const Member: React.FC<MemberType> = ({
 
   const isAdmin = role === "CREATOR" ? true : false;
 
-  const [isCurrentUser, setCurrentUser] = useState<boolean>(userId === user?.id)
+  const [isCurrentUser, setCurrentUser] = useState<boolean>(false)
+  useEffect(() => {
+    setCurrentUser(userId === user.id && !isAdmin )
+  }, [user])
+
 
   const handleUtilsClick = () => {
     setUtilsVisible(!isUtilsVisible);
@@ -219,7 +223,7 @@ const Member: React.FC<MemberType> = ({
                   </span>
                 </li>
               )}
-              {isCurrentUser &&  (
+              {isCurrentUser && (
                 <li className="util-dropdown-item" onClick={handleLeaveGroup}>
                   <span className="dropdown-icon alert">
                     <IoExitOutline  size={22} />

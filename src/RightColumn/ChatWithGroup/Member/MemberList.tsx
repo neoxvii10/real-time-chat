@@ -74,13 +74,13 @@ const MemberList: React.FC<ChannelInboxProps> = ({
       }, 100)
     }
 
-    console.log(serverMessage);
   }
 
   const fetchMember = async () => {
     try {
-      const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
+      const response = await ChannelApi.getAllMembersChannel(channelInfo.id);// Replace with your API endpoint
       setMemners(response.data);
+      
     } catch (error) {
       console.error(error);
       // Handle errors appropriately
@@ -131,9 +131,6 @@ const MemberList: React.FC<ChannelInboxProps> = ({
       transform: "translateX(480px)",
     });
   
-
-
-
   return (
     <>
       <AddMember 
