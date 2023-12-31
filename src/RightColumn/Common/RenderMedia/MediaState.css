@@ -27,7 +27,7 @@
   grid-gap: 1px;
 }
 
-.media-grid-container > img {
+.media-grid-container img {
   cursor: pointer;
   width: 100%;
   aspect-ratio: 1;

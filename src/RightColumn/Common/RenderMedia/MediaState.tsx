@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import "./MediaState.css";
-
 import ChannelApi from "../../../Api/ChannelApi";
 import { channel } from "diagnostics_channel";
 
@@ -53,6 +52,12 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
     fetchImage(channel.id);
   }, [channel.id]);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleOverlay = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div>
       <div className="media-container">
@@ -75,7 +80,19 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
             ) : (
               <div className="media-grid-container">
                 {data.map((image) => (
-                  <img key={image.id} src={image.content} />
+                  <>
+                    <a
+                      href={image.content}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        onClick={toggleOverlay}
+                        key={image.id}
+                        src={image.content}
+                      />
+                    </a>
+                  </>
                 ))}
               </div>
             )}
