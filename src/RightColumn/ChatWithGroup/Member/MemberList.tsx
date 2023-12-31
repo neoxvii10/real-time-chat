@@ -60,21 +60,35 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   const [members, setMemners] = useState<MemberType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  socket.onmessage = (e) => {
-    const serverMessage = JSON.parse(e.data);
+  useEffect(() => {
+    const handleSocketMessage = (e: MessageEvent) => {
+      // Parse the JSON data from the server
+      const serverMessage = JSON.parse(e.data);
 
-    if (
-      serverMessage.action === "change_creator" ||
-      serverMessage.action === "remove_member" ||
-      serverMessage.action === "add_member" ||
-      serverMessage.action === "set_nickname"
-    ) {
-      setTimeout(async () => {
-        const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
-        setMemners(response.data);
-      }, 100);
-    }
-  };
+      // Rest of your message handling logic...
+      if (
+        serverMessage.action === "change_creator" ||
+        serverMessage.action === "remove_member" ||
+        serverMessage.action === "add_member" ||
+        serverMessage.action === "set_nickname"
+      ) {
+        setTimeout(async () => {
+          const response = await ChannelApi.getAllMembersChannel(
+            channelInfo.id
+          ); // Replace with your API endpoint
+          setMemners(response.data);
+        }, 100);
+      }
+    };
+
+    // Add event listener when component mounts
+    socket.addEventListener("message", handleSocketMessage);
+
+    // Remove event listener when component unmounts
+    return () => {
+      socket.removeEventListener("message", handleSocketMessage);
+    };
+  }, [socket]);
 
   const fetchMember = async () => {
     try {

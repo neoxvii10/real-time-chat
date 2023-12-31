@@ -74,52 +74,42 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
       console.log(error);
     }
   };
-  const applyAdmin = () => {
-    if (memberList.length > 0)
-      for (let i = 0; i < memberList.length; i++) {
-        if (
-          memberList[i].user.id === userId &&
-          memberList[i].role === "CREATOR"
-        ) {
-          setCreator(true);
-          break;
-        }
-        setCreator(false);
-      }
-  };
 
   useEffect(() => {
     fetchMemberList();
   }, [channel.id]);
 
   return (
-    <div className="RightColumn-container">
-      <div>
-        {memberList.length === 2 ? (
-          <ChatWithOne
-            channel={channel}
-            userId={userId}
-            handleClose={handleClose}
-          />
-        ) : (
-          <ChatWithGroup
-            memberList={memberList}
-            Creator={Creator}
-            socket={socket}
-            channel={channel}
-            userId={userId}
-            handleClose={handleClose}
-            croppedImage={croppedImage}
-            croppedBlob={croppedBlob}
-            isCropped={isCropped}
-            setIsCropped={setIsCropped}
-            handleImageChange={handleImageChange}
-            hideBtnSubmit={hideBtnSubmit}
-            handleVisibleBtn={handleVisibleBtn}
-          />
-        )}
+    <>
+      <div className="RightColumn-container">
+        <div>
+          {memberList.length === 2 ? (
+            <ChatWithOne
+              channel={channel as ChannelType}
+              handleClose={handleClose}
+              memberList={memberList}
+              userId={userId}
+            />
+          ) : (
+            <ChatWithGroup
+              memberList={memberList}
+              Creator={Creator}
+              socket={socket}
+              channel={channel}
+              userId={userId}
+              handleClose={handleClose}
+              croppedImage={croppedImage}
+              croppedBlob={croppedBlob}
+              isCropped={isCropped}
+              setIsCropped={setIsCropped}
+              handleImageChange={handleImageChange}
+              hideBtnSubmit={hideBtnSubmit}
+              handleVisibleBtn={handleVisibleBtn}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 export default UserInfor;

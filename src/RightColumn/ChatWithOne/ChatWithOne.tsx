@@ -1,12 +1,17 @@
-import React, { CSSProperties, useState } from "react";
-import { MdOutlineCall } from "react-icons/md";
-import "../RightColumn.css";
-
-import MediaState from "../Common/RenderMedia/MediaState";
+import { useNavigate, Link } from "react-router-dom";
+import { CSSProperties, useEffect, useState } from "react";
+import { TfiArrowLeft } from "react-icons/tfi";
+import { MdOutlineModeEditOutline } from "react-icons/md";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineCall, MdAlternateEmail } from "react-icons/md";
+import { TbLogout } from "react-icons/tb";
+import { PiAddressBook } from "react-icons/pi";
+import { PiWarningCircle } from "react-icons/pi";
 import EditInforOne from "./Edit/EditOne";
-import { IoMdClose } from "react-icons/io";
-import { RiPencilLine } from "react-icons/ri";
 
+import UserProfileApi from "../../Api/UserProfileApi";
+import { useAuth } from "../../Hooks/AuthContext";
+import MediaState from "../Common/RenderMedia/MediaState";
 type UserType = {
   id: number;
   username: string;
@@ -25,73 +30,168 @@ type ChannelType = {
   create_at: string;
 };
 
-type UnifiedType = UserType | ChannelType;
-
-type ChannelInboxProps = {
-  channel: UnifiedType;
-  userId: number;
-  handleClose: (event: React.MouseEvent<Element>) => void;
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
 };
 
-const ChatWithOne: React.FC<ChannelInboxProps> = ({ channel, userId }) => {
-  const [mediaClicked, setMediaClick] = useState<string>("");
-  const [isSlidedEdit, setSlidedEdit] = useState<boolean>(true); //slide edit status
+type UnifiedType = UserType | ChannelType;
 
-  const [EditTranslateX, EditSetTranslateX] = useState<CSSProperties>({
+type ProfileProps = {
+  channel: ChannelType;
+  handleClose: (event: React.MouseEvent<Element>) => void;
+  memberList: MemberType[];
+  userId: number;
+};
+
+type TypeUserProfile = {
+  user?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    fullname: string;
+    username: string;
+  };
+  bio?: string;
+  avatar_url?: string;
+  phone_number?: string;
+  address?: string;
+  online?: boolean;
+};
+
+const ChatWithOne: React.FC<ProfileProps> = ({
+  channel,
+  handleClose,
+  memberList,
+  userId,
+}) => {
+  const friend: MemberType =
+    memberList[0].user.id === userId ? memberList[1] : memberList[0];
+  // handle slide for edit
+  const [translateXForEdit, setTranslateXForEdit] = useState<CSSProperties>({
     visibility: "hidden",
-    transform: "translateX(480px)",
+    opacity: 0,
+    transform: "translateX(-480px)",
   });
-  const [pageStatus, setPageStatus] = useState<string>("info");
-  const handleClickOnEditButton = (
-    event: React.MouseEvent<HTMLSpanElement>
-  ) => {
-    event.preventDefault();
-    setPageStatus(pageStatus === "info" ? "edit" : "info");
-    setSlidedEdit(!isSlidedEdit);
-    EditSetTranslateX((EditTranslateX) => ({
-      ...EditTranslateX,
-      visibility: isSlidedEdit ? "visible" : "hidden",
-      transform: isSlidedEdit ? "translateX(0px)" : "translateX(600px)",
+
+  const handleSlideEdit = (event: React.MouseEvent<Element>) => {
+    setTranslateXForEdit((translateXForEdit) => ({
+      ...translateXForEdit,
+      visibility: "visible",
+      opacity: 1,
+      transform: "translateX(0px)",
     }));
   };
 
-  const channelInfo = channel as ChannelType;
-
-  const handleClickOnMedia = (
-    event: React.MouseEvent<HTMLParagraphElement>
-  ) => {
-    setMediaClick(event.currentTarget.innerHTML);
-  };
-
-  function handleClose(
-    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
-  ): void {
-    throw new Error("Function not implemented.");
-  }
+  //fetch data
+  const [dataUser, setDataUser] = useState<TypeUserProfile>({
+    user: {
+      id: 0,
+      first_name: "",
+      last_name: "",
+      fullname: "",
+      username: "",
+    },
+    bio: "",
+    avatar_url: "",
+    phone_number: "",
+    address: "",
+    online: true,
+  });
 
   return (
-    <div className="RightColumn-container">
-      <div className={`user-info`} style={EditTranslateX}>
-        <EditInforOne
-          channel={channel}
-          userId={userId}
-          handleEdit={handleClickOnEditButton}
-        />
+    <>
+      <div className="profile-container">
+        <div className="profile-header">
+          <span className="icon-container" onClick={(e) => handleClose(e)}>
+            <TfiArrowLeft size={22} className="header-icon" />
+          </span>
+          <div className="main-header">
+            <h3 className="title">Profile</h3>
+            <span
+              className="icon-container"
+              onClick={(e) => handleSlideEdit(e)}
+            >
+              <MdOutlineModeEditOutline size={22} className="header-icon" />
+            </span>
+          </div>
+        </div>
+        <div className="content-profile">
+          <div className="profile-info">
+            <div className="avatar">
+              <img
+                className="cropped-img"
+                src={friend.user.avatar_url}
+                alt="Cropped Image"
+              />
+            </div>
+            <div className="info">
+              <div className="name">
+                <h3>{friend.user?.fullname}</h3>
+              </div>
+              <div className="status"></div>
+            </div>
+          </div>
+          <div className="info-extra">
+            <ul>
+              {dataUser.phone_number && (
+                <li>
+                  <div className="list-item">
+                    <span className="icon-item">
+                      <MdOutlineCall size={24} />
+                    </span>
+                    <div className="multiline-item">
+                      <span className="title-item">
+                        {dataUser.phone_number}
+                      </span>
+                      <span className="subtitle">Phone</span>
+                    </div>
+                  </div>
+                </li>
+              )}
+              <li>
+                <div className="list-item">
+                  <span className="icon-item">
+                    <MdAlternateEmail size={24} />
+                  </span>
+                  <div className="multiline-item">
+                    <span className="title-item">{friend.user?.username}</span>
+                    <span className="subtitle">Username</span>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="list-item">
+                  <span className="icon-item">
+                    <PiAddressBook size={24} />
+                  </span>
+                  <div className="multiline-item">
+                    <span className="title-item">{dataUser.address}</span>
+                    <span className="subtitle">Address</span>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="list-item">
+                  <span className="icon-item">
+                    <PiWarningCircle size={24} />
+                  </span>
+                  <div className="multiline-item">
+                    <span className="title-item">{dataUser.bio}</span>
+                    <span className="subtitle">Bio</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <MediaState channel={channel} />
+        </div>
       </div>
-      <div className="rightcolumn-header">
-        <span className="btn-close" onClick={(event) => handleClose(event)}>
-          <IoMdClose size={24} className="util-icon" />
-        </span>
-        <h3>Profile</h3>
-        <span className="btn-edit" onClick={handleClickOnEditButton}>
-          <RiPencilLine size={24} className={`util-icon`} />
-        </span>
-      </div>
-
-      <div className="rightcolumn-body"></div>
-
-      {/* <MediaState /> */}
-    </div>
+    </>
   );
 };
+
 export default ChatWithOne;

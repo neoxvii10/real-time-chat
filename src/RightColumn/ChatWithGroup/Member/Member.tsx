@@ -24,15 +24,6 @@ type MemberType = {
   handleSlideAnimation: (event: React.MouseEvent<Element>) => void;
 };
 
-// type ChannelType = {
-//   id: number;
-//   member_count: number;
-//   last_message?: any;
-//   title: string;
-//   avatar_url?: string;
-//   create_at: string;
-// };
-
 const Member: React.FC<MemberType> = ({
   id,
   user,
@@ -49,6 +40,8 @@ const Member: React.FC<MemberType> = ({
   const [isUtilsVisible, setUtilsVisible] = useState(false);
 
   const isAdmin = role === "CREATOR" ? true : false;
+
+  const userMember = role === "MEMBER" ? true : false;
 
   const [isCurrentUser, setCurrentUser] = useState<boolean>(false);
   useEffect(() => {
@@ -202,7 +195,6 @@ const Member: React.FC<MemberType> = ({
               opacity: isUtilsVisible ? 1 : 0,
             }}
             onMouseLeave={() => setUtilsVisible(false)}
-            // onBlur={() => setUtilsVisible(false)}
           >
             <ul className="util-dropdown-item-container">
               {!isAdmin && (

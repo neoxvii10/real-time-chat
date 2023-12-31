@@ -217,16 +217,6 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
               </div>
             </div>
           </div>
-          <div className="delete-contact">
-            <div className="layout-btn">
-              <MdExitToApp
-                size={24}
-                className="util-icon"
-                style={{ color: "red" }}
-              />
-              <p>Leave Group</p>
-            </div>
-          </div>
 
           <MediaState channel={channel as ChannelType} />
         </div>

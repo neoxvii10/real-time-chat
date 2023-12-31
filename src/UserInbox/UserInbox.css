@@ -474,9 +474,9 @@ p {
   width: 63%;
   display: grid;
   top: 4rem;
-  gap: 0.2rem;
-  /* bottom: 7rem;
-  gap: 0.3rem; */
+  /* gap: 0.2rem; */
+  bottom: 7rem;
+  gap: 0.3rem;
   overflow-y: auto;
   max-height: 74.5vh;
   margin-left: 2.4rem;
@@ -533,8 +533,28 @@ p {
   }
 }
 
+.message.user.image .message-icons {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  display: none;
+  flex-direction: row;
+}
+
+.message.user.image:hover .message-icons {
+  display: flex;
+  top: -2.5rem;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.message.image .message-footer .timestamp {
+  color: white;
+}
+
 .message-container .icon-container {
-  position: relative;
 }
 
 .message.user.image .message-icons {
@@ -561,6 +581,11 @@ p {
 .icon-container {
   left: 85px;
   top: -30px;
+  position: relative;
+}
+
+.icon:hover {
+  transform: scale(1.1);
 }
 
 .icon:hover {
