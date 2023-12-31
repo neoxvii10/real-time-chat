@@ -34,7 +34,7 @@ function App() {
             />
           )
         })}
-        <Route path="/admin" element = {isLoggedIn ? <AdminManagement/> : <Navigate to='/signin' />}>
+        <Route path="/admin" element = {isLoggedIn ? <AdminManagement/> : <Navigate to='/admin/login' />}>
           <Route path='*'/>
         </Route>
       </Routes>
