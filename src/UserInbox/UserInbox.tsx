@@ -379,6 +379,25 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
               }
             }
           break;
+          case "remove_reaction":
+            const removeReactionData = serverMessage.data
+            loop1:
+            for (let i = messages.length - 1; i >= 0; i--) {
+              if (messages[i].id === removeReactionData.messageId) {
+                loop2:
+                //@ts-ignore
+                for (let j = 0; j < messages[i]?.reactions?.length; j++) {
+                  //@ts-ignore
+                  let reaction = messages[i]?.reactions[j]
+                  if (reaction.id === removeReactionData.reactionId) {
+                    messages[i]?.reactions?.splice(j, 1)
+                    setMessages([...messages])
+                    break loop1;
+                  }
+                }
+              }
+            }
+            break;
       }
     };
 
