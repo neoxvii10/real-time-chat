@@ -323,6 +323,32 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           }
           onNewMessage();
           break;
+          case "remove_message":
+            const messageId = serverMessage.data.messageId;
+            console.log(`remove_message ${messageId}`)
+            const updatedMessages = messages.filter((msg) => msg.id !== messageId);
+            setMessages(updatedMessages);
+          break;
+    
+          case "create_reaction":
+            const data = serverMessage.data
+            let newReaction = {
+              id: data.id,
+              member: data.member,
+              message: data.message,
+              emoji: data.emoji
+            }
+            for (let i = messages.length - 1; i >= 0; i--) {
+              if (messages[i].id === newReaction.message) {
+                if (!messages[i].reactions) {
+                  messages[i].reactions = []
+                }
+                messages[i].reactions?.push(newReaction)
+                setMessages([...messages])
+                break
+              }
+            }
+          break;
       }
     };
 
