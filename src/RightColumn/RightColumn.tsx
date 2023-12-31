@@ -60,7 +60,7 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
   handleVisibleBtn,
   setIsCropped,
 }) => {
-  const [UserAdmin, setUserAdmin] = useState<boolean>(false);
+  const [Creator, setCreator] = useState<boolean>(true);
 
   const [memberList, setMemberList] = useState<MemberType[]>([]);
 
@@ -81,19 +81,15 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
           memberList[i].user.id === userId &&
           memberList[i].role === "CREATOR"
         ) {
-          setUserAdmin(true);
+          setCreator(true);
           break;
         }
-        setUserAdmin(false);
+        setCreator(false);
       }
   };
 
   useEffect(() => {
     fetchMemberList();
-  }, [channel.id]);
-
-  useEffect(() => {
-    applyAdmin();
   }, [channel.id]);
 
   return (
@@ -108,7 +104,7 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
         ) : (
           <ChatWithGroup
             memberList={memberList}
-            UserAdmin={UserAdmin}
+            Creator={Creator}
             socket={socket}
             channel={channel}
             userId={userId}

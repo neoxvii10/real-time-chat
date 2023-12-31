@@ -45,8 +45,7 @@ type ChannelInboxProps = {
   userId: number;
   handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
   socket: WebSocket;
-  isUserAdmin: boolean;
-  
+  Creator: boolean;
 };
 
 const MemberList: React.FC<ChannelInboxProps> = ({
@@ -54,7 +53,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   handMemberBack,
   userId,
   socket,
-  isUserAdmin,
+  Creator,
 }) => {
   const channelInfo = channel as ChannelType;
 
@@ -64,23 +63,23 @@ const MemberList: React.FC<ChannelInboxProps> = ({
   socket.onmessage = (e) => {
     const serverMessage = JSON.parse(e.data);
 
-    if (serverMessage.action === "change_creator" 
-    || serverMessage.action === "remove_member"
-    || serverMessage.action === "add_member"
-    || serverMessage.action === "set_nickname") {
-      setTimeout( async () => {
+    if (
+      serverMessage.action === "change_creator" ||
+      serverMessage.action === "remove_member" ||
+      serverMessage.action === "add_member" ||
+      serverMessage.action === "set_nickname"
+    ) {
+      setTimeout(async () => {
         const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
-        setMemners(response.data);  
-      }, 100)
+        setMemners(response.data);
+      }, 100);
     }
-
-  }
+  };
 
   const fetchMember = async () => {
     try {
-      const response = await ChannelApi.getAllMembersChannel(channelInfo.id);// Replace with your API endpoint
+      const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
       setMemners(response.data);
-      
     } catch (error) {
       console.error(error);
       // Handle errors appropriately
@@ -98,51 +97,54 @@ const MemberList: React.FC<ChannelInboxProps> = ({
     bottom: "1rem",
   });
 
-  const [translateXForAddMember, setTranslateXForAddMember] = useState<CSSProperties>({
-    visibility: "hidden",
-    opacity: 0,
-    transform: "translateX(480px)",
-  });
+  const [translateXForAddMember, setTranslateXForAddMember] =
+    useState<CSSProperties>({
+      visibility: "hidden",
+      opacity: 0,
+      transform: "translateX(480px)",
+    });
 
   const handleSlideAnimationAddMember = (event: React.MouseEvent<Element>) => {
     setTranslateXForAddMember({
-        ...translateXForAddMember,
-        visibility: "visible",
-        opacity: 1,
-        transform: "translateX(0px)"
-      });
-    }
+      ...translateXForAddMember,
+      visibility: "visible",
+      opacity: 1,
+      transform: "translateX(0px)",
+    });
+  };
 
   // set nick name
   const [memberId, setMemberId] = useState(-1);
 
   const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
     setTranslateXForNickName({
-        ...translateXForNickName,
-        visibility: "visible",
-        opacity: 1,
-        transform: "translateX(0px)"
-      });
-    };
+      ...translateXForNickName,
+      visibility: "visible",
+      opacity: 1,
+      transform: "translateX(0px)",
+    });
+  };
 
-    const [translateXForNickName, setTranslateXForNickName] = useState<CSSProperties>({
+  const [translateXForNickName, setTranslateXForNickName] =
+    useState<CSSProperties>({
       visibility: "hidden",
       opacity: 0,
       transform: "translateX(480px)",
     });
-  
+
   return (
     <>
-      <AddMember 
+      <AddMember
         socket={socket}
         translateX={translateXForAddMember}
         setTranslateX={setTranslateXForAddMember}
-        channelId={channel.id} />
-      <SetNickName 
+        channelId={channel.id}
+      />
+      <SetNickName
         socket={socket}
         translateX={translateXForNickName}
         setTranslateX={setTranslateXForNickName}
-        channelId={channel.id} 
+        channelId={channel.id}
         memberId={memberId}
       />
 
@@ -170,7 +172,7 @@ const MemberList: React.FC<ChannelInboxProps> = ({
             />
           ))}
         </div>
-        <button 
+        <button
           style={hideBtnSubmit}
           className="btn-submit-edit"
           onClick={handleSlideAnimationAddMember}
@@ -178,7 +180,6 @@ const MemberList: React.FC<ChannelInboxProps> = ({
           <FaPlus size={24} />
         </button>
       </div>
-      
     </>
   );
 };

@@ -9,6 +9,18 @@
   min-height: 100vh;
 }
 
+.user-info {
+  width: 34%;
+  overflow: hidden;
+  height: 100vh;
+  background: var(--background-color);
+  position: absolute;
+  z-index: 10;
+  right: 0.4rem;
+  transition: 300ms;
+  box-shadow: 0 0 3px black;
+}
+
 .RightColumn-container > .user-info {
   width: 100%;
   right: 0;
@@ -34,10 +46,6 @@
   width: 73%;
   font-size: x-large;
   padding-left: 2%;
-}
-
-.rightcolumn-body {
-  overflow-y: scroll;
 }
 
 .rectangle-container {
@@ -69,4 +77,8 @@
   position: relative;
   top: 20%;
   left: 0.5em;
+}
+
+.rightcolumn-body {
+  overflow-y: scroll;
 }

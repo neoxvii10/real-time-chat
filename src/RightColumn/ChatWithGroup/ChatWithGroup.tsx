@@ -51,13 +51,13 @@ type ChannelInboxProps = {
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
   socket: WebSocket;
-  UserAdmin: boolean;
+  Creator: boolean;
   memberList: MemberType[];
 };
 
 const ChatWithGroup: React.FC<ChannelInboxProps> = ({
   memberList,
-  UserAdmin,
+  Creator,
   socket,
   channel,
   userId,
@@ -135,7 +135,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
 
   return (
     <div className="RightColumn-container">
-      {UserAdmin && (
+      {Creator && (
         <div className={`user-info`} style={EditTranslateX}>
           <EditInforGroup
             memberList={memberList}
@@ -159,7 +159,7 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           channel={channel}
           handMemberBack={handleShowAllMembers}
           userId={userId}
-          isUserAdmin={UserAdmin}
+          Creator={Creator}
         />
       </div>
 
@@ -168,15 +168,15 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
           <IoMdClose size={24} className="util-icon" />
         </span>
         <h3>Profile</h3>
-        {UserAdmin && (
+        {Creator && (
           <span className="btn-edit" onClick={handleClickOnEditButton}>
             <RiPencilLine size={24} className={`util-icon`} />
           </span>
         )}
       </div>
-      <div>
+      <div className="rightcolumn-body">
         <div className="wrapper" onWheel={handleOnWheel}>
-          <div className="rightcolumn-body">
+          <div>
             <div className="group-avatar-wrapper">
               <div
                 className="group-avatar-container"
@@ -216,16 +216,6 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 />
               </div>
             </div>
-            {/* <div className="rectangle-container">
-              <div className="layout-btn" >
-                <MdExitToApp
-                  size={24}
-                  className="util-icon"
-                  style={{ color: "red" }}
-                />
-                <p style={{ color: "red" }}>Leave group</p>
-              </div>
-            </div> */}
           </div>
           <div className="delete-contact">
             <div className="layout-btn">
