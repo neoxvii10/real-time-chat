@@ -730,7 +730,9 @@ p {
   color: white;
   border-radius: 10px;
 }
-
+.message.user.image .fullname {
+  color: white;
+}
 .emoji-popup span {
   cursor: pointer;
 }

@@ -469,6 +469,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
         uuid: uuidv4(),
         data: {
           content: inputValue,
+          reply: null,
         },
       };
 
@@ -543,13 +544,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
 
   const handleFileMessage = async () => {
     if (selectedFile) {
-      // const fileMessage = {
-      //   text: `${selectedFile.name}\n${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
-      //   sender: "self",
-      //   type: "file",
-      //   file: selectedFile,
-      // };
-      // setMessages([...messages, fileMessage]);
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("channel", channel.id.toString());
@@ -664,6 +658,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
   };
 
   const ReplyPopup = () => {
+    if (replyToMessage.type === "image") {
+      replyToMessage.text = "Image";
+    }
+
     return (
       <div className="reply-popup">
         <div className="close-button" onClick={() => setReplying(false)}>
