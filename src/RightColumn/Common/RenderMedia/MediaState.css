@@ -33,3 +33,13 @@
   width: 100%;
   aspect-ratio: 1;
 }
+.no-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-image p {
+  margin-top: 100px;
+  color: rgba(245, 222, 179, 0.664);
+}

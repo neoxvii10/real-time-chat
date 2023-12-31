@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import "./MediaState.css";
 
 import ChannelApi from "../../../Api/ChannelApi";
-import { channel } from "diagnostics_channel";
 
 type ChannelType = {
   id: number;
@@ -73,12 +72,20 @@ const MediaState: React.FC<MediaShow> = ({ channel }) => {
             {loading ? (
               <p>Loading data...</p>
             ) : (
-              <div className="media-grid-container">
-                {data.map((image) => (
-                  <a href={image.content} target="_blank">
-                    <img key={image.id} src={image.content} />
-                  </a>
-                ))}
+              <div>
+                {data.length === 0 ? (
+                  <div className="no-image">
+                    <p>No images available</p>
+                  </div>
+                ) : (
+                  <div className="media-grid-container">
+                    {data.map((image) => (
+                      <a href={image.content} target="_blank">
+                        <img key={image.id} src={image.content} />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
