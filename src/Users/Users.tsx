@@ -191,11 +191,16 @@ const Users: React.FC<UsersTypes> = (
 
     if (serverMessage.action === "create_channel" 
     || serverMessage.action === "upload_channel_avatar"
-    || serverMessage.action === "set_channel_title") {
+    || serverMessage.action === "set_channel_title"
+    || serverMessage.action === "remove_member") {
       setTimeout( async () => {
         const channelListRes = await ChannelApi.getChannelList()
         setChannelList(channelListRes?.data);
-      }, 1000)
+      }, 200)
+    }
+
+    if(serverMessage.action === "out_channel") {
+      window.location.reload();
     }
   }
 

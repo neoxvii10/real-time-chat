@@ -1,7 +1,8 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import "./RightColumn.css";
 import ChatWithOne from "./ChatWithOne/ChatWithOne";
 import ChatWithGroup from "./ChatWithGroup/ChatWithGroup";
+import ChannelApi from "../Api/ChannelApi";
 
 type UserType = {
   id: number;
@@ -35,11 +36,17 @@ type ChannelInboxProps = {
   hideBtnSubmit: CSSProperties;
   handleVisibleBtn: (visible: boolean) => void;
   socket: WebSocket;
-  UserAdmin: boolean;
+};
+
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
 };
 
 const UserInfor: React.FC<ChannelInboxProps> = ({
-  UserAdmin,
   socket,
   channel,
   handleClose,
@@ -52,12 +59,46 @@ const UserInfor: React.FC<ChannelInboxProps> = ({
   handleVisibleBtn,
   setIsCropped,
 }) => {
-  const isUserType = false;
+  const [UserAdmin, setUserAdmin] = useState<boolean>(false);
+
+  const [memberList, setMemberList] = useState<MemberType[]>([]);
+
+  const fetchMemberList = async () => {
+    try {
+      const memberList = await ChannelApi.getAllMembersChannel(channel.id);
+      setMemberList(memberList?.data);
+
+      // console.log(listFriendRes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const applyAdmin = () => {
+    if (memberList.length > 0)
+      for (let i = 0; i < memberList.length; i++) {
+        if (
+          memberList[i].user.id === userId &&
+          memberList[i].role === "CREATOR"
+        ) {
+          setUserAdmin(true);
+          break;
+        }
+        setUserAdmin(false);
+      }
+  };
+
+  useEffect(() => {
+    fetchMemberList();
+  }, [channel.id]);
+
+  useEffect(() => {
+    applyAdmin();
+  }, [channel.id]);
 
   return (
     <div className="RightColumn-container">
       <div>
-        {isUserType ? (
+        {memberList.length === 2 ? (
           <ChatWithOne
             channel={channel}
             userId={userId}

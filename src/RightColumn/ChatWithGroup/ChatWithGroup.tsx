@@ -198,6 +198,16 @@ const ChatWithGroup: React.FC<ChannelInboxProps> = ({
                 />
               </div>
             </div>
+            {/* <div className="rectangle-container">
+              <div className="layout-btn" >
+                <MdExitToApp
+                  size={24}
+                  className="util-icon"
+                  style={{ color: "red" }}
+                />
+                <p style={{ color: "red" }}>Leave group</p>
+              </div>
+            </div> */}
           </div>
           <div className="delete-contact">
             <div className="layout-btn">

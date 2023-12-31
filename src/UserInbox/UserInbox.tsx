@@ -36,14 +36,6 @@ type UserType = {
   fullname: string;
 };
 
-type MemberType = {
-  id: number;
-  user: any;
-  nickname: string;
-  role: any;
-  channel: number;
-};
-
 type UnifiedType = UserType | ChannelType;
 
 type ChannelInboxProps = {
@@ -185,32 +177,11 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
       console.error("Error fetching messages:", error);
     }
   };
-  const [UserAdmin, setUserAdmin] = useState(false);
-  const [members, setMemberlist] = useState<MemberType[]>([]);
-
-  const fetchMember = async (channelID: number) => {
-    try {
-      const response = await ChannelApi.getAllMembersChannel(channelID); // Replace with your API endpoint
-      setMemberlist(response.data);
-    } catch (error) {
-      console.error(error);
-      // Handle errors appropriately
-    }
-  };
 
   useEffect(() => {
-    // Fetch messages when medium or channel.id changes
-    fetchMember(channel.id);
     fetchMessages(channel.id);
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
-    }
-
-    for (let member of members) {
-      if (member.user.id === userId && member.role === "CREATOR") {
-        setUserAdmin(true);
-        break;
-      }
     }
   }, [channel.id, isUserType]);
 
@@ -664,7 +635,6 @@ const UserInbox: React.FC<ChannelInboxProps> = ({
             style={translateX}
           >
             <UserInformation
-              UserAdmin={UserAdmin}
               socket={socket}
               userId={userId}
               channel={channel}
