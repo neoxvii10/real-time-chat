@@ -5,8 +5,11 @@ import { FiTrash } from "react-icons/fi";
 import { PiPencilSimpleLineBold } from "react-icons/pi";
 import { FaKey } from "react-icons/fa6";
 import { FaCrown } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck  } from "react-icons/fa6";
+import { FaPlus } from "react-icons/fa";
 import { eventManager } from "react-toastify/dist/core";
+import AddMember from "./AddMember/AddMember";
+import { IoExitOutline } from "react-icons/io5";
 
 type MemberType = {
   id: number;
@@ -17,6 +20,8 @@ type MemberType = {
   isUserAdmin: boolean;
   socket: WebSocket;
   userId: number;
+  setMemberId: React.Dispatch<React.SetStateAction<number>>;
+  handleSlideAnimation: (event: React.MouseEvent<Element>) => void;
 };
 
 // type ChannelType = {
@@ -37,6 +42,8 @@ const Member: React.FC<MemberType> = ({
   isUserAdmin,
   socket,
   userId,
+  setMemberId,
+  handleSlideAnimation
 }) => {
   // handle utils dropdown
   const [isUtilsVisible, setUtilsVisible] = useState(false);
@@ -49,13 +56,16 @@ const Member: React.FC<MemberType> = ({
     setUtilsVisible(!isUtilsVisible);
   };
 
-  const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
-    visibility: "visible",
-    bottom: "1rem",
-  });
+  function isOpen(WebSocket: { readyState: any; OPEN: any; }) {
+     return WebSocket.readyState === WebSocket.OPEN 
+  }
 
-  function isOpen(WebSocket: { readyState: any; OPEN: any; }) { return WebSocket.readyState === WebSocket.OPEN }
+  const handleVisibleInputNickName = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    setMemberId(id);
+    handleSlideAnimation(e);
+  }
 
+  //
   const handleSetAdmin = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
     e.preventDefault();
     try {
@@ -193,7 +203,7 @@ const Member: React.FC<MemberType> = ({
                 </li>
               )}
 
-              <li className="util-dropdown-item">
+              <li className="util-dropdown-item" onClick={handleVisibleInputNickName}>
                 <span className="dropdown-icon">
                   <PiPencilSimpleLineBold size={22} />
                 </span>
@@ -209,10 +219,10 @@ const Member: React.FC<MemberType> = ({
                   </span>
                 </li>
               )}
-              {isCurrentUser && !isAdmin &&  (
+              {isCurrentUser &&  (
                 <li className="util-dropdown-item" onClick={handleLeaveGroup}>
                   <span className="dropdown-icon alert">
-                    <FiTrash size={22} />
+                    <IoExitOutline  size={22} />
                   </span>
                   <span className="dropdown-label alert">
                     Leave group
@@ -223,12 +233,7 @@ const Member: React.FC<MemberType> = ({
           </div>
         </span>
       </span>
-      <button
-        style={hideBtnSubmit}
-        className="btn-submit-edit"
-      >
-        <FaCheck size={24} />
-      </button>
+      
     </div>
   );
 };

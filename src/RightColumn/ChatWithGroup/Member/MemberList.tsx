@@ -1,13 +1,16 @@
 import "../Edit/EditGroup.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, CSSProperties } from "react";
 import { TiTick } from "react-icons/ti";
 import { IoMdTrash } from "react-icons/io";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { IoMdArrowBack } from "react-icons/io";
 import { MdPeopleAlt } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 import ChannelApi from "../../../Api/ChannelApi";
 import Member from "./Member";
+import AddMember from "./AddMember/AddMember";
+import SetNickName from "./SetNickName/SetNickName";
 
 type UserType = {
   id: number;
@@ -43,6 +46,7 @@ type ChannelInboxProps = {
   handMemberBack: (event: React.MouseEvent<HTMLSpanElement>) => void;
   socket: WebSocket;
   isUserAdmin: boolean;
+  
 };
 
 const MemberList: React.FC<ChannelInboxProps> = ({
@@ -61,12 +65,16 @@ const MemberList: React.FC<ChannelInboxProps> = ({
     const serverMessage = JSON.parse(e.data);
 
     if (serverMessage.action === "change_creator" 
-    || serverMessage.action === "remove_member") {
+    || serverMessage.action === "remove_member"
+    || serverMessage.action === "add_member"
+    || serverMessage.action === "set_nickname") {
       setTimeout( async () => {
         const response = await ChannelApi.getAllMembersChannel(channelInfo.id); // Replace with your API endpoint
         setMemners(response.data);  
       }, 100)
     }
+
+    console.log(serverMessage);
   }
 
   const fetchMember = async () => {
@@ -85,31 +93,96 @@ const MemberList: React.FC<ChannelInboxProps> = ({
     fetchMember();
   }, [channel.id]);
 
+  const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
+    visibility: "visible",
+    bottom: "1rem",
+  });
+
+  const [translateXForAddMember, setTranslateXForAddMember] = useState<CSSProperties>({
+    visibility: "hidden",
+    opacity: 0,
+    transform: "translateX(480px)",
+  });
+
+  const handleSlideAnimationAddMember = (event: React.MouseEvent<Element>) => {
+    setTranslateXForAddMember({
+        ...translateXForAddMember,
+        visibility: "visible",
+        opacity: 1,
+        transform: "translateX(0px)"
+      });
+    }
+
+  // set nick name
+  const [memberId, setMemberId] = useState(-1);
+
+  const handleSlideAnimation = (event: React.MouseEvent<Element>) => {
+    setTranslateXForNickName({
+        ...translateXForNickName,
+        visibility: "visible",
+        opacity: 1,
+        transform: "translateX(0px)"
+      });
+    };
+
+    const [translateXForNickName, setTranslateXForNickName] = useState<CSSProperties>({
+      visibility: "hidden",
+      opacity: 0,
+      transform: "translateX(480px)",
+    });
+  
+
+
 
   return (
-    <div>
-      <div className="rightcolumn-header">
-        <span className="btn-edit" onClick={handMemberBack}>
-          <IoMdArrowBack size={24} className="util-icon" />
-        </span>
-        <h3>Member</h3>
-      </div>
-      <div style={{ height: "4rem" }}></div>
+    <>
+      <AddMember 
+        socket={socket}
+        translateX={translateXForAddMember}
+        setTranslateX={setTranslateXForAddMember}
+        channelId={channel.id} />
+      <SetNickName 
+        socket={socket}
+        translateX={translateXForNickName}
+        setTranslateX={setTranslateXForNickName}
+        channelId={channel.id} 
+        memberId={memberId}
+      />
+
       <div>
-        {members.map((member) => (
-          <Member
-            channel={member.channel}
-            id={member.id}
-            nickname={member.nickname}
-            role={member.role}
-            user={member.user}
-            isUserAdmin
-            socket={socket}
-            userId={userId}
-          />
-        ))}
+        <div className="rightcolumn-header">
+          <span className="btn-edit" onClick={handMemberBack}>
+            <IoMdArrowBack size={24} className="util-icon" />
+          </span>
+          <h3>Member</h3>
+        </div>
+        <div style={{ height: "4rem" }}></div>
+        <div>
+          {members.map((member) => (
+            <Member
+              channel={member.channel}
+              id={member.id}
+              nickname={member.nickname}
+              role={member.role}
+              user={member.user}
+              isUserAdmin
+              socket={socket}
+              userId={userId}
+              setMemberId={setMemberId}
+              handleSlideAnimation={handleSlideAnimation}
+            />
+          ))}
+        </div>
+        <button 
+          style={hideBtnSubmit}
+          className="btn-submit-edit"
+          onClick={handleSlideAnimationAddMember}
+        >
+          <FaPlus size={24} />
+        </button>
       </div>
-    </div>
+      
+    </>
   );
 };
 
