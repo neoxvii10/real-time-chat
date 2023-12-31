@@ -10,20 +10,23 @@ import { FiTrash } from "react-icons/fi";
 import { BiSend } from "react-icons/bi";
 import { ImAttachment } from "react-icons/im";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import { FaReply } from "react-icons/fa";
-import { GoSearch, GoX } from 'react-icons/go'
+
+import { FaReply } from "react-icons//fa";
+import { GoSearch, GoX } from "react-icons/go";
 import { CSSProperties } from "react";
 import React, { useEffect, useState, useRef } from "react";
 import EmojiPicker, { EmojiStyle, EmojiClickData } from "emoji-picker-react";
 import "./UserInbox.css";
 import axiosClient from "../Api/AxiosClient";
-import { v4 as uuidv4 } from 'uuid';
-import UserProfileApi from '../Api/UserProfileApi';
+import { v4 as uuidv4 } from "uuid";
+import UserProfileApi from "../Api/UserProfileApi";
 import Report from "../Users/Report/Report";
 import UserInformation from "../RightColumn/RightColumn";
 import EditAvatarChannel from "../RightColumn/ChatWithGroup/Edit/EditAvatar/EditAvatarChannel";
 import axios from "axios";
 
+import { timeEnd } from "console";
+import ChannelApi from "../Api/ChannelApi";
 
 // use api
 type UserType = {
@@ -33,6 +36,14 @@ type UserType = {
   first_name: string;
   last_name: string;
   fullname: string;
+};
+
+type MemberType = {
+  id: number;
+  user: any;
+  nickname: string;
+  role: any;
+  channel: number;
 };
 
 type UnifiedType = UserType | ChannelType;
@@ -90,7 +101,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
     };
   }, []);
 
-  const isUserType = (channel as UnifiedType).hasOwnProperty('username');
+  const isUserType = (channel as UnifiedType).hasOwnProperty("username");
 
   const renderHeader = () => {
     if (isUserType) {
@@ -219,9 +230,28 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       console.error("Error fetching messages:", error);
     }
   };
+  const [UserAdmin, setUserAdmin] = useState(false);
+  const [members, setMemberlist] = useState<MemberType[]>([]);
+
+  const fetchMember = async (channelID: number) => {
+    try {
+      const response = await ChannelApi.getAllMembersChannel(channelID); // Replace with your API endpoint
+      setMemberlist(response.data);
+      for (let member of members) {
+        if (member.user.id === userId && member.role === "CREATOR") {
+          setUserAdmin(true);
+          break;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle errors appropriately
+    }
+  };
 
   useEffect(() => {
     // Fetch messages when medium or channel.id changes
+    fetchMember(channel.id);
     fetchMessages(channel.id);
     if (messageContainer && onBottom) {
       messageContainer.scrollTop = messageContainer?.scrollHeight;
@@ -426,8 +456,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
         if (
           Math.abs(
             messageContainer.scrollTop +
-            messageContainer.clientHeight -
-            messageContainer?.scrollHeight
+              messageContainer.clientHeight -
+              messageContainer?.scrollHeight
           ) < 1
         ) {
           setOnBottom(true);
@@ -679,11 +709,13 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
   // hanle report channel
   const [isReport, setIsReport] = useState(false);
 
-  const handleVisibleFormReport = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleVisibleFormReport = (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
     e.preventDefault();
 
     setIsReport(!isReport);
-  }
+  };
 
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
 
@@ -716,7 +748,7 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
-      setCroppedImage('');
+      setCroppedImage("");
       setIsCropped(false);
     }
     setDisEditAvatar(true);
@@ -724,29 +756,29 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
   };
 
   const [hideBtnSubmit, setHideBtnSubmit] = useState<CSSProperties>({
-    visibility: 'hidden',
-    bottom: '-4rem'
+    visibility: "hidden",
+    bottom: "-4rem",
   });
 
   const handleVisibleBtn = (visible: boolean) => {
-      if (visible) {
-          setHideBtnSubmit({
-              ...hideBtnSubmit,
-              visibility: 'visible',
-              bottom: '1rem'
-          })
-      } else {
-          setHideBtnSubmit({
-              ...hideBtnSubmit,
-              visibility: 'hidden',
-              bottom: '-4rem'
-          })
-      }
-  }
+    if (visible) {
+      setHideBtnSubmit({
+        ...hideBtnSubmit,
+        visibility: "visible",
+        bottom: "1rem",
+      });
+    } else {
+      setHideBtnSubmit({
+        ...hideBtnSubmit,
+        visibility: "hidden",
+        bottom: "-4rem",
+      });
+    }
+  };
 
   return (
     <>
-      {!isUserType ?
+      {!isUserType ? (
         <div className="user-box-chat">
           <div
             className="user-header-container"
@@ -790,7 +822,10 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
                       </span>
                       <span className="dropdown-label">Share Contact</span>
                     </li>
-                    <li className="util-dropdown-item" onClick={handleVisibleFormReport}>
+                    <li
+                      className="util-dropdown-item"
+                      onClick={handleVisibleFormReport}
+                    >
                       <span className="dropdown-icon">
                         <FiFlag size={22} />
                       </span>
@@ -815,6 +850,8 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
             style={translateX}
           >
             <UserInformation
+              UserAdmin={UserAdmin}
+              socket={socket}
               userId={userId}
               channel={channel}
               handleClose={handleSlideAnimation}
@@ -831,7 +868,9 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           <div className="message-container">
             {messages.map((message, index) => (
               <div
-                className={`message-block ${hoveredMessageIndex === index ? "hovered" : ""}`}
+                className={`message-block ${
+                  hoveredMessageIndex === index ? "hovered" : ""
+                }`}
                 key={index}
                 onMouseEnter={() => handleMouseEnter(index)}
                 onMouseLeave={handleMouseLeave}
@@ -1018,13 +1057,18 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
             </div>
           )}
         </div>
-        :
+      ) : (
         <div className="user-box-chat">
           {userProfile && (
             <div className="user-profile-container">
               <div className="user-profile-ava-container">
-                <img src={userProfile.avatar_url || "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"}
-                  alt="profile-img" />
+                <img
+                  src={
+                    userProfile.avatar_url ||
+                    "https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+                  }
+                  alt="profile-img"
+                />
               </div>
               <div className="user-profile-labels-container">
                 <h4>{userProfile.user.fullname}</h4>
@@ -1034,18 +1078,26 @@ const UserInbox: React.FC<ChannelInboxProps> = ({ channel, userId, socket, onNew
           )}
           <Logo />
         </div>
-      }
-      {isReport && <Report setIsReport={setIsReport} channel={channel} isUserType={isUserType}/>}
-      {disEditAvatar && <EditAvatarChannel
-        croppedImage={croppedImage}
-        croppedBlob={croppedBlob}
-        isCropped={isCropped}
-        handleCropImage={handleCropImage}
-        handleImageChange={handleImageChange}
-        setDisEditAvatar={setDisEditAvatar}
-        selectedImage={selectedImage}
-        setSelectedImage={setSelectedImage}
-      />}
+      )}
+      {isReport && (
+        <Report
+          setIsReport={setIsReport}
+          channel={channel}
+          isUserType={isUserType}
+        />
+      )}
+      {disEditAvatar && (
+        <EditAvatarChannel
+          croppedImage={croppedImage}
+          croppedBlob={croppedBlob}
+          isCropped={isCropped}
+          handleCropImage={handleCropImage}
+          handleImageChange={handleImageChange}
+          setDisEditAvatar={setDisEditAvatar}
+          selectedImage={selectedImage}
+          setSelectedImage={setSelectedImage}
+        />
+      )}
     </>
   );
 };

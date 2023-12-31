@@ -77,6 +77,34 @@ const Users: React.FC<UsersTypes> = (
   function isOpen(WebSocket: { readyState: any; OPEN: any; }) 
   { return WebSocket.readyState === WebSocket.OPEN }
 
+  useEffect(() => {
+      const handleSocketMessage = (e: MessageEvent) => {
+        // Parse the JSON data from the server
+        const serverMessage = JSON.parse(e.data);
+  
+        // Rest of your message handling logic...
+        if (serverMessage.action === "create_channel" 
+        || serverMessage.action === "upload_channel_avatar"
+        || serverMessage.action === "set_channel_title"
+        || serverMessage.action === "remove_member"
+        || serverMessage.action === "out_channel"
+        || serverMessage.action === "add_member") {
+          setTimeout( async () => {
+            const channelListRes = await ChannelApi.getChannelList()
+            setChannelList(channelListRes?.data);
+          }, 200)
+        }
+      }
+  
+      // Add event listener when component mounts
+      socket.addEventListener("message", handleSocketMessage);
+  
+      // Remove event listener when component unmounts
+      return () => {
+        socket.removeEventListener("message", handleSocketMessage);
+      };
+  }, [socket])
+
   
   const [channelAdd, setChannelAdd] = useState<boolean>(false);
 
@@ -130,9 +158,7 @@ const Users: React.FC<UsersTypes> = (
       try {
         // Your channel fetching logic here
         const searchUserListRes = await SearchUserApi.getSearchResults();
-        const channelListRes = await ChannelApi.getChannelList();
         setSearchUserList(searchUserListRes?.data.users);
-        setChannelList(channelListRes?.data);
       } catch (error) {
         console.log(error);
       }
@@ -187,31 +213,14 @@ const Users: React.FC<UsersTypes> = (
         setListFriends(listFriendRes?.data)
         const channelListRes = await ChannelApi.getChannelList();
         setChannelList(channelListRes?.data);
+        // console.log(listFriendRes);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-    const handleSocketChannel = (e: MessageEvent) => {
-      // Parse the JSON data from the server
-      const serverMessage = JSON.parse(e.data);
-
-      if (serverMessage.action === "create_channel" || serverMessage.action === "upload_channel_avatar") {
-        setTimeout( async () => {
-          const channelListRes = await ChannelApi.getChannelList();
-          setChannelList(channelListRes?.data);
-        }, 1000)
-      }
-    };
-
-    // Add event listener when component mounts
-    socket.addEventListener("message", handleSocketChannel);
-
-    // Remove event listener when component unmounts
-    return () => {
-      socket.removeEventListener("message", handleSocketChannel);
-    };
-  }, [translateX, socket])
+    // console.log("listFriend: ", listFriends);
+  }, [translateX])
 
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isMenuRotated, setMenuRotated] = useState<boolean>(false);

@@ -22,6 +22,11 @@ class ChannelApi {
         });
     }
 
+    getAllMembersChannel = async (channelId: number) => {
+        const url = `/api/channel/${channelId}/members`;
+        return await axiosClient.get(url);
+    }
+
     getChannelMediaList = async (channelId: number) => {
         const url = `/api/channel/${channelId}/media`;
         return await axiosClient.get(url);
